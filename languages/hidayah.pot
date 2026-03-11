@@ -1,0 +1,15 @@
+# Hidayah Theme Translation File
+# Copyright (C) 2025 Ridowan Hossain
+# This file is distributed under the same license as the Hidayah package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Hidayah 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-11\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: WP-CLI 2.x\n"
+"Domain: hidayah\n"
