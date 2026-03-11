@@ -4462,7 +4462,7 @@ footer.main-footer {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
-  z-index: 3000;
+  z-index: 9999; /* High enough to be over most things */
   display: flex;
   justify-content: flex-end;
   opacity: 0;
@@ -4470,6 +4470,26 @@ footer.main-footer {
   transition:
     opacity 0.3s ease,
     visibility 0.3s ease;
+}
+
+/* Handle WordPress Admin Bar overlap */
+.admin-bar .cart-modal-overlay {
+  top: 32px;
+  height: calc(100vh - 32px);
+}
+
+@media screen and (max-width: 782px) {
+  .admin-bar .cart-modal-overlay {
+    top: 46px;
+    height: calc(100vh - 46px);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .admin-bar .cart-modal-overlay {
+    top: 0;
+    height: 100vh;
+  }
 }
 .cart-modal-overlay.active {
   opacity: 1;
