@@ -18,6 +18,7 @@ if ( file_exists( HIDAYAH_DIR . '/inc/codestar-framework/codestar-framework.php'
 
 // ── Load inc/ files ───────────────────────────────────────
 require_once HIDAYAH_DIR . '/inc/theme-support.php';
+require_once HIDAYAH_DIR . '/inc/nav-walker.php';
 require_once HIDAYAH_DIR . '/inc/enqueue.php';
 require_once HIDAYAH_DIR . '/inc/menus.php';
 require_once HIDAYAH_DIR . '/inc/custom-post-types.php';
@@ -25,6 +26,10 @@ require_once HIDAYAH_DIR . '/inc/taxonomies.php';
 require_once HIDAYAH_DIR . '/inc/widgets.php';
 require_once HIDAYAH_DIR . '/inc/shortcodes.php';
 require_once HIDAYAH_DIR . '/inc/helpers.php';
+require_once HIDAYAH_DIR . '/inc/template-loader.php';
 
 // ── Theme Options Panel (Codestar) ────────────────────────
 require_once HIDAYAH_DIR . '/inc/cs-options.php';
+require_once HIDAYAH_DIR . '/inc/meta-boxes.php';
+require_once HIDAYAH_DIR . '/inc/ajax-audio-filters.php';
+

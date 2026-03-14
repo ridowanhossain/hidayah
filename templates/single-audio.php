@@ -11,11 +11,21 @@ while ( have_posts() ) : the_post();
     $views = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
     update_post_meta( get_the_ID(), '_post_views_count', $views + 1 );
 
-    $audio_url = get_post_meta( get_the_ID(), '_audio_file_url', true );
-    $duration  = get_post_meta( get_the_ID(), '_audio_duration', true );
-    $location  = get_post_meta( get_the_ID(), '_audio_location', true );
-    $speakers  = get_the_terms( get_the_ID(), 'speaker' );
-    $topics    = get_the_terms( get_the_ID(), 'topic' );
+    $audio_url    = get_post_meta( get_the_ID(), '_audio_url',      true );
+    $youtube_url  = get_post_meta( get_the_ID(), '_youtube_url',   true );
+    $audio_embed  = get_post_meta( get_the_ID(), '_audio_embed',   true );
+    $duration     = h_get_audio_duration( get_the_ID() );
+    $location     = get_post_meta( get_the_ID(), '_mahfil_location', true );
+    $speaker_role = get_post_meta( get_the_ID(), '_speaker_role',    true );
+    $speakers     = get_the_terms( get_the_ID(), 'speaker' );
+    $topics       = get_the_terms( get_the_ID(), 'topic' );
+
+    // Extract YouTube video ID
+    $yt_video_id = '';
+    if ( $youtube_url ) {
+        preg_match( '/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/', $youtube_url, $yt_m );
+        $yt_video_id = $yt_m[1] ?? '';
+    }
 ?>
 
     <section class="archive-hero single-audio-hero">
@@ -81,25 +91,56 @@ while ( have_posts() ) : the_post();
                       <?php printf( __( '%s শ্রোতা', 'hidayah' ), hidayah_en_to_bn_number( number_format_i18n( $views + 1 ) ) ); ?>
                     </span>
                   </div>
-                  <!-- Audio Player -->
-                  <div class="audio-player" data-src="<?php echo esc_url( $audio_url ); ?>" id="single-audio-player">
-                    <div class="player-controls">
-                      <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>">
-                        <span class="material-symbols-outlined">replay_10</span>
-                      </button>
-                      <button class="player-btn player-btn-main" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                      </button>
-                      <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>">
-                        <span class="material-symbols-outlined">forward_10</span>
-                      </button>
+                  <!-- Audio / YouTube Player -->
+                  <?php if ( $yt_video_id && ! $audio_url ) : ?>
+                    <!-- YouTube Audio Mode Player -->
+                    <div class="audio-player yt-audio-mode" id="single-audio-player" data-ytid="<?php echo esc_attr( $yt_video_id ); ?>">
+                      <div class="player-controls">
+                        <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">replay_10</span>
+                        </button>
+                        <button class="player-btn player-btn-main yt-play-btn" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">play_arrow</span>
+                        </button>
+                        <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">forward_10</span>
+                        </button>
+                      </div>
+                      <div class="player-progress">
+                        <span class="player-time player-current">0:00</span>
+                        <input class="player-seek" max="0" min="0" step="1" type="range" value="0" />
+                        <span class="player-time player-duration">0:00</span>
+                      </div>
+                      <!-- Hidden YouTube iframe -->
+                      <div id="yt-audio-iframe-wrap" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+                        <div id="yt-audio-iframe"></div>
+                      </div>
                     </div>
-                    <div class="player-progress">
-                      <span class="player-time player-current">0:00</span>
-                      <input class="player-seek" max="0" min="0" step="1" type="range" value="0" />
-                      <span class="player-time player-duration">0:00</span>
+
+                  <?php elseif ( $audio_url ) : ?>
+                    <!-- Standard MP3 Player -->
+                    <div class="audio-player" data-src="<?php echo esc_url( $audio_url ); ?>" id="single-audio-player">
+                      <div class="player-controls">
+                        <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">replay_10</span>
+                        </button>
+                        <button class="player-btn player-btn-main" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">play_arrow</span>
+                        </button>
+                        <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>">
+                          <span class="material-symbols-outlined">forward_10</span>
+                        </button>
+                      </div>
+                      <div class="player-progress">
+                        <span class="player-time player-current">0:00</span>
+                        <input class="player-seek" max="0" min="0" step="1" type="range" value="0" />
+                        <span class="player-time player-duration">0:00</span>
+                      </div>
                     </div>
-                  </div>
+
+                  <?php else : ?>
+                    <p style="color:#888; font-style:italic; padding:12px 0;"><?php _e( 'এই বয়ানের অডিও শীঘ্রই যুক্ত হবে।', 'hidayah' ); ?></p>
+                  <?php endif; ?>
                 </div>
               </div>
 
@@ -122,14 +163,22 @@ while ( have_posts() ) : the_post();
                     <span class="material-symbols-outlined">link</span>
                     <?php _e( 'লিঙ্ক কপি করুন', 'hidayah' ); ?>
                   </button>
+                  <?php if ( $audio_url ) : ?>
+                  <a class="share-btn share-download" download href="<?php echo esc_url($audio_url); ?>" style="background:var(--primary-green); color:#fff; border-color:var(--primary-green);">
+                    <span class="material-symbols-outlined">download</span>
+                    <?php _e( 'ডাউনলোড', 'hidayah' ); ?>
+                  </a>
+                  <?php endif; ?>
                 </div>
               </div>
 
               <!-- Audio Content -->
-              <div class="single-audio-description entry-content">
-                <h3 class="section-heading-sm"><?php _e( 'বয়ানের সারসংক্ষেপ', 'hidayah' ); ?></h3>
-                <?php the_content(); ?>
-              </div>
+              <?php if ( get_the_content() ) : ?>
+                  <div class="single-audio-description entry-content">
+                    <h3 class="section-heading-sm"><?php _e( 'বয়ানের সারসংক্ষেপ', 'hidayah' ); ?></h3>
+                    <?php the_content(); ?>
+                  </div>
+              <?php endif; ?>
 
               <!-- Tags -->
               <?php if ( has_tag() ) : ?>
@@ -187,7 +236,7 @@ while ( have_posts() ) : the_post();
                           ),
                       ) );
                       if ( $related->have_posts() ) : while ( $related->have_posts() ) : $related->the_post(); 
-                        $rel_url = get_post_meta( get_the_ID(), '_audio_file_url', true );
+                        $rel_url = get_post_meta( get_the_ID(), '_audio_url', true );
                         $rel_dur = get_post_meta( get_the_ID(), '_audio_duration', true );
                         $rel_views = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
                         $rel_speakers = get_the_terms( get_the_ID(), 'speaker' );
@@ -260,7 +309,11 @@ while ( have_posts() ) : the_post();
                     </div>
                     <div class="speaker-details">
                       <h4 class="speaker-name"><?php echo esc_html($speaker->name); ?></h4>
-                      <p class="speaker-role"><?php echo esc_html($speaker->description); ?></p>
+                      <?php if ( $speaker_role ) : ?>
+                          <p class="speaker-role"><?php echo esc_html($speaker_role); ?></p>
+                      <?php elseif ( $speaker->description ) : ?>
+                          <p class="speaker-role"><?php echo esc_html($speaker->description); ?></p>
+                      <?php endif; ?>
                       <div class="speaker-stats">
                         <span>
                           <span class="material-symbols-outlined">headphones</span>
@@ -309,63 +362,9 @@ while ( have_posts() ) : the_post();
                   </div>
               <?php endif; ?>
 
-              <!-- Series / Playlist (Audios from same topic) -->
-              <?php if ( ! empty( $topics ) ) : ?>
-                  <div class="sidebar-widget sidebar-playlist">
-                    <h4 class="sidebar-widget-title">
-                      <span class="material-symbols-outlined">queue_music</span>
-                      <?php printf( __( 'সিরিজ — %s', 'hidayah' ), esc_html($topics[0]->name) ); ?>
-                    </h4>
-                    <ul class="sidebar-playlist-list">
-                      <?php
-                      $series = new WP_Query( array(
-                          'post_type'      => 'audio',
-                          'posts_per_page' => 8,
-                          'tax_query'      => array(
-                              array(
-                                  'taxonomy' => 'topic',
-                                  'field'    => 'term_id',
-                                  'terms'    => $topics[0]->term_id,
-                              ),
-                          ),
-                      ) );
-                      $count = 1;
-                      while ( $series->have_posts() ) : $series->the_post(); 
-                        $s_dur = get_post_meta( get_the_ID(), '_audio_duration', true );
-                        $is_current = ( get_the_ID() === get_queried_object_id() );
-                      ?>
-                        <li class="playlist-item <?php echo $is_current ? 'active-playlist-item' : ''; ?>" onclick="window.location.href='<?php the_permalink(); ?>'">
-                          <span class="playlist-num"><?php echo hidayah_en_to_bn_number($count++); ?></span>
-                          <div class="playlist-info">
-                            <span class="playlist-title"><?php the_title(); ?></span>
-                            <?php if ($s_dur) : ?>
-                                <span class="playlist-dur"><?php echo hidayah_en_to_bn_number($s_dur); ?> মি</span>
-                            <?php endif; ?>
-                          </div>
-                          <?php if ($is_current) : ?>
-                              <span class="material-symbols-outlined playlist-playing-icon">volume_up</span>
-                          <?php else : ?>
-                              <span class="material-symbols-outlined playlist-play-icon">play_circle</span>
-                          <?php endif; ?>
-                        </li>
-                      <?php endwhile; wp_reset_postdata(); ?>
-                    </ul>
-                  </div>
-              <?php endif; ?>
 
-              <!-- Download Button -->
-              <?php if ( $audio_url ) : ?>
-                  <div class="sidebar-widget">
-                    <h4 class="sidebar-widget-title">
-                      <span class="material-symbols-outlined">download</span>
-                      <?php _e( 'ডাউনলোড', 'hidayah' ); ?>
-                    </h4>
-                    <a class="sidebar-download-btn" download href="<?php echo esc_url($audio_url); ?>">
-                      <span class="material-symbols-outlined">download</span>
-                      <?php _e( 'MP3 ডাউনলোড করুন', 'hidayah' ); ?>
-                    </a>
-                  </div>
-              <?php endif; ?>
+
+
 
               <!-- All Audios CTA -->
               <div class="sidebar-widget sidebar-cta-widget">
@@ -382,5 +381,87 @@ while ( have_posts() ) : the_post();
     </section>
 
 <?php endwhile; ?>
+
+<?php if ( $yt_video_id && ! $audio_url ) : ?>
+<script>
+// YouTube IFrame API – Audio Mode
+var ytAudioPlayer, ytSeekTimer;
+
+function onYouTubeIframeAPIReady() {
+    ytAudioPlayer = new YT.Player('yt-audio-iframe', {
+        height: '1', width: '1',
+        videoId: '<?php echo esc_js( $yt_video_id ); ?>',
+        playerVars: { autoplay: 0, controls: 0, disablekb: 1, rel: 0, modestbranding: 1 },
+        events: {
+            'onReady': function(e) { initYTAudioControls(e.target); },
+            'onStateChange': function(e) { onYTStateChange(e); }
+        }
+    });
+}
+
+function initYTAudioControls(player) {
+    var $wrap  = document.querySelector('.yt-audio-mode');
+    var $play  = $wrap ? $wrap.querySelector('.yt-play-btn span') : null;
+    var $seek  = $wrap ? $wrap.querySelector('.player-seek') : null;
+    var $curr  = $wrap ? $wrap.querySelector('.player-current') : null;
+    var $dur   = $wrap ? $wrap.querySelector('.player-duration') : null;
+    if (!$wrap) return;
+
+    function fmtTime(s) {
+        s = Math.floor(s || 0);
+        var m = Math.floor(s / 60), sec = s % 60;
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    // Play/Pause button
+    $wrap.querySelector('.player-btn-main').addEventListener('click', function() {
+        var state = player.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) { player.pauseVideo(); }
+        else { player.playVideo(); }
+    });
+
+    // Seek backward
+    $wrap.querySelector('.player-btn-backward').addEventListener('click', function() {
+        player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+    });
+
+    // Seek forward
+    $wrap.querySelector('.player-btn-forward').addEventListener('click', function() {
+        player.seekTo(player.getCurrentTime() + 10, true);
+    });
+
+    // Range seek
+    if ($seek) {
+        $seek.addEventListener('input', function() {
+            player.seekTo(parseFloat(this.value), true);
+        });
+    }
+
+    // Tick timer
+    ytSeekTimer = setInterval(function() {
+        var dur  = player.getDuration ? player.getDuration() : 0;
+        var curr = player.getCurrentTime ? player.getCurrentTime() : 0;
+        if ($seek && dur) {
+            $seek.max   = Math.floor(dur);
+            $seek.value = Math.floor(curr);
+        }
+        if ($curr) $curr.textContent = fmtTime(curr);
+        if ($dur)  $dur.textContent  = fmtTime(dur);
+    }, 500);
+}
+
+function onYTStateChange(e) {
+    var $wrap = document.querySelector('.yt-audio-mode');
+    var $icon = $wrap ? $wrap.querySelector('.yt-play-btn span') : null;
+    if (!$icon) return;
+    if (e.data === YT.PlayerState.PLAYING) {
+        $icon.textContent = 'pause';
+    } else {
+        $icon.textContent = 'play_arrow';
+    }
+}
+</script>
+<script src="https://www.youtube.com/iframe_api" async></script>
+<?php endif; ?>
 
 <?php get_footer(); ?>

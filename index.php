@@ -107,7 +107,7 @@ get_header();
 
                         if ( $featured_audio->have_posts() ) :
                             $featured_audio->the_post();
-                            $audio_src = get_post_meta( get_the_ID(), '_audio_file_url', true );
+                            $audio_src = get_post_meta( get_the_ID(), '_audio_url', true );
                             $speaker   = get_the_term_list( get_the_ID(), 'speaker', '', ', ', '' );
                             $location  = get_post_meta( get_the_ID(), '_audio_location', true );
                             $audio_type = get_the_term_list( get_the_ID(), 'topic', '', ', ', '' );
@@ -207,7 +207,7 @@ get_header();
                         if ( $sidebar_audio->have_posts() ) :
                             while ( $sidebar_audio->have_posts() ) :
                                 $sidebar_audio->the_post();
-                                $audio_src = get_post_meta( get_the_ID(), '_audio_file_url', true );
+                                $audio_src = get_post_meta( get_the_ID(), '_audio_url', true );
                                 $icon = get_post_meta( get_the_ID(), '_audio_icon', true ) ?: 'mic';
                         ?>
                         <div class="audio-card audio-player" id="audio-player-<?php echo esc_attr( $counter ); ?>"
@@ -764,65 +764,6 @@ get_header();
 <!-- ══════════════════════════════════════════
      যোগাযোগ CTA সেকশন
      ══════════════════════════════════════════ -->
-<section class="bridge-cta-section">
-    <div class="container">
-        <div class="bridge-cta-shell">
-            <div class="bridge-cta-copy">
-                <p class="bridge-cta-kicker"><?php esc_html_e( 'যোগাযোগ শুরু করুন', 'hidayah' ); ?></p>
-                <h3><a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">
-                    <?php esc_html_e( 'দ্বীনি জিজ্ঞাসা বা সহায়তা দরকার?', 'hidayah' ); ?>
-                </a></h3>
-                <p><?php esc_html_e( 'আপনি প্রশ্ন করতে চাইলে, বিস্তারিত বার্তা পাঠাতে চাইলে বা সরাসরি কল করতে চাইলে নিচের অপশনগুলো থেকে একটি বেছে নিতে পারেন।', 'hidayah' ); ?></p>
-                <div class="grand-cta-stat-row">
-                    <div class="grand-stat">
-                        <span class="grand-stat-num"><?php esc_html_e( '২৪/৭', 'hidayah' ); ?></span>
-                        <span class="grand-stat-label"><?php esc_html_e( 'অনলাইন সেবা', 'hidayah' ); ?></span>
-                    </div>
-                    <div class="grand-stat-divider"></div>
-                    <div class="grand-stat">
-                        <span class="grand-stat-num"><?php esc_html_e( '১০০+', 'hidayah' ); ?></span>
-                        <span class="grand-stat-label"><?php esc_html_e( 'দ্বীনি প্রশ্নের উত্তর', 'hidayah' ); ?></span>
-                    </div>
-                    <div class="grand-stat-divider"></div>
-                    <div class="grand-stat">
-                        <span class="grand-stat-num"><?php esc_html_e( '৫০০০+', 'hidayah' ); ?></span>
-                        <span class="grand-stat-label"><?php esc_html_e( 'সন্তুষ্ট মুসলিম', 'hidayah' ); ?></span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="bridge-cta-links">
-                <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="bridge-link-card">
-                    <span class="material-symbols-outlined bridge-link-icon">forum</span>
-                    <div>
-                        <h4><?php esc_html_e( 'যোগাযোগ ফর্ম', 'hidayah' ); ?></h4>
-                        <p><?php esc_html_e( 'বিস্তারিত মেসেজ পাঠানোর জন্য', 'hidayah' ); ?></p>
-                    </div>
-                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
-                </a>
-
-                <a href="mailto:<?php echo esc_attr( get_theme_mod( 'contact_email', 'info@hoquerdawat.com' ) ); ?>"
-                   class="bridge-link-card">
-                    <span class="material-symbols-outlined bridge-link-icon">mail</span>
-                    <div>
-                        <h4><?php esc_html_e( 'ইমেইল সাপোর্ট', 'hidayah' ); ?></h4>
-                        <p><?php esc_html_e( 'ডকুমেন্ট বা লিখিত জিজ্ঞাসার জন্য', 'hidayah' ); ?></p>
-                    </div>
-                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
-                </a>
-
-                <a href="tel:<?php echo esc_attr( get_theme_mod( 'contact_phone_raw', '+8801234567890' ) ); ?>"
-                   class="bridge-link-card">
-                    <span class="material-symbols-outlined bridge-link-icon">call</span>
-                    <div>
-                        <h4><?php esc_html_e( 'ফোন কল', 'hidayah' ); ?></h4>
-                        <p><?php esc_html_e( 'তাৎক্ষণিক সহায়তার জন্য', 'hidayah' ); ?></p>
-                    </div>
-                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
 
 <?php get_footer(); ?>

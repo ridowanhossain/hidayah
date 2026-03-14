@@ -732,6 +732,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Navigation Logic
   const menuToggle = document.getElementById("mobile-menu");
   const navWrap = document.querySelector(".nav-wrap");
+  const siteNav = document.getElementById("site-navigation");
   const navOverlay = document.querySelector(".nav-overlay");
   const closeMenuBtn = document.querySelector(".close-menu");
   const navItems = document.querySelectorAll(".nav-item");
@@ -739,20 +740,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeMenu = () => {
     if (menuToggle) menuToggle.classList.remove("active");
     if (navWrap) navWrap.classList.remove("active");
+    if (siteNav) siteNav.classList.remove("active");
     if (navOverlay) navOverlay.classList.remove("active");
+    document.body.classList.remove("menu-open");
     document.body.style.overflow = ""; // Enable scrolling
   };
 
   const openMenu = () => {
     if (menuToggle) menuToggle.classList.add("active");
     if (navWrap) navWrap.classList.add("active");
+    if (siteNav) siteNav.classList.add("active");
     if (navOverlay) navOverlay.classList.add("active");
+    document.body.classList.add("menu-open");
     document.body.style.overflow = "hidden"; // Disable scrolling
   };
 
   if (menuToggle) {
     menuToggle.addEventListener("click", function () {
-      if (navWrap.classList.contains("active")) {
+      if (navWrap && navWrap.classList.contains("active")) {
         closeMenu();
       } else {
         openMenu();
@@ -769,50 +774,77 @@ document.addEventListener("DOMContentLoaded", function () {
     navOverlay.addEventListener("click", closeMenu);
   }
 
-  // Legacy close logic (optional fallback)
-  document.addEventListener("click", function (e) {
-    if (navWrap && navWrap.classList.contains("active") && !navWrap.contains(e.target) && !menuToggle.contains(e.target) && !navOverlay.contains(e.target)) {
-      // Exclude overlay too
-      closeMenu();
-    }
-  });
 
   navItems.forEach((item) => {
     const dropdown = item.querySelector(".dropdown-menu");
-    if (dropdown) {
-      item.classList.add("has-dropdown");
-      const link = item.querySelector("a");
+    if (!dropdown) return;
 
-      link.addEventListener("click", function (e) {
-        if (window.innerWidth <= 992) {
-          e.preventDefault();
+    // Ensure has-dropdown class is present (fallback for dynamic menus)
+    item.classList.add("has-dropdown");
 
-          // Save scroll position before toggling
-          const navMenu = document.querySelector(".nav-menu");
-          const savedScrollTop = navMenu ? navMenu.scrollTop : 0;
+    // ── Mobile: inject a dedicated arrow toggle button ──────────────────────
+    // This avoids capturing the parent <a> click, so parent links with
+    // real URLs still navigate normally on desktop.
+    const existingBtn = item.querySelector(".dd-toggle-btn");
+    if (!existingBtn) {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.className = "dd-toggle-btn";
+      toggleBtn.setAttribute("aria-label", "সাব-মেনু খুলুন");
+      toggleBtn.setAttribute("aria-expanded", "false");
+      toggleBtn.innerHTML = '<span class="material-symbols-outlined">expand_more</span>';
 
-          // Close all other dropdowns
-          navItems.forEach((otherItem) => {
-            if (otherItem !== item) {
-              otherItem.classList.remove("active");
-            }
-          });
+      // Insert the toggle button right after the top-level <a>
+      const topLink = item.querySelector(":scope > a");
+      if (topLink) {
+        topLink.insertAdjacentElement("afterend", toggleBtn);
+      }
 
-          // Toggle current item
-          item.classList.toggle("active");
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
 
-          // Restore scroll position immediately
-          if (navMenu) {
-            navMenu.scrollTop = savedScrollTop;
-            // Also restore after a frame to prevent any async reflow
-            requestAnimationFrame(() => {
-              navMenu.scrollTop = savedScrollTop;
-            });
+        if (window.innerWidth > 992) return; // Desktop uses CSS hover
+
+        // Save scroll position
+        const navMenu = document.querySelector(".nav-menu");
+        const savedScrollTop = navMenu ? navMenu.scrollTop : 0;
+
+        const isOpen = item.classList.contains("active");
+
+        // Close all other dropdowns first
+        navItems.forEach((other) => {
+          if (other !== item) {
+            other.classList.remove("active");
+            const otherBtn = other.querySelector(".dd-toggle-btn");
+            if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
           }
+        });
+
+        // Toggle current
+        item.classList.toggle("active", !isOpen);
+        toggleBtn.setAttribute("aria-expanded", String(!isOpen));
+
+        // Restore scroll
+        if (navMenu) {
+          navMenu.scrollTop = savedScrollTop;
+          requestAnimationFrame(() => {
+            navMenu.scrollTop = savedScrollTop;
+          });
         }
       });
     }
   });
+
+  // ── Desktop: close open dropdowns when clicking outside nav ─────────────
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#site-navigation")) {
+      navItems.forEach((item) => {
+        item.classList.remove("active");
+        const btn = item.querySelector(".dd-toggle-btn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+  });
+
 
   // Dynamic Video Modal Logic (Robust Fix for Error 153)
   const videoThumbs = document.querySelectorAll(".video-thumb");
@@ -915,208 +947,164 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // ==========================================
-  // ==========================================
   // Audio Players (Generic logic for all instances)
   // ==========================================
+  window.initAudioPlayers = function() {
+    const audioPlayerContainers = document.querySelectorAll(".audio-player:not(.initialized)");
+    
+    audioPlayerContainers.forEach((container) => {
+      container.classList.add("initialized");
+      const playerID = container.id;
+      let playBtn = document.querySelector(`[data-player-target="${playerID}"]`);
+
+      if (!playBtn && playerID === "featured-audio-player") {
+        playBtn = document.getElementById("featured-audio-play-btn");
+      }
+
+      const playerPlayPause = container.querySelector(".player-btn-main");
+      const playerSeek = container.querySelector(".player-seek");
+      const playerCurrent = container.querySelector(".player-current");
+      const playerDuration = container.querySelector(".player-duration");
+      const playerBackward = container.querySelector(".player-btn-backward");
+      const playerForward = container.querySelector(".player-btn-forward");
+
+      const audioSrc = container.dataset.src;
+      if (!audioSrc) return;
+
+      const audio = document.createElement("audio");
+      audio.preload = "none";
+      audio.src = encodeURI(audioSrc);
+      container._hdAudio = audio; // Store for global access
+
+      let isSeeking = false;
+      let savedTime = 0;
+      let isMetadataLoaded = false;
+
+      if (playerCurrent) playerCurrent.textContent = "0:00";
+      if (playerDuration) playerDuration.textContent = "--:--";
+
+      audio.addEventListener("play", () => {
+        document.querySelectorAll('audio').forEach(a => {
+          if (a !== audio && !a.paused) a.pause();
+        });
+      });
+
+      if (playBtn) {
+        playBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          container.classList.add("active");
+          if (!audio.src || audio.src === window.location.href) {
+            audio.src = encodeURI(audioSrc);
+            audio.load();
+            if (savedTime > 0) audio.currentTime = savedTime;
+          }
+          audio.play();
+          this.style.display = "none";
+        });
+      }
+
+      if (playerPlayPause) {
+        audio.onplay = () => { playerPlayPause.querySelector(".material-symbols-outlined").textContent = "pause"; };
+        audio.onpause = () => {
+          playerPlayPause.querySelector(".material-symbols-outlined").textContent = "play_arrow";
+          if (!isSeeking && audio.currentTime > 0) {
+            savedTime = audio.currentTime;
+            audio.removeAttribute("src");
+            audio.load();
+          }
+        };
+
+        playerPlayPause.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (audio.paused || !audio.src || audio.src === window.location.href) {
+            if (!audio.src || audio.src === window.location.href) {
+              audio.src = encodeURI(audioSrc);
+              audio.load();
+              if (savedTime > 0) {
+                audio.addEventListener("loadedmetadata", function onMeta() {
+                  audio.currentTime = savedTime;
+                  audio.removeEventListener("loadedmetadata", onMeta);
+                  audio.play();
+                });
+              } else { audio.play(); }
+            } else { audio.play(); }
+          } else { audio.pause(); }
+        });
+      }
+
+      audio.onloadedmetadata = function () {
+        isMetadataLoaded = true;
+        if (playerDuration) playerDuration.textContent = formatTime(audio.duration);
+        if (playerSeek) {
+          playerSeek.max = Math.floor(audio.duration);
+          if (!isSeeking) playerSeek.value = Math.floor(audio.currentTime);
+          playerSeek.oninput = () => { isSeeking = true; };
+          playerSeek.onchange = () => {
+            savedTime = Number(playerSeek.value);
+            if (!audio.src || audio.src === window.location.href) {
+              audio.src = encodeURI(audioSrc);
+              audio.load();
+            }
+            audio.currentTime = savedTime;
+            if (playerCurrent) playerCurrent.textContent = formatTime(savedTime);
+            audio.play();
+            isSeeking = false;
+          };
+        }
+      };
+
+      audio.ontimeupdate = function () {
+        if (!isMetadataLoaded || isNaN(audio.duration)) return;
+        if (playerSeek && !isSeeking) playerSeek.value = Math.floor(audio.currentTime);
+        if (playerCurrent) playerCurrent.textContent = formatTime(audio.currentTime);
+      };
+
+      if (playerBackward) {
+        playerBackward.addEventListener("click", (e) => {
+          e.preventDefault();
+          let nt = Math.max(0, (audio.currentTime || savedTime) - 10);
+          savedTime = nt;
+          if (audio.src && audio.src !== window.location.href) audio.currentTime = nt;
+          if (playerSeek) playerSeek.value = Math.floor(nt);
+          if (playerCurrent) playerCurrent.textContent = formatTime(nt);
+        });
+      }
+
+      if (playerForward) {
+        playerForward.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (isMetadataLoaded && isFinite(audio.duration)) {
+            let nt = Math.min(audio.duration, (audio.currentTime || savedTime) + 10);
+            savedTime = nt;
+            if (audio.src && audio.src !== window.location.href) audio.currentTime = nt;
+            if (playerSeek) playerSeek.value = Math.floor(nt);
+            if (playerCurrent) playerCurrent.textContent = formatTime(nt);
+          }
+        });
+      }
+
+      audio.oncanplaythrough = () => { if (playerSeek) playerSeek.disabled = false; };
+      audio.onended = () => {
+        if (playerSeek) playerSeek.value = 0;
+        if (playerCurrent) playerCurrent.textContent = "0:00";
+        savedTime = 0;
+        playerPlayPause.querySelector(".material-symbols-outlined").textContent = "play_arrow";
+      };
+    });
+  };
+
   function formatTime(secs) {
     let ss = Math.floor(secs);
     let hh = Math.floor(ss / 3600);
     let mm = Math.floor((ss - hh * 3600) / 60);
     ss = ss - hh * 3600 - mm * 60;
-    if (hh > 0) {
-      mm = mm < 10 ? "0" + mm : mm;
-    }
+    if (hh > 0) mm = mm < 10 ? "0" + mm : mm;
     ss = ss < 10 ? "0" + ss : ss;
     return hh > 0 ? hh + ":" + mm + ":" + ss : mm + ":" + ss;
   }
 
-  const audioPlayerContainers = document.querySelectorAll(".audio-player");
-  const allAudios = []; // Keep track of all audio instances to pause others
-
-  audioPlayerContainers.forEach((container) => {
-    const playerID = container.id;
-    let playBtn = document.querySelector(`[data-player-target="${playerID}"]`);
-
-    if (!playBtn && playerID === "featured-audio-player") {
-      playBtn = document.getElementById("featured-audio-play-btn");
-    }
-
-    const playerPlayPause = container.querySelector(".player-btn-main");
-    const playerSeek = container.querySelector(".player-seek");
-    const playerCurrent = container.querySelector(".player-current");
-    const playerDuration = container.querySelector(".player-duration");
-    const playerBackward = container.querySelector(".player-btn-backward");
-    const playerForward = container.querySelector(".player-btn-forward");
-
-    const audioSrc = container.dataset.src;
-    if (!audioSrc) return;
-
-    const audio = document.createElement("audio");
-    audio.preload = "none"; // Strict NO preload to save user data
-    audio.src = encodeURI(audioSrc);
-
-    allAudios.push(audio); // Add to tracking list
-    let isSeeking = false;
-    let savedTime = 0; // For resuming after stopping network
-    let isMetadataLoaded = false;
-
-    if (playerCurrent) playerCurrent.textContent = "0:00";
-    if (playerDuration) playerDuration.textContent = "--:--";
-
-    // Pause other audios when this one starts playing
-    audio.addEventListener("play", () => {
-      allAudios.forEach((otherAudio) => {
-        if (otherAudio !== audio && !otherAudio.paused) {
-          otherAudio.pause();
-        }
-      });
-    });
-
-    if (playBtn) {
-      playBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        container.classList.add("active");
-
-        // Restore src if it was killed to save data
-        if (!audio.src || audio.src === window.location.href) {
-          audio.src = encodeURI(audioSrc);
-          audio.load();
-          if (savedTime > 0) audio.currentTime = savedTime;
-        }
-
-        audio.play();
-        this.style.display = "none";
-      });
-    }
-
-    if (playerPlayPause) {
-      audio.onplay = function () {
-        playerPlayPause.querySelector(".material-symbols-outlined").textContent = "pause";
-      };
-
-      audio.onpause = function () {
-        playerPlayPause.querySelector(".material-symbols-outlined").textContent = "play_arrow";
-
-        // --- DATA SAVING LOGIC: Kill the network connection when paused ---
-        // Browsers keep downloading mp3 in the background. Removing src stops bytes from draining.
-        if (!isSeeking && audio.currentTime > 0) {
-          savedTime = audio.currentTime;
-          audio.removeAttribute("src");
-          audio.load(); // Forces browser to drop the pending connection
-        }
-      };
-
-      playerPlayPause.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (audio.paused || !audio.src || audio.src === window.location.href) {
-          if (!audio.src || audio.src === window.location.href) {
-            audio.src = encodeURI(audioSrc);
-            audio.load();
-            if (savedTime > 0) {
-              // Wait for enough data before setting time to avoid exceptions
-              audio.addEventListener("loadedmetadata", function onMeta() {
-                audio.currentTime = savedTime;
-                audio.removeEventListener("loadedmetadata", onMeta);
-                audio.play();
-              });
-            } else {
-              audio.play();
-            }
-          } else {
-            audio.play();
-          }
-        } else {
-          audio.pause();
-        }
-      });
-    }
-
-    audio.onloadedmetadata = function () {
-      isMetadataLoaded = true;
-      if (playerDuration) playerDuration.textContent = formatTime(audio.duration);
-      if (playerSeek) {
-        playerSeek.max = Math.floor(audio.duration);
-
-        // Ensure seek max is up to date when dragging
-        if (!isSeeking) {
-          playerSeek.value = Math.floor(audio.currentTime);
-        }
-
-        playerSeek.oninput = function () {
-          isSeeking = true;
-        };
-
-        playerSeek.onchange = function () {
-          savedTime = Number(playerSeek.value);
-          if (!audio.src || audio.src === window.location.href) {
-            audio.src = encodeURI(audioSrc);
-            audio.load();
-          }
-          audio.currentTime = savedTime;
-
-          if (playerCurrent) playerCurrent.textContent = formatTime(savedTime);
-
-          // Re-trigger play if we are seeking
-          audio.play();
-          isSeeking = false;
-        };
-      }
-    };
-
-    audio.ontimeupdate = function () {
-      if (!isMetadataLoaded || isNaN(audio.duration)) return;
-
-      if (playerSeek && !isSeeking) {
-        playerSeek.value = Math.floor(audio.currentTime);
-      }
-      if (playerCurrent) {
-        playerCurrent.textContent = formatTime(audio.currentTime);
-      }
-    };
-
-    if (playerBackward) {
-      playerBackward.addEventListener("click", function (e) {
-        e.preventDefault();
-        let newTime = Math.max(0, (audio.currentTime || savedTime) - 10);
-        savedTime = newTime;
-
-        if (audio.src && audio.src !== window.location.href) {
-          audio.currentTime = newTime;
-        }
-
-        if (playerSeek) playerSeek.value = Math.floor(newTime);
-        if (playerCurrent) playerCurrent.textContent = formatTime(newTime);
-      });
-    }
-
-    if (playerForward) {
-      playerForward.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (isMetadataLoaded && isFinite(audio.duration)) {
-          let newTime = Math.min(audio.duration, (audio.currentTime || savedTime) + 10);
-          savedTime = newTime;
-
-          if (audio.src && audio.src !== window.location.href) {
-            audio.currentTime = newTime;
-          }
-
-          if (playerSeek) playerSeek.value = Math.floor(newTime);
-          if (playerCurrent) playerCurrent.textContent = formatTime(newTime);
-        }
-      });
-    }
-
-    audio.oncanplaythrough = function () {
-      if (playerSeek) playerSeek.disabled = false;
-    };
-
-    audio.onended = function () {
-      if (playerSeek) playerSeek.value = 0;
-      if (playerCurrent) playerCurrent.textContent = "0:00";
-      savedTime = 0;
-      playerPlayPause.querySelector(".material-symbols-outlined").textContent = "play_arrow";
-    };
-  });
+  // Initial call
+  initAudioPlayers();
 
   // ==========================================
   // Generic Infinite Slider Logic
@@ -1623,25 +1611,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let readableDate = "";
         if (todayData.date && todayData.date.hijri && todayData.date.gregorian) {
-          const hijriMonthNames = ["", "মহররম", "সফর", "রবিউল আউয়াল", "রবিউস সানি", "জুমাদাল উলা", "জুমাদাস সানি", "রজব", "শাবান", "রমজান", "শাওয়াল", "জিলকদ", "জিলহজ্ব"];
           const hDay = todayData.date.hijri.day;
-          const hMonth = hijriMonthNames[todayData.date.hijri.month.number] || todayData.date.hijri.month.en;
+          
+          const hijriMonthsEn = {
+            1: "Muharram", 2: "Safar", 3: "Rabi' al-awwal", 4: "Rabi' al-thani",
+            5: "Jumada al-ula", 6: "Jumada al-akhira", 7: "Rajab", 8: "Sha'ban",
+            9: "Ramadan", 10: "Shawwal", 11: "Dhu al-Qi'dah", 12: "Dhu al-Hijjah"
+          };
+          const mNum = parseInt(todayData.date.hijri.month.number);
+          const hMonth = hijriMonthsEn[mNum] || todayData.date.hijri.month.en;
           const hYear = todayData.date.hijri.year;
 
           const gDay = todayData.date.gregorian.day;
-          const gMonth = todayData.date.gregorian.month.en.slice(0, 3);
+          const gMonth = todayData.date.gregorian.month.en;
           const gYear = todayData.date.gregorian.year;
 
-          readableDate = toBanglaDigits(`${hDay} ${hMonth} ${hYear} হিজরী  •  ${gDay} ${gMonth} ${gYear}`);
+          readableDate = `${hDay} ${hMonth} ${hYear} Hijri  •  ${gDay} ${gMonth} ${gYear}`;
         } else if (todayData.date && todayData.date.readable) {
-          readableDate = toBanglaDigits(todayData.date.readable);
+          readableDate = todayData.date.readable;
         } else {
-          readableDate = toBanglaDigits(new Intl.DateTimeFormat("bn-BD", { dateStyle: "medium" }).format(now));
+          readableDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         prayerElements.sheetDate.textContent = readableDate;
 
-        // Also update the header Hijri date to ensure perfectly synced API data
         const hijriHeaderElement = document.getElementById("hijri-date");
         if (hijriHeaderElement) {
           hijriHeaderElement.textContent = readableDate;
@@ -2176,4 +2169,128 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   console.log("Website loaded successfully.");
+
+  // ==========================================
+  // Audio Archive AJAX Filtering
+  // ==========================================
+  const audioAjax = {
+    $grid: document.getElementById('archiveAudioGrid'),
+    $pagination: document.getElementById('audioPagination'),
+    $loader: document.getElementById('audioLoader'),
+    $count: document.querySelector('.archive-count-badge'),
+    
+    // Selects
+    $speaker: document.getElementById('audioSpeakerFilter'),
+    $topic: document.getElementById('audioTopicFilter'),
+    $sort: document.getElementById('audioSortSelect'),
+    $searchInput: document.getElementById('audioSearchInput'),
+    $searchForm: document.getElementById('audioSearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$speaker, this.$topic, this.$sort];
+      
+      triggers.forEach(el => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      // Pagination click handling
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#audioPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      
+      // Values are now IDs (integers), so no encoding issue
+      const data = new URLSearchParams({
+        action: 'filter_audio',
+        speaker: this.$speaker ? this.$speaker.value : '',
+        topic: this.$topic ? this.$topic.value : '',
+        orderby: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      // Show loader
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(window.location.origin + '/wp-admin/admin-ajax.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          // Update Grid
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          // Always update pagination and count
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+          
+          if (self.$count && countData) {
+              const countText = countData.textContent;
+              const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+              self.$count.innerHTML = icon + ' মোট ' + countText + 'টি অডিও';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          // Re-init players and other triggers
+          if (typeof window.initAudioPlayers === 'function') {
+            window.initAudioPlayers();
+          }
+          
+          // Trigger DOMContentLoaded events for YouTube
+          const event = new Event('DOMContentLoaded');
+          document.dispatchEvent(event);
+
+          // Scroll to top of grid
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  audioAjax.init();
 });
+

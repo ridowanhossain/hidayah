@@ -13,8 +13,10 @@
 $h_site_title    = hidayah_opt( 'header_site_title',    get_bloginfo( 'name' ) );
 $h_site_subtitle = hidayah_opt( 'header_site_subtitle', get_bloginfo( 'description' ) );
 $h_donate_url    = hidayah_opt( 'header_donation_url',  home_url( '/hadiya' ) );
-$h_donate_label  = hidayah_opt( 'header_donation_label', __( 'Donate', 'hidayah' ) );
+$h_donate_label  = hidayah_opt( 'header_donation_label', __( 'হাদিয়া', 'hidayah' ) );
 $h_show_cart     = hidayah_opt( 'header_show_cart', true );
+$h_hide_donate_m = hidayah_opt( 'header_hide_donation_mobile', false );
+$h_show_date     = hidayah_opt( 'header_show_date', true );
 
 // ── Logo from General Settings (CSF media field) ─────────────────────────────
 $logo_data = hidayah_opt( 'site_logo' );
@@ -33,21 +35,18 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
 
         <!-- Logo & Site Title -->
         <div class="header-left">
-            <div class="logo">
-                <?php if ( $logo_url ) : ?>
-                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-                        <img src="<?php echo esc_url( $logo_url ); ?>"
-                             alt="<?php echo esc_attr( $h_site_title ); ?>" />
-                    </a>
-                <?php elseif ( has_custom_logo() ) : ?>
-                    <?php the_custom_logo(); ?>
-                <?php else : ?>
-                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-                        <img src="<?php echo esc_url( HIDAYAH_URI . '/assets/images/logo-new.png' ); ?>"
-                             alt="<?php echo esc_attr( $h_site_title ); ?>" />
-                    </a>
-                <?php endif; ?>
-            </div>
+            <?php if ( $logo_url || has_custom_logo() ) : ?>
+                <div class="logo">
+                    <?php if ( $logo_url ) : ?>
+                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
+                            <img src="<?php echo esc_url( $logo_url ); ?>"
+                                 alt="<?php echo esc_attr( $h_site_title ); ?>" />
+                        </a>
+                    <?php else : ?>
+                        <?php the_custom_logo(); ?>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
             <div class="header-text">
                 <?php if ( is_front_page() && is_home() ) : ?>
                     <h1><?php echo esc_html( $h_site_title ); ?></h1>
@@ -59,29 +58,33 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
                     </p>
                 <?php endif; ?>
                 <p><?php echo esc_html( $h_site_subtitle ); ?></p>
-                <p id="hijri-date" class="hijri-date"></p>
+                <?php if ( $h_show_date ) : ?>
+                    <p id="hijri-date" class="hijri-date"></p>
+                <?php endif; ?>
             </div>
         </div>
 
         <!-- Right side: Cart + Donation button -->
         <div class="header-right">
             <?php if ( $h_show_cart ) : ?>
-                <?php if ( function_exists( 'WC' ) ) : ?>
-                <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="header-cart-btn" id="headerCartBtn">
-                    <span class="material-symbols-outlined cart-icon">shopping_cart</span>
-                    <span class="cart-count" id="cartCountBadge">
-                        <?php echo intval( WC()->cart->get_cart_contents_count() ); ?>
-                    </span>
-                </a>
-                <?php else : ?>
-                <a href="<?php echo esc_url( home_url( '/cart' ) ); ?>" class="header-cart-btn" id="headerCartBtn">
-                    <span class="material-symbols-outlined cart-icon">shopping_cart</span>
-                    <span class="cart-count" id="cartCountBadge">0</span>
-                </a>
-                <?php endif; ?>
+                <div class="cart-wrapper">
+                    <?php if ( function_exists( 'WC' ) ) : ?>
+                    <button class="header-cart-btn" id="headerCartBtn">
+                        <span class="material-symbols-outlined cart-icon">shopping_cart</span>
+                        <span class="cart-count" id="cartCountBadge">
+                            <?php echo intval( WC()->cart->get_cart_contents_count() ); ?>
+                        </span>
+                    </button>
+                    <?php else : ?>
+                    <button class="header-cart-btn" id="headerCartBtn">
+                        <span class="material-symbols-outlined cart-icon">shopping_cart</span>
+                        <span class="cart-count" id="cartCountBadge">0</span>
+                    </button>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
 
-            <a href="<?php echo esc_url( $h_donate_url ); ?>" class="donation-btn">
+            <a href="<?php echo esc_url( $h_donate_url ); ?>" class="donation-btn<?php echo $h_hide_donate_m ? ' hide-m' : ''; ?>">
                 <span class="material-symbols-outlined donation-icon">volunteer_activism</span>
                 <span class="donation-text"><?php echo esc_html( $h_donate_label ); ?></span>
             </a>
@@ -99,8 +102,8 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
 
         <!-- Mobile menu header -->
         <div class="nav-header-mobile">
-            <span class="nav-title"><?php esc_html_e( 'Menu', 'hidayah' ); ?></span>
-            <button class="close-menu" aria-label="<?php esc_attr_e( 'Close menu', 'hidayah' ); ?>">
+            <span class="nav-title"><?php esc_html_e( 'মেনু', 'hidayah' ); ?></span>
+            <button class="close-menu" aria-label="<?php esc_attr_e( 'বন্ধ করুন', 'hidayah' ); ?>">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -117,52 +120,21 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
             ) );
         else :
         ?>
-            <!-- Fallback nav: shown when no WordPress menu is assigned -->
+            <!-- Fallback nav: removed as requested -->
             <ul class="nav-menu">
-                <li class="nav-item"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><span><?php esc_html_e( 'Home', 'hidayah' ); ?></span></a></li>
-                <li class="nav-item"><a href="<?php echo esc_url( home_url( '/darbar-sharif' ) ); ?>"><span><?php esc_html_e( 'Darbar Sharif', 'hidayah' ); ?></span></a></li>
-                <li class="nav-item has-dropdown">
-                    <a href="#"><span><?php esc_html_e( 'Publications', 'hidayah' ); ?></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'monthly_hd' ) ); ?>"><?php esc_html_e( 'Monthly Haqquer Dawat (PDF)', 'hidayah' ); ?></a></li>
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'book' ) ); ?>"><?php esc_html_e( 'Books & Publications', 'hidayah' ); ?></a></li>
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'probondho' ) ); ?>"><?php esc_html_e( 'Articles & Essays', 'hidayah' ); ?></a></li>
-                    </ul>
+                <li class="nav-item">
+                    <p style="padding: 20px; color: rgba(255,255,255,0.6); font-size: 14px;">
+                        <?php esc_html_e( 'কোন মেনু সেট করা নেই। দয়া করে অ্যাপিয়ারেন্স > মেনু থেকে মেনু সেট করুন।', 'hidayah' ); ?>
+                    </p>
                 </li>
-                <li class="nav-item has-dropdown">
-                    <a href="#"><span><?php esc_html_e( 'Live & Media', 'hidayah' ); ?></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'audio' ) ); ?>"><?php esc_html_e( 'Audio Lectures', 'hidayah' ); ?></a></li>
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'video' ) ); ?>"><?php esc_html_e( 'Video Lectures', 'hidayah' ); ?></a></li>
-                        <li><a href="<?php echo esc_url( get_post_type_archive_link( 'photo_gallery' ) ); ?>"><?php esc_html_e( 'Photo Gallery', 'hidayah' ); ?></a></li>
-                    </ul>
-                </li>
-                <li class="nav-item has-dropdown">
-                    <a href="#"><span><?php esc_html_e( 'Education', 'hidayah' ); ?></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#"><?php esc_html_e( 'School Program', 'hidayah' ); ?></a></li>
-                        <li><a href="#"><?php esc_html_e( 'Madrasa Program', 'hidayah' ); ?></a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/admission-info' ) ); ?>"><?php esc_html_e( 'Admission Info', 'hidayah' ); ?></a></li>
-                    </ul>
-                </li>
-                <li class="nav-item"><a href="<?php echo esc_url( get_post_type_archive_link( 'dini_jiggasa' ) ); ?>"><span><?php esc_html_e( 'Islamic Q&A', 'hidayah' ); ?></span></a></li>
-                <li class="nav-item has-dropdown">
-                    <a href="<?php echo esc_url( get_post_type_archive_link( 'notice' ) ); ?>"><span><?php esc_html_e( 'Notices', 'hidayah' ); ?></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#"><?php esc_html_e( 'Darbar Notices', 'hidayah' ); ?></a></li>
-                        <li><a href="#"><?php esc_html_e( 'Mahfil Announcements', 'hidayah' ); ?></a></li>
-                    </ul>
-                </li>
-                <li class="nav-item"><a href="<?php echo esc_url( home_url( '/contact' ) ); ?>"><span><?php esc_html_e( 'Contact', 'hidayah' ); ?></span></a></li>
             </ul>
         <?php endif; ?>
 
         <!-- Mobile menu footer -->
-        <div class="mobile-menu-footer">
-            <a href="<?php echo esc_url( home_url( '/hadiya' ) ); ?>" class="donation-btn full-width">
-                <span class="donation-text"><?php esc_html_e( 'Donate', 'hidayah' ); ?></span>
+        <div class="mobile-menu-footer<?php echo $h_hide_donate_m ? ' hide-m' : ''; ?>">
+            <a href="<?php echo esc_url( $h_donate_url ); ?>" class="donation-btn full-width">
+                <span class="donation-text"><?php echo esc_html( $h_donate_label ); ?></span>
             </a>
         </div>
-
     </div>
 </nav>

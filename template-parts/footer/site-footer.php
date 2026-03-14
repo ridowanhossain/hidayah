@@ -10,6 +10,70 @@
  */
 ?>
 
+<!-- ══════════════════════════════════════════
+     যোগাযোগ CTA সেকশন
+     ══════════════════════════════════════════ -->
+<section class="bridge-cta-section">
+    <div class="container">
+        <div class="bridge-cta-shell">
+            <div class="bridge-cta-copy">
+                <p class="bridge-cta-kicker"><?php echo esc_html( hidayah_opt( 'footer_cta_kicker', __( 'যোগাযোগ শুরু করুন', 'hidayah' ) ) ); ?></p>
+                <h3><a href="<?php echo esc_url( hidayah_opt( 'footer_cta_card1_url', home_url( '/contact' ) ) ); ?>">
+                    <?php echo esc_html( hidayah_opt( 'footer_cta_title', __( 'দ্বীনি জিজ্ঞাসা বা সহায়তা দরকার?', 'hidayah' ) ) ); ?>
+                </a></h3>
+                <p><?php echo esc_html( hidayah_opt( 'footer_cta_desc', __( 'আপনি প্রশ্ন করতে চাইলে, বিস্তারিত বার্তা পাঠাতে চাইলে বা সরাসরি কল করতে চাইলে নিচের অপশনগুলো থেকে একটি বেছে নিতে পারেন।', 'hidayah' ) ) ); ?></p>
+                <div class="grand-cta-stat-row">
+                    <div class="grand-stat">
+                        <span class="grand-stat-num"><?php echo esc_html( hidayah_opt( 'footer_cta_stat1_num', '২৪/৭' ) ); ?></span>
+                        <span class="grand-stat-label"><?php echo esc_html( hidayah_opt( 'footer_cta_stat1_label', __( 'অনলাইন সেবা', 'hidayah' ) ) ); ?></span>
+                    </div>
+                    <div class="grand-stat-divider"></div>
+                    <div class="grand-stat">
+                        <span class="grand-stat-num"><?php echo esc_html( hidayah_opt( 'footer_cta_stat2_num', '১০০+' ) ); ?></span>
+                        <span class="grand-stat-label"><?php echo esc_html( hidayah_opt( 'footer_cta_stat2_label', __( 'দ্বীনি প্রশ্নের উত্তর', 'hidayah' ) ) ); ?></span>
+                    </div>
+                    <div class="grand-stat-divider"></div>
+                    <div class="grand-stat">
+                        <span class="grand-stat-num"><?php echo esc_html( hidayah_opt( 'footer_cta_stat3_num', '৫০০০+' ) ); ?></span>
+                        <span class="grand-stat-label"><?php echo esc_html( hidayah_opt( 'footer_cta_stat3_label', __( 'সন্তুষ্ট মুসলিম', 'hidayah' ) ) ); ?></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bridge-cta-links">
+                <a href="<?php echo esc_url( hidayah_opt( 'footer_cta_card1_url', home_url( '/contact' ) ) ); ?>" class="bridge-link-card">
+                    <span class="material-symbols-outlined bridge-link-icon">forum</span>
+                    <div>
+                        <h4><?php echo esc_html( hidayah_opt( 'footer_cta_card1_title', __( 'যোগাযোগ ফর্ম', 'hidayah' ) ) ); ?></h4>
+                        <p><?php echo esc_html( hidayah_opt( 'footer_cta_card1_desc', __( 'বিস্তারিত মেসেজ পাঠানোর জন্য', 'hidayah' ) ) ); ?></p>
+                    </div>
+                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
+                </a>
+
+                <a href="mailto:<?php echo esc_attr( hidayah_opt( 'contact_email', 'info@hoquerdawat.com' ) ); ?>"
+                   class="bridge-link-card">
+                    <span class="material-symbols-outlined bridge-link-icon">mail</span>
+                    <div>
+                        <h4><?php echo esc_html( hidayah_opt( 'footer_cta_card2_title', __( 'ইমেইল সাপোর্ট', 'hidayah' ) ) ); ?></h4>
+                        <p><?php echo esc_html( hidayah_opt( 'footer_cta_card2_desc', __( 'ডকুমেন্ট বা লিখিত জিজ্ঞাসার জন্য', 'hidayah' ) ) ); ?></p>
+                    </div>
+                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
+                </a>
+
+                <a href="tel:<?php echo esc_attr( hidayah_opt( 'contact_phone_raw', '+8801234567890' ) ); ?>"
+                   class="bridge-link-card">
+                    <span class="material-symbols-outlined bridge-link-icon">call</span>
+                    <div>
+                        <h4><?php echo esc_html( hidayah_opt( 'footer_cta_card3_title', __( 'ফোন কল', 'hidayah' ) ) ); ?></h4>
+                        <p><?php echo esc_html( hidayah_opt( 'footer_cta_card3_desc', __( 'তাৎক্ষণিক সহায়তার জন্য', 'hidayah' ) ) ); ?></p>
+                    </div>
+                    <span class="material-symbols-outlined bridge-link-arrow">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <footer class="main-footer" id="colophon">
     <div class="container">
         <div class="footer-grid">

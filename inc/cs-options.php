@@ -109,6 +109,22 @@ CSF::createSection( 'hidayah_options', array(
             'default' => true,
         ),
 
+        array(
+            'id'      => 'header_hide_donation_mobile',
+            'type'    => 'switcher',
+            'title'   => __( 'Hide Donation Button on Mobile', 'hidayah' ),
+            'desc'    => __( 'If enabled, the donation button (হাদিয়া) will be hidden on screens smaller than 992px.', 'hidayah' ),
+            'default' => false,
+        ),
+
+        array(
+            'id'      => 'header_show_date',
+            'type'    => 'switcher',
+            'title'   => __( 'Show Date in Header', 'hidayah' ),
+            'desc'    => __( 'Show or hide the Hijri and Gregorian date in the header.', 'hidayah' ),
+            'default' => true,
+        ),
+
     ),
 ) );
 
@@ -123,11 +139,133 @@ CSF::createSection( 'hidayah_options', array(
     'fields' => array(
 
         array(
-            'id'      => 'footer_about_text',
-            'type'    => 'textarea',
-            'title'   => __( 'Footer Description', 'hidayah' ),
-            'desc'    => __( 'Short text shown in the footer brand column.', 'hidayah' ),
+            'id'    => 'footer_about_text',
+            'type'  => 'textarea',
+            'title' => __( 'Footer Description', 'hidayah' ),
+            'desc'  => __( 'Short text shown in the footer brand column.', 'hidayah' ),
             'default' => 'আমরা সত্যের পথে আহবান জানাই। হক্কানী আলেমদের সরাসরি বয়ান ও নির্ভরযোগ্য কন্টেন্ট সরবরাহ করাই আমাদের মূল লক্ষ্য।',
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Contact Bridge CTA', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_cta_kicker',
+            'type'    => 'text',
+            'title'   => __( 'CTA Kicker (Badge)', 'hidayah' ),
+            'default' => 'যোগাযোগ শুরু করুন',
+        ),
+
+        array(
+            'id'      => 'footer_cta_title',
+            'type'    => 'text',
+            'title'   => __( 'CTA Title', 'hidayah' ),
+            'default' => 'দ্বীনি জিজ্ঞাসা বা সহায়তা দরকার?',
+        ),
+
+        array(
+            'id'      => 'footer_cta_desc',
+            'type'    => 'textarea',
+            'title'   => __( 'CTA Description', 'hidayah' ),
+            'default' => 'আপনি প্রশ্ন করতে চাইলে, বিস্তারিত বার্তা পাঠাতে চাইলে বা সরাসরি কল করতে চাইলে নিচের অপশনগুলো থেকে একটি বেছে নিতে পারেন।',
+        ),
+
+        // Statistics Group (Simplified as separate fields)
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'CTA Statistics', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_cta_stat1_num',
+            'type'    => 'text',
+            'title'   => __( 'Stat 1 Number', 'hidayah' ),
+            'default' => '২৪/৭',
+        ),
+        array(
+            'id'      => 'footer_cta_stat1_label',
+            'type'    => 'text',
+            'title'   => __( 'Stat 1 Label', 'hidayah' ),
+            'default' => 'অনলাইন সেবা',
+        ),
+
+        array(
+            'id'      => 'footer_cta_stat2_num',
+            'type'    => 'text',
+            'title'   => __( 'Stat 2 Number', 'hidayah' ),
+            'default' => '১০০+',
+        ),
+        array(
+            'id'      => 'footer_cta_stat2_label',
+            'type'    => 'text',
+            'title'   => __( 'Stat 2 Label', 'hidayah' ),
+            'default' => 'দ্বীনি প্রশ্নের উত্তর',
+        ),
+
+        array(
+            'id'      => 'footer_cta_stat3_num',
+            'type'    => 'text',
+            'title'   => __( 'Stat 3 Number', 'hidayah' ),
+            'default' => '৫০০০+',
+        ),
+        array(
+            'id'      => 'footer_cta_stat3_label',
+            'type'    => 'text',
+            'title'   => __( 'Stat 3 Label', 'hidayah' ),
+            'default' => 'সন্তুষ্ট মুসলিম',
+        ),
+
+        // Contact Cards Group
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Contact Cards', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_cta_card1_title',
+            'type'    => 'text',
+            'title'   => __( 'Card 1 Title', 'hidayah' ),
+            'default' => 'যোগাযোগ ফর্ম',
+        ),
+        array(
+            'id'      => 'footer_cta_card1_desc',
+            'type'    => 'text',
+            'title'   => __( 'Card 1 Desc', 'hidayah' ),
+            'default' => 'বিস্তারিত মেসেজ পাঠানোর জন্য',
+        ),
+        array(
+            'id'      => 'footer_cta_card1_url',
+            'type'    => 'text',
+            'title'   => __( 'Card 1 URL', 'hidayah' ),
+            'default' => '/contact',
+        ),
+
+        array(
+            'id'      => 'footer_cta_card2_title',
+            'type'    => 'text',
+            'title'   => __( 'Card 2 Title', 'hidayah' ),
+            'default' => 'ইমেইল সাপোর্ট',
+        ),
+        array(
+            'id'      => 'footer_cta_card2_desc',
+            'type'    => 'text',
+            'title'   => __( 'Card 2 Desc', 'hidayah' ),
+            'default' => 'ডকুমেন্ট বা লিখিত জিজ্ঞাসার জন্য',
+        ),
+
+        array(
+            'id'      => 'footer_cta_card3_title',
+            'type'    => 'text',
+            'title'   => __( 'Card 3 Title', 'hidayah' ),
+            'default' => 'ফোন কল',
+        ),
+        array(
+            'id'      => 'footer_cta_card3_desc',
+            'type'    => 'text',
+            'title'   => __( 'Card 3 Desc', 'hidayah' ),
+            'default' => 'তাৎক্ষণিক সহায়তার জন্য',
         ),
 
         array(
@@ -160,19 +298,6 @@ CSF::createSection( 'hidayah_options', array(
     'fields' => array(
 
         array(
-            'type'    => 'subheading',
-            'content' => __( 'Hero Section', 'hidayah' ),
-        ),
-
-        array(
-            'id'      => 'hero_badge_text',
-            'type'    => 'text',
-            'title'   => __( 'Hero Badge Text', 'hidayah' ),
-            'desc'    => __( 'Small badge shown above the hero title.', 'hidayah' ),
-            'default' => "বিসমিল্লাহির রাহমানির রাহীম",
-        ),
-
-        array(
             'id'      => 'hero_title',
             'type'    => 'text',
             'title'   => __( 'Hero Title', 'hidayah' ),
@@ -187,64 +312,115 @@ CSF::createSection( 'hidayah_options', array(
         ),
 
         array(
-            'id'      => 'hero_btn1_label',
-            'type'    => 'text',
-            'title'   => __( 'Hero Primary Button Label', 'hidayah' ),
-            'default' => 'প্রকাশনা দেখুন',
+            'type'    => 'subheading',
+            'content' => __( 'Book Corner Section', 'hidayah' ),
         ),
 
         array(
-            'id'      => 'hero_btn1_url',
+            'id'      => 'book_sales_title',
             'type'    => 'text',
-            'title'   => __( 'Hero Primary Button URL', 'hidayah' ),
-            'default' => '#',
+            'title'   => __( 'Book Corner Title', 'hidayah' ),
+            'default' => 'বই বিক্রয় কর্নার',
         ),
 
         array(
-            'id'      => 'hero_btn2_label',
-            'type'    => 'text',
-            'title'   => __( 'Hero Secondary Button Label', 'hidayah' ),
-            'default' => 'লাইভ দেখুন',
+            'id'      => 'book_sales_subtitle',
+            'type'    => 'textarea',
+            'title'   => __( 'Book Corner Subtitle', 'hidayah' ),
+            'default' => '',
         ),
 
         array(
-            'id'      => 'hero_btn2_url',
+            'id'      => 'book_sales_btn_label',
             'type'    => 'text',
-            'title'   => __( 'Hero Secondary Button URL', 'hidayah' ),
+            'title'   => __( 'View More Button Label', 'hidayah' ),
+            'default' => 'আরও দেখুন',
+        ),
+
+        array(
+            'id'      => 'book_sales_btn_url',
+            'type'    => 'text',
+            'title'   => __( 'View More Button URL', 'hidayah' ),
             'default' => '#',
         ),
 
         array(
             'type'    => 'subheading',
-            'content' => __( 'About / Darbar Section', 'hidayah' ),
+            'content' => __( 'About Section', 'hidayah' ),
         ),
 
         array(
-            'id'      => 'about_text',
-            'type'    => 'textarea',
-            'title'   => __( 'About Darbar Text', 'hidayah' ),
-            'desc'    => __( 'Short description shown in the About section.', 'hidayah' ),
-            'default' => 'দরবার ও দাওয়াত একটি দলীলভিত্তিক, মার্জিত ও দায়িত্বশীল দ্বীনি মারকাজ।',
-        ),
-
-        array(
-            'id'      => 'promo_text',
-            'type'    => 'textarea',
-            'title'   => __( 'Darbar Promo Banner Text', 'hidayah' ),
-            'default' => 'তরবিয়ত, তাযকিয়া ও আত্মশুদ্ধির মাধ্যমে প্রকৃত মুসলিম হিসেবে গড়ে ওঠার প্রশিক্ষণ কেন্দ্র।',
-        ),
-
-        array(
-            'id'      => 'promo_btn_label',
+            'id'      => 'about_title',
             'type'    => 'text',
-            'title'   => __( 'Promo Banner Button Label', 'hidayah' ),
-            'default' => 'আরও জানুন',
+            'title'   => __( 'About Title', 'hidayah' ),
+            'default' => "দরবার ও দাওয়াত সম্পর্কে",
         ),
 
         array(
-            'id'      => 'promo_btn_url',
+            'id'      => 'about_desc',
+            'type'    => 'textarea',
+            'title'   => __( 'About Description', 'hidayah' ),
+            'default' => "দরবার ও দাওয়াত একটি দলীলভিত্তিক, মার্জিত ও দায়িত্বশীল দ্বীনি মারকাজ। আমাদের লক্ষ্য হলো পবিত্র কুরআন ও সহীহ হাদীসের আলোকে বিশুদ্ধ ইসলামী জ্ঞান প্রচার করা এবং তরবিয়ত ও তাযকিয়ার মাধ্যমে প্রকৃত মুসলিম হিসেবে গড়ে তোলা।",
+        ),
+
+        array(
+            'id'      => 'about_btn1_label',
             'type'    => 'text',
-            'title'   => __( 'Promo Banner Button URL', 'hidayah' ),
+            'title'   => __( 'Button 1 Label', 'hidayah' ),
+            'default' => 'বিস্তারিত জানুন →',
+        ),
+
+        array(
+            'id'      => 'about_btn1_url',
+            'type'    => 'text',
+            'title'   => __( 'Button 1 URL', 'hidayah' ),
+            'default' => '#',
+        ),
+
+        array(
+            'id'      => 'about_btn2_label',
+            'type'    => 'text',
+            'title'   => __( 'Button 2 Label', 'hidayah' ),
+            'default' => 'যোগাযোগ করুন →',
+        ),
+
+        array(
+            'id'      => 'about_btn2_url',
+            'type'    => 'text',
+            'title'   => __( 'Button 2 URL', 'hidayah' ),
+            'default' => '#',
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Monthly Publication Section', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'monthly_hd_title',
+            'type'    => 'text',
+            'title'   => __( 'Section Title', 'hidayah' ),
+            'default' => 'মাসিক হক্বের দাওয়াত - প্রকাশনা',
+        ),
+
+        array(
+            'id'      => 'monthly_hd_subtitle',
+            'type'    => 'textarea',
+            'title'   => __( 'Section Subtitle', 'hidayah' ),
+            'default' => 'সহীহ আকিদা, ইবাদত ও তাযকিয়াহভিত্তিক মাসিক দলীলসমৃদ্ধ প্রকাশনা',
+        ),
+
+        array(
+            'id'      => 'monthly_hd_btn_label',
+            'type'    => 'text',
+            'title'   => __( 'View More Button Label', 'hidayah' ),
+            'default' => 'আরও দেখুন →',
+        ),
+
+        array(
+            'id'      => 'monthly_hd_btn_url',
+            'type'    => 'text',
+            'title'   => __( 'View More Button URL', 'hidayah' ),
             'default' => '#',
         ),
 

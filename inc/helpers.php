@@ -152,3 +152,35 @@ if ( ! function_exists( 'h_bn_num' ) ) :
         return hidayah_en_to_bn_number( $number );
     }
 endif;
+/**
+ * Auto-grabs audio duration from attachment metadata or URL.
+ *
+ * @param int $post_id Post ID.
+ * @return string|false
+ */
+if ( ! function_exists( 'h_get_audio_duration' ) ) :
+    function h_get_audio_duration( $post_id ) {
+        // 1. Try to get it from the media library attachment FIRST
+        $audio_url = get_post_meta( $post_id, '_audio_url', true );
+        if ( $audio_url ) {
+            $attachment_id = attachment_url_to_postid( $audio_url );
+            if ( $attachment_id ) {
+                $metadata = wp_get_attachment_metadata( $attachment_id );
+                if ( ! empty( $metadata['length_formatted'] ) ) {
+                    return $metadata['length_formatted'];
+                }
+                if ( ! empty( $metadata['length'] ) ) {
+                    return floor( $metadata['length'] / 60 ); // Return minutes
+                }
+            }
+        }
+
+        // 2. Fallback to saved meta (for YouTube or external links)
+        $duration = get_post_meta( $post_id, '_audio_duration', true );
+        if ( ! empty( $duration ) ) {
+            return $duration;
+        }
+
+        return false;
+    }
+endif;

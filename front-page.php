@@ -79,10 +79,17 @@ get_header();
                         }
 
                         if ( $feat_audio->have_posts() ) : $feat_audio->the_post();
-                            $audio_url = get_post_meta( get_the_ID(), '_audio_url', true );
-                            $v_count   = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
-                            $duration  = get_post_meta( get_the_ID(), '_audio_duration', true ) ?: '0:00';
-                            $location  = get_post_meta( get_the_ID(), '_mahfil_location', true );
+                            $audio_url   = get_post_meta( get_the_ID(), '_audio_url',      true );
+                            $youtube_url = get_post_meta( get_the_ID(), '_youtube_url',    true );
+                            $v_count     = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
+                            $duration    = get_post_meta( get_the_ID(), '_audio_duration',  true ) ?: '0:00';
+                            $location    = get_post_meta( get_the_ID(), '_mahfil_location', true );
+                            // Extract YouTube video ID
+                            $feat_yt_id  = '';
+                            if ( $youtube_url && ! $audio_url ) {
+                                preg_match( '/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/', $youtube_url, $yt_m );
+                                $feat_yt_id = $yt_m[1] ?? '';
+                            }
                         ?>
                             <div class="featured-audio-card">
                                 <div class="featured-audio-cover">
@@ -96,6 +103,26 @@ get_header();
                                             <?php _e( 'সর্বশেষ বয়ান', 'hidayah' ); ?>
                                         </div>
                                     </div>
+                                    <?php if ( $feat_yt_id ) : ?>
+                                    <!-- YouTube Audio Mode (Featured) -->
+                                    <div class="audio-player yt-audio-mode" id="featured-audio-player" data-ytid="<?php echo esc_attr( $feat_yt_id ); ?>">
+                                        <div class="player-controls">
+                                            <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>"><span class="material-symbols-outlined">replay_10</span></button>
+                                            <button class="player-btn player-btn-main yt-play-btn" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>"><span class="material-symbols-outlined">play_arrow</span></button>
+                                            <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>"><span class="material-symbols-outlined">forward_10</span></button>
+                                        </div>
+                                        <div class="player-progress">
+                                            <span class="player-time player-current">0:00</span>
+                                            <input type="range" class="player-seek" value="0" min="0" max="0" step="1" />
+                                            <span class="player-time player-duration"><?php echo esc_html($duration); ?></span>
+                                        </div>
+                                        <!-- Hidden YouTube iframe -->
+                                        <div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+                                            <div id="yt-feat-iframe"></div>
+                                        </div>
+                                    </div>
+                                    <?php else : ?>
+                                    <!-- Standard MP3 Player -->
                                     <div class="audio-player" id="featured-audio-player" data-src="<?php echo esc_url($audio_url); ?>">
                                         <div class="player-controls">
                                             <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>"><span class="material-symbols-outlined">replay_10</span></button>
@@ -108,6 +135,7 @@ get_header();
                                             <span class="player-time player-duration"><?php echo esc_html($duration); ?></span>
                                         </div>
                                     </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -138,17 +166,35 @@ get_header();
                     <div class="audio-sidebar-list">
                         <?php
                         $side_audio = new WP_Query( array( 'post_type' => 'audio', 'posts_per_page' => 2, 'offset' => 1 ) );
+                        $side_yt_ids = [];
                         while ( $side_audio->have_posts() ) : $side_audio->the_post();
-                            $s_url = get_post_meta( get_the_ID(), '_audio_url', true );
+                            $s_url     = get_post_meta( get_the_ID(), '_audio_url',     true );
+                            $s_yt_url  = get_post_meta( get_the_ID(), '_youtube_url',   true );
+                            $s_yt_id   = '';
+                            if ( $s_yt_url && ! $s_url ) {
+                                preg_match( '/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/', $s_yt_url, $sy_m );
+                                $s_yt_id = $sy_m[1] ?? '';
+                            }
+                            $side_yt_ids[] = $s_yt_id;
                         ?>
+                            <?php if ( $s_yt_id ) : ?>
+                            <!-- YouTube sidebar card -->
+                            <div class="audio-card yt-audio-mode" data-ytid="<?php echo esc_attr( $s_yt_id ); ?>" id="side-yt-<?php echo esc_attr( $s_yt_id ); ?>">
+                            <?php else : ?>
                             <div class="audio-card audio-player" data-src="<?php echo esc_url($s_url); ?>">
+                            <?php endif; ?>
                                 <h4><a href="<?php the_permalink(); ?>"><span class="material-symbols-outlined audio-title-icon">mic</span><?php the_title(); ?></a></h4>
                                 <div class="player-progress">
-                                    <button class="player-btn player-btn-main sidebar-player-btn-reset"><span class="material-symbols-outlined">play_arrow</span></button>
+                                    <button class="player-btn player-btn-main <?php echo $s_yt_id ? 'yt-play-btn' : 'sidebar-player-btn-reset'; ?>"><span class="material-symbols-outlined">play_arrow</span></button>
                                     <span class="player-time player-current">0:00</span>
                                     <input type="range" class="player-seek" value="0" min="0" max="0" step="1" />
                                     <span class="player-time player-duration">0:00</span>
                                 </div>
+                                <?php if ( $s_yt_id ) : ?>
+                                <div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
+                                    <div id="yt-side-<?php echo esc_attr( $s_yt_id ); ?>"></div>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         <?php endwhile; wp_reset_postdata(); ?>
                         <a href="<?php echo get_post_type_archive_link('audio'); ?>" class="sidebar-view-more-btn"><?php _e( 'আরও অডিও শুনুন', 'hidayah' ); ?> <span class="material-symbols-outlined">arrow_forward</span></a>
@@ -283,7 +329,10 @@ get_header();
 <!-- Book Sales Section -->
 <section class="book-sales-section">
     <div class="container">
-        <div class="section-title text-center"><?php _e( 'বই বিক্রয় কর্নার', 'hidayah' ); ?></div>
+        <div class="section-title text-center"><?php echo h_opt( 'book_sales_title', 'বই বিক্রয় কর্নার' ); ?></div>
+        <?php if ( $book_subtitle = h_opt( 'book_sales_subtitle' ) ) : ?>
+            <p class="section-subtitle text-center" style="max-width: 800px; margin: -15px auto 30px; opacity: 0.8; font-size: 16px;"><?php echo esc_html( $book_subtitle ); ?></p>
+        <?php endif; ?>
         <div class="book-slider-wrapper">
             <button class="book-slider-btn book-slider-prev"><span class="material-symbols-outlined">chevron_left</span></button>
             <div class="book-sales-grid">
@@ -318,7 +367,10 @@ get_header();
             <button class="book-slider-btn book-slider-next"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
         <div class="book-sales-cta text-center mt-35">
-            <a href="<?php echo get_post_type_archive_link('book'); ?>" class="book-sales-more-btn"><?php _e( 'আরও দেখুন', 'hidayah' ); ?> <span class="material-symbols-outlined">arrow_forward</span></a>
+            <a href="<?php echo esc_url( h_opt( 'book_sales_btn_url', '#' ) ); ?>" class="book-sales-more-btn">
+                <?php echo h_opt( 'book_sales_btn_label', 'আরও দেখুন' ); ?>
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
         </div>
     </div>
 </section>
@@ -328,10 +380,10 @@ get_header();
     <div class="container">
         <div class="section-title text-center"><?php echo h_opt( 'about_title', 'দরবার ও দাওয়াত সম্পর্কে' ); ?></div>
         <div class="about-intro">
-            <p><?php echo h_opt( 'about_desc', 'দরবার ও দাওয়াত একটি দলীলভিত্তিক, মার্জিত ও দায়িত্বশীল দ্বীনি মারকাজ। আমাদের লক্ষ্য হলো পবিত্র কুরআন ও সহীহ হাদীসের আলোকে বিশুদ্ধ ইসলামী জ্ঞান প্রচার করা এবং তরবিয়ত ও তাযকিয়ার মাধ্যমে প্রকৃত মুসলিম হিসেবে গড়ে তোলা।' ); ?></p>
+            <p><?php echo h_opt( 'about_desc', 'দরবার ও দাওয়াত একটি দলীলভিত্তিক, মার্জিত ও দায়িত্বশীল দ্বীনি মারকাজ। আমাদের লক্ষ্য হলো পবিত্র কুরআন ও সহীহ হাদীসের আলোকে বিশুদ্ধ ইসলামী জ্ঞান প্রচার করা এবং তরবিয়ত ও তাযকিয়ার মাধ্যমে প্রকৃত মুসলিম হিসেবে গড়ে তোলা।' ); ?></p>
             <div class="about-buttons">
-                <a href="<?php echo esc_url( home_url('/about') ); ?>" class="btn"><?php _e( 'বিস্তারিত জানুন →', 'hidayah' ); ?></a>
-                <a href="<?php echo esc_url( home_url('/contact') ); ?>" class="btn btn-outline"><?php _e( 'যোগাযোগ করুন →', 'hidayah' ); ?></a>
+                <a href="<?php echo esc_url( h_opt( 'about_btn1_url', '#' ) ); ?>" class="btn"><?php echo h_opt( 'about_btn1_label', 'বিস্তারিত জানুন →' ); ?></a>
+                <a href="<?php echo esc_url( h_opt( 'about_btn2_url', '#' ) ); ?>" class="btn btn-outline"><?php echo h_opt( 'about_btn2_label', 'যোগাযোগ করুন →' ); ?></a>
             </div>
         </div>
     </div>
@@ -340,8 +392,8 @@ get_header();
 <!-- Publications Section (Monthly HD) -->
 <section class="publications-section">
     <div class="container">
-        <div class="section-title text-center"><?php _e( 'মাসিক হক্বের দাওয়াত - প্রকাশনা', 'hidayah' ); ?></div>
-        <p class="publications-subtitle text-center"><?php _e( 'সহীহ আকিদা, ইবাদত ও তাযকিয়াহভিত্তিক মাসিক দলীলসমৃদ্ধ প্রকাশনা', 'hidayah' ); ?></p>
+        <div class="section-title text-center"><?php echo h_opt( 'monthly_hd_title', 'মাসিক হক্বের দাওয়াত - প্রকাশনা' ); ?></div>
+        <p class="publications-subtitle text-center"><?php echo h_opt( 'monthly_hd_subtitle', 'সহীহ আকিদা, ইবাদত ও তাযকিয়াহভিত্তিক মাসিক দলীলসমৃদ্ধ প্রকাশনা' ); ?></p>
 
         <div class="publications-grid">
             <?php
@@ -373,9 +425,117 @@ get_header();
         </div>
 
         <div class="text-center mt-35">
-            <a href="<?php echo get_post_type_archive_link('monthly_hd'); ?>" class="btn btn-outline"><?php _e( 'আরও দেখুন →', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( h_opt( 'monthly_hd_btn_url', '#' ) ); ?>" class="btn btn-outline"><?php echo h_opt( 'monthly_hd_btn_label', 'আরও দেখুন →' ); ?></a>
         </div>
     </div>
 </section>
 
 <?php get_footer(); ?>
+
+<script>
+// ── Homepage: Universal YouTube Audio Mode ──────────────────
+// Finds every .yt-audio-mode element on the page and wires up
+// the YouTube IFrame API for each one.
+(function() {
+
+    // Collect all YT player cards
+    var ytCards = document.querySelectorAll('.yt-audio-mode');
+    if (!ytCards.length) return; // Nothing to do
+
+    var ytPlayers  = {}; // { iframeId: YT.Player }
+    var ytTimers   = {};
+
+    function loadYTAPI() {
+        if (window.YT && window.YT.Player) { initAllPlayers(); return; }
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+    }
+
+    // Called by YT API automatically
+    window.onYouTubeIframeAPIReady = function() { initAllPlayers(); };
+
+    function initAllPlayers() {
+        ytCards.forEach(function(card) {
+            var ytid = card.getAttribute('data-ytid');
+            if (!ytid) return;
+
+            // Each card needs a unique hidden div for YT to inject the iframe
+            var iframeId = 'yt-player-' + ytid + '-' + Math.random().toString(36).slice(2, 6);
+
+            // Create or reuse hidden container inside the card
+            var wrap = card.querySelector('[id^="yt-"]');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;';
+                card.style.position = 'relative';
+                card.appendChild(wrap);
+            }
+            var inner = document.createElement('div');
+            inner.id = iframeId;
+            wrap.appendChild(inner);
+
+            ytPlayers[iframeId] = new YT.Player(iframeId, {
+                height: '1', width: '1',
+                videoId: ytid,
+                playerVars: { autoplay: 0, controls: 0, disablekb: 1, rel: 0, modestbranding: 1 },
+                events: {
+                    'onReady':       function(e) { wireControls(card, e.target, iframeId); },
+                    'onStateChange': function(e) { syncIcon(card, e.data); }
+                }
+            });
+        });
+    }
+
+    function fmtTime(s) {
+        s = Math.floor(s || 0);
+        var m = Math.floor(s / 60), sec = s % 60;
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    function wireControls(card, player, iframeId) {
+        var $playBtn  = card.querySelector('.player-btn-main');
+        var $backBtn  = card.querySelector('.player-btn-backward');
+        var $fwdBtn   = card.querySelector('.player-btn-forward');
+        var $seek     = card.querySelector('.player-seek');
+        var $curr     = card.querySelector('.player-current');
+        var $dur      = card.querySelector('.player-duration');
+
+        if ($playBtn) {
+            $playBtn.addEventListener('click', function() {
+                // Pause any other YT players on the page
+                Object.keys(ytPlayers).forEach(function(id) {
+                    if (id !== iframeId && ytPlayers[id] && ytPlayers[id].getPlayerState &&
+                        ytPlayers[id].getPlayerState() === YT.PlayerState.PLAYING) {
+                        ytPlayers[id].pauseVideo();
+                    }
+                });
+                var state = player.getPlayerState();
+                if (state === YT.PlayerState.PLAYING) { player.pauseVideo(); }
+                else { player.playVideo(); }
+            });
+        }
+        if ($backBtn) { $backBtn.addEventListener('click', function() { player.seekTo(Math.max(0, player.getCurrentTime() - 10), true); }); }
+        if ($fwdBtn)  { $fwdBtn.addEventListener('click',  function() { player.seekTo(player.getCurrentTime() + 10, true); }); }
+        if ($seek)    { $seek.addEventListener('input',    function() { player.seekTo(parseFloat(this.value), true); }); }
+
+        // Tick timer
+        ytTimers[iframeId] = setInterval(function() {
+            var dur  = player.getDuration     ? player.getDuration()     : 0;
+            var curr = player.getCurrentTime  ? player.getCurrentTime()  : 0;
+            if ($seek && dur) { $seek.max = Math.floor(dur); $seek.value = Math.floor(curr); }
+            if ($curr) $curr.textContent = fmtTime(curr);
+            if ($dur && dur)  $dur.textContent  = fmtTime(dur);
+        }, 500);
+    }
+
+    function syncIcon(card, state) {
+        var icon = card.querySelector('.yt-play-btn span, .player-btn-main span');
+        if (!icon) return;
+        icon.textContent = (state === 1 /* PLAYING */) ? 'pause' : 'play_arrow';
+    }
+
+    loadYTAPI();
+
+})();
+</script>

@@ -23,7 +23,7 @@ if ( ! function_exists( 'hidayah_register_post_types' ) ) :
             'public'       => true,
             'has_archive'  => true,
             'menu_icon'    => 'dashicons-microphone',
-            'supports'     => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
+            'supports'     => array( 'title', 'editor', 'thumbnail' ),
             'rewrite'      => array( 'slug' => 'audio' ),
             'show_in_rest' => true,
         ) );
