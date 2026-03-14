@@ -184,3 +184,56 @@ if ( ! function_exists( 'h_get_audio_duration' ) ) :
         return false;
     }
 endif;
+
+/**
+ * Get video duration from meta or YouTube API (optional).
+ *
+ * @param int $post_id
+ * @return string
+ */
+if ( ! function_exists( 'h_get_video_duration' ) ) :
+    function h_get_video_duration( $post_id ) {
+        $manual = get_post_meta( $post_id, '_video_duration', true );
+        if ( $manual ) {
+            return $manual;
+        }
+
+        $yt_url = get_post_meta( $post_id, '_video_youtube_url', true );
+        if ( $yt_url ) {
+            preg_match( '/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $yt_url, $m );
+            if ( isset( $m[1] ) ) {
+                $api_key = h_opt( 'youtube_api_key' );
+                if ( $api_key ) {
+                    $cache_key = 'yt_dur_' . $m[1];
+                    $cached = get_transient( $cache_key );
+                    if ( $cached ) {
+                        return $cached;
+                    }
+
+                    $response = wp_remote_get(
+                        "https://www.googleapis.com/youtube/v3/videos?id={$m[1]}&part=contentDetails&key={$api_key}"
+                    );
+                    if ( ! is_wp_error( $response ) ) {
+                        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+                        if ( isset( $data['items'][0]['contentDetails']['duration'] ) ) {
+                            $iso = $data['items'][0]['contentDetails']['duration'];
+                            preg_match( '/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/', $iso, $parts );
+                            $h = isset( $parts[1] ) ? intval( $parts[1] ) : 0;
+                            $min = isset( $parts[2] ) ? intval( $parts[2] ) : 0;
+                            $sec = isset( $parts[3] ) ? intval( $parts[3] ) : 0;
+                            $dur = $h > 0
+                                ? sprintf( '%d:%02d:%02d', $h, $min, $sec )
+                                : sprintf( '%d:%02d', $min, $sec );
+                            $dur = hidayah_en_to_bn_number( $dur );
+                            set_transient( $cache_key, $dur, DAY_IN_SECONDS );
+                            update_post_meta( $post_id, '_video_duration', $dur );
+                            return $dur;
+                        }
+                    }
+                }
+            }
+        }
+
+        return '';
+    }
+endif;

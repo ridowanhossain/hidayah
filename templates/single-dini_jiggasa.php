@@ -77,6 +77,14 @@ while ( have_posts() ) : the_post();
                         </div>
                     </div>
 
+                    <?php if ( $status === 'pending' ) : ?>
+                        <div class="jiggasa-pending-notice">
+                            <span class="material-symbols-outlined">schedule</span>
+                            <h3><?php _e( 'এই প্রশ্নের উত্তর প্রক্রিয়াধীন', 'hidayah' ); ?></h3>
+                            <p><?php _e( 'বিশেষজ্ঞ আলেম উত্তর প্রদান করলে এখানে প্রদর্শিত হবে। ধন্যবাদ আপনার ধৈর্যের জন্য।', 'hidayah' ); ?></p>
+                        </div>
+                    <?php endif; ?>
+
                     <!-- Answer Box -->
                     <div class="jiggasa-answer-box">
                         <div class="jiggasa-answer-label">

@@ -16,6 +16,10 @@ while ( have_posts() ) : the_post();
     $location  = get_post_meta( get_the_ID(), '_video_location', true );
     $speakers  = get_the_terms( get_the_ID(), 'speaker' );
     $topics    = get_the_terms( get_the_ID(), 'topic' );
+    $speaker_role = get_post_meta( get_the_ID(), '_speaker_role', true );
+    if ( ! $speaker_role && ! empty( $speakers ) ) {
+        $speaker_role = term_description( $speakers[0]->term_id );
+    }
 ?>
 
     <section class="archive-hero single-video-hero">
@@ -133,10 +137,12 @@ while ( have_posts() ) : the_post();
               </div>
 
               <!-- Video Content -->
-              <div class="single-video-description entry-content">
-                <h3 class="section-heading-sm"><?php _e( 'বয়ানের সারসংক্ষেপ', 'hidayah' ); ?></h3>
-                <?php the_content(); ?>
-              </div>
+              <?php if ( get_the_content() ) : ?>
+                <div class="single-video-description entry-content">
+                  <h3 class="section-heading-sm"><?php _e( 'বয়ানের সারসংক্ষেপ', 'hidayah' ); ?></h3>
+                  <?php the_content(); ?>
+                </div>
+              <?php endif; ?>
 
               <!-- Tags -->
               <?php if ( has_tag() ) : ?>
@@ -254,7 +260,7 @@ while ( have_posts() ) : the_post();
                     </div>
                     <div class="speaker-details">
                       <h4 class="speaker-name"><?php echo esc_html($speaker->name); ?></h4>
-                      <p class="speaker-role"><?php echo esc_html($speaker->description); ?></p>
+                      <p class="speaker-role"><?php echo esc_html( wp_strip_all_tags( $speaker_role ?: __( 'ভাষণকারী', 'hidayah' ) ) ); ?></p>
                       <div class="speaker-stats">
                         <span>
                           <span class="material-symbols-outlined">videocam</span>

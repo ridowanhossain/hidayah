@@ -41,6 +41,7 @@ if ( ! empty( $_GET['orderby'] ) ) {
 }
 
 $art_query = new WP_Query( $args );
+$cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
 ?>
 
 <section class="archive-hero">
@@ -66,16 +67,16 @@ $art_query = new WP_Query( $args );
                     <!-- Toolbar -->
                     <div class="archive-toolbar">
                         <div class="archive-search-bar">
-                            <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
+                            <form role="search" id="probondhoSearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" placeholder="<?php _e( 'প্রবন্ধ খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input class="archive-search-input" id="probondhoSearchInput" placeholder="<?php _e( 'প্রবন্ধ খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="probondho" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
-                            <select class="archive-sort-select" onchange="window.location.href=this.value">
-                                <option value="<?php echo add_query_arg('orderby', 'date'); ?>" <?php selected($_GET['orderby'] ?? '', 'date'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'popular'); ?>" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                            <select class="archive-sort-select" id="probondhoSortSelect">
+                                <option value="newest" <?php selected($_GET['orderby'] ?? '', 'date'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#probondhoArchiveList">
                                 <button class="view-toggle-btn active" data-view="grid">
@@ -90,35 +91,28 @@ $art_query = new WP_Query( $args );
 
                     <!-- Count & Filter Chips -->
                     <div class="book-archive-topbar">
-                        <div class="archive-count-badge">
+                        <div class="archive-filters-toolbar">
+                        <div class="archive-count-badge" id="probondhoCountBadge">
                             <span class="material-symbols-outlined">article</span>
                             <?php printf( __( 'মোট %sটি প্রবন্ধ', 'hidayah' ), hidayah_en_to_bn_number( $art_query->found_posts ) ); ?>
                         </div>
-                        <div class="active-filter-chips">
-                            <?php if ( ! empty( $_GET['probondho_cat'] ) ) : 
-                                $term = get_term_by('slug', $_GET['probondho_cat'], 'probondho_cat');
-                            ?>
-                                <span class="filter-chip">
-                                    <?php echo esc_html($term->name); ?>
-                                    <a href="<?php echo remove_query_arg('probondho_cat'); ?>" class="filter-chip-remove">
-                                        <span class="material-symbols-outlined">close</span>
-                                    </a>
-                                </span>
-                            <?php endif; ?>
-
-                            <select class="archive-sort-select topbar-filter-select" onchange="window.location.href=this.value">
+                        <div class="archive-taxonomy-filters">
+                            <select id="probondhoCatFilter">
                                 <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
-                                <?php
-                                $cats = get_terms( array('taxonomy' => 'probondho_cat') );
-                                foreach ( $cats as $ct ) : ?>
-                                    <option value="<?php echo add_query_arg('probondho_cat', $ct->slug); ?>" <?php selected($_GET['probondho_cat'] ?? '', $ct->slug); ?>><?php echo esc_html($ct->name); ?> (<?php echo hidayah_en_to_bn_number($ct->count); ?>)</option>
+                                <?php foreach ( $cats as $ct ) : ?>
+                                    <option value="<?php echo esc_attr( $ct->term_id ); ?>"><?php echo esc_html( $ct->name ); ?> (<?php echo hidayah_en_to_bn_number($ct->count); ?>)</option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
                         </div>
                     </div>
 
                     <!-- Probondho Cards -->
-                    <div class="probondho-list" id="probondhoArchiveList">
+                    <div style="position: relative; min-height: 200px;">
+                        <div id="probondhoLoader" class="archive-ajax-loader" style="display: none;">
+                            <span class="material-symbols-outlined rotating">progress_activity</span>
+                        </div>
+                        <div class="probondho-list" id="probondhoArchiveList">
                         <?php if ( $art_query->have_posts() ) : while ( $art_query->have_posts() ) : $art_query->the_post(); 
                             $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '৫';
                             $cats = get_the_terms( get_the_ID(), 'probondho_cat' );
@@ -162,10 +156,13 @@ $art_query = new WP_Query( $args );
                                 <?php get_template_part( 'template-parts/content/content', 'none' ); ?>
                             </div>
                         <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Pagination -->
-                    <?php hidayah_pagination($art_query); ?>
+                    <div id="probondhoPagination">
+                        <?php hidayah_pagination($art_query); ?>
+                    </div>
                 </div>
             </div>
 
@@ -221,7 +218,7 @@ $art_query = new WP_Query( $args );
                     <!-- Submit Article CTA -->
                     <div class="sidebar-widget probondho-submit-cta">
                         <span class="material-symbols-outlined probondho-submit-icon">edit_note</span>
-                        <h4 class="probondho-submit-title"><?php _e( 'লেখা পাঠান", "hidayah' ); ?></h4>
+                        <h4 class="probondho-submit-title"><?php _e( 'লেখা পাঠান', 'hidayah' ); ?></h4>
                         <p class="probondho-submit-text"><?php _e( 'আপনার লেখা আমাদের পাঠাতে পারেন।', 'hidayah' ); ?></p>
                         <a class="btn btn-sm" href="<?php echo esc_url( home_url( '/submit-article' ) ); ?>"><?php _e( 'লেখা পাঠান', 'hidayah' ); ?></a>
                     </div>

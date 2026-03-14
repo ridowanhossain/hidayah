@@ -13,6 +13,11 @@ get_header();
     $expiry_date     = get_post_meta( get_the_ID(), '_notice_expiry_date', true );
     $important_dates = get_post_meta( get_the_ID(), '_notice_important_dates', true ); // Assuming it's a formatted string or array
     $cats            = get_the_terms( get_the_ID(), 'notice_category' );
+    $file_url         = $attachment_id ? wp_get_attachment_url( $attachment_id ) : '';
+    $file_name        = $attachment_id ? get_the_title( $attachment_id ) : '';
+    $attached_path    = $attachment_id ? get_attached_file( $attachment_id ) : '';
+    $file_size        = $attached_path && file_exists( $attached_path ) ? size_format( filesize( $attached_path ) ) : '';
+    $file_ext         = $attached_path ? strtoupper( pathinfo( $attached_path, PATHINFO_EXTENSION ) ) : '';
 ?>
 
     <section class="archive-hero">
@@ -81,6 +86,20 @@ get_header();
                   </span>
                   <?php endif; ?>
                 </div>
+                <?php if ( $expiry_date ) :
+                    $expired = strtotime( $expiry_date ) < time();
+                ?>
+                    <div class="notice-expiry-warning <?php echo $expired ? 'expired' : 'active'; ?>">
+                        <span class="material-symbols-outlined">
+                            <?php echo $expired ? 'event_busy' : 'event_available'; ?>
+                        </span>
+                        <?php if ( $expired ) : ?>
+                            <strong><?php _e( 'এই নোটিশের মেয়াদ শেষ হয়েছে।', 'hidayah' ); ?></strong>
+                        <?php else : ?>
+                            <strong><?php printf( __( 'মেয়াদ: %s পর্যন্ত', 'hidayah' ), esc_html( $expiry_date ) ); ?></strong>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
               </div>
 
               <!-- Notice Body -->
@@ -102,12 +121,7 @@ get_header();
               <?php endif; ?>
 
               <!-- Attachments -->
-              <?php if ( $attachment_id ) : 
-                  $file_url = wp_get_attachment_url( $attachment_id );
-                  $file_name = get_the_title( $attachment_id );
-                  $file_size = size_format( filesize( get_attached_file( $attachment_id ) ) );
-                  $file_ext = strtoupper( pathinfo( get_attached_file( $attachment_id ), PATHINFO_EXTENSION ) );
-              ?>
+              <?php if ( $attachment_id ) : ?>
                   <div class="notice-attachments">
                     <h3>
                       <span class="material-symbols-outlined">attach_file</span>

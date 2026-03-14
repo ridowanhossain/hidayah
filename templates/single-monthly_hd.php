@@ -18,6 +18,12 @@ while ( have_posts() ) : the_post();
     $toc        = get_post_meta( get_the_ID(), '_magazine_toc', true );
     $editorial  = get_post_meta( get_the_ID(), '_editorial_text', true );
     $summaries  = get_post_meta( get_the_ID(), '_article_summaries', true ); // Expecting array of [title, desc]
+    if ( is_string( $summaries ) ) {
+        $decoded = json_decode( $summaries, true );
+        if ( json_last_error() === JSON_ERROR_NONE ) {
+            $summaries = $decoded;
+        }
+    }
 ?>
 
 <section class="archive-hero">
@@ -100,7 +106,7 @@ while ( have_posts() ) : the_post();
                         <div class="sb-section">
                             <h2 class="sb-section-title"><?php _e( 'পত্রিকা পড়ুন', 'hidayah' ); ?></h2>
                             <div class="mhd-pdf-viewer">
-                                <iframe src="<?php echo esc_url($pdf_url); ?>#toolbar=0" width="100%" height="600px" style="border: none; border-radius: 8px;"></iframe>
+                                <iframe src="<?php echo esc_url( $pdf_url ); ?>#toolbar=0" width="100%" height="600px" style="border: none; border-radius: 8px;" onerror="this.parentElement.innerHTML='<p>PDF preview লোড হচ্ছে না। <a href=\'<?php echo esc_url( $pdf_url ); ?>\' target=\'_blank\'>এখানে ক্লিক করুন</a>।</p>'"></iframe>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -212,7 +218,7 @@ while ( have_posts() ) : the_post();
                             <tbody>
                                 <tr><th><?php _e( 'সংখ্যা', 'hidayah' ); ?></th><td><?php the_title(); ?></td></tr>
                                 <?php if ($pages) : ?>
-                                    <tr><th><?php _e( 'পৃষ্ঠা", "hidayah' ); ?></th><td><?php echo hidayah_en_to_bn_number($pages); ?></td></tr>
+                                    <tr><th><?php _e( 'পৃষ্ঠা', 'hidayah' ); ?></th><td><?php echo hidayah_en_to_bn_number($pages); ?></td></tr>
                                 <?php endif; ?>
                                 <?php if ($pdf_size) : ?>
                                     <tr><th><?php _e( 'ফাইল সাইজ', 'hidayah' ); ?></th><td><?php echo hidayah_en_to_bn_number($pdf_size); ?> MB</td></tr>

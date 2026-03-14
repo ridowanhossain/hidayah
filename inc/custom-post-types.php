@@ -41,7 +41,7 @@ if ( ! function_exists( 'hidayah_register_post_types' ) ) :
             'public'       => true,
             'has_archive'  => true,
             'menu_icon'    => 'dashicons-video-alt3',
-            'supports'     => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
+            'supports'     => array( 'title', 'thumbnail' ),
             'rewrite'      => array( 'slug' => 'video' ),
             'show_in_rest' => true,
         ) );

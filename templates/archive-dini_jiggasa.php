@@ -40,6 +40,17 @@ if ( ! empty( $_GET['status'] ) ) {
 }
 
 $q_query = new WP_Query( $args );
+$cats = get_terms( array( 'taxonomy' => 'dini_jiggasa_cat' ) );
+
+global $wpdb;
+$answered_count = (int) $wpdb->get_var( $wpdb->prepare(
+    "SELECT COUNT(p.ID) FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type = %s AND p.post_status = 'publish' AND pm.meta_key = '_jiggasa_status' AND pm.meta_value = 'answered'",
+    'dini_jiggasa'
+) );
+$pending_count = (int) $wpdb->get_var( $wpdb->prepare(
+    "SELECT COUNT(p.ID) FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id WHERE p.post_type = %s AND p.post_status = 'publish' AND pm.meta_key = '_jiggasa_status' AND pm.meta_value = 'pending'",
+    'dini_jiggasa'
+) );
 ?>
 
 <section class="archive-hero">
@@ -65,16 +76,16 @@ $q_query = new WP_Query( $args );
                     <!-- Toolbar -->
                     <div class="archive-toolbar">
                         <div class="archive-search-bar">
-                            <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
+                            <form id="jiggasaSearchForm" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" placeholder="<?php _e( 'প্রশ্ন খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input class="archive-search-input" id="jiggasaSearchInput" placeholder="<?php _e( 'প্রশ্ন খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="dini_jiggasa" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
-                            <select class="archive-sort-select" onchange="window.location.href=this.value">
-                                <option value="<?php echo add_query_arg('orderby', 'date'); ?>"><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'popular'); ?>"><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                            <select class="archive-sort-select" id="jiggasaSortSelect">
+                                <option value="newest"><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="popular"><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#jiggasaList">
                                 <button class="view-toggle-btn active" data-view="grid" title="গ্রিড ভিউ">
@@ -88,51 +99,44 @@ $q_query = new WP_Query( $args );
                     </div>
 
                     <!-- Tabs/Status Filter -->
-                    <div class="jiggasa-tabs">
-                        <a href="<?php echo remove_query_arg('status'); ?>" class="jiggasa-tab <?php echo !isset($_GET['status']) ? 'active' : ''; ?>"><?php _e( 'সকল', 'hidayah' ); ?></a>
-                        <a href="<?php echo add_query_arg('status', 'answered'); ?>" class="jiggasa-tab <?php echo ($_GET['status'] ?? '') === 'answered' ? 'active' : ''; ?>"><?php _e( 'উত্তরিত", "hidayah' ); ?></a>
-                        <a href="<?php echo add_query_arg('status', 'pending'); ?>" class="jiggasa-tab <?php echo ($_GET['status'] ?? '') === 'pending' ? 'active' : ''; ?>"><?php _e( 'অপেক্ষমাণ", "hidayah' ); ?></a>
+                    <div class="jiggasa-tabs jiggasa-tabs-container">
+                        <button class="jiggasa-tab active" data-status=""><?php _e( 'সকল', 'hidayah' ); ?></button>
+                        <button class="jiggasa-tab" data-status="answered"><?php _e( 'উত্তরিত', 'hidayah' ); ?></button>
+                        <button class="jiggasa-tab" data-status="pending"><?php _e( 'অপেক্ষমাণ', 'hidayah' ); ?></button>
                     </div>
 
                     <!-- Topbar Info -->
                     <div class="book-archive-topbar">
-                        <div class="archive-count-badge">
-                            <span class="material-symbols-outlined">help</span>
-                            <?php printf( __( 'মোট %sটি প্রশ্ন', 'hidayah' ), hidayah_en_to_bn_number( $q_query->found_posts ) ); ?>
-                        </div>
-                        <div class="active-filter-chips">
-                            <?php if ( ! empty( $_GET['jiggasa_cat'] ) ) : 
-                                $term = get_term_by('slug', $_GET['jiggasa_cat'], 'dini_jiggasa_cat');
-                            ?>
-                                <span class="filter-chip">
-                                    <?php echo esc_html($term->name); ?>
-                                    <a href="<?php echo remove_query_arg('jiggasa_cat'); ?>" class="filter-chip-remove">
-                                        <span class="material-symbols-outlined">close</span>
-                                    </a>
-                                </span>
-                            <?php endif; ?>
-                            
-                            <select class="archive-sort-select topbar-filter-select" onchange="window.location.href=this.value">
-                                <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
-                                <?php
-                                $cats = get_terms( array('taxonomy' => 'dini_jiggasa_cat') );
-                                foreach ( $cats as $ct ) : ?>
-                                    <option value="<?php echo add_query_arg('jiggasa_cat', $ct->slug); ?>" <?php selected($_GET['jiggasa_cat'] ?? '', $ct->slug); ?>><?php echo esc_html($ct->name); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                        <div class="archive-filters-toolbar">
+                            <div class="archive-count-badge" id="jiggasaCountBadge">
+                                <span class="material-symbols-outlined">help</span>
+                                <?php printf( __( 'মোট %sটি প্রশ্ন', 'hidayah' ), hidayah_en_to_bn_number( $q_query->found_posts ) ); ?>
+                            </div>
+                            <div class="archive-taxonomy-filters">
+                                <select id="jiggasaCatFilter">
+                                    <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
+                                    <?php foreach ( $cats as $ct ) : ?>
+                                        <option value="<?php echo esc_attr( $ct->term_id ); ?>"><?php echo esc_html( $ct->name ); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Question Cards -->
-                    <div class="jiggasa-list" id="jiggasaList">
-                        <?php if ( $q_query->have_posts() ) : while ( $q_query->have_posts() ) : $q_query->the_post(); 
-                            $status  = get_post_meta( get_the_ID(), '_jiggasa_status', true ) ?: 'answered';
-                            $mufti   = get_post_meta( get_the_ID(), '_jiggasa_mufti', true );
-                            $asker   = get_post_meta( get_the_ID(), '_jiggasa_asker_name', true ) ?: __( 'আনোনিমাস', 'hidayah' );
-                            $cat_terms = get_the_terms( get_the_ID(), 'dini_jiggasa_cat' );
-                            $cat_name = !empty($cat_terms) ? $cat_terms[0]->name : __( 'সাধারণ', 'hidayah' );
-                        ?>
-                            <article class="jiggasa-card <?php echo esc_attr($status); ?>">
+                    <div class="jiggasa-grid-wrapper" style="position:relative; min-height:200px;">
+                        <div id="jiggasaLoader" style="display:none;" class="archive-ajax-loader">
+                            <span class="material-symbols-outlined rotating">progress_activity</span>
+                        </div>
+                        <div class="jiggasa-list" id="jiggasaList">
+                            <?php if ( $q_query->have_posts() ) : while ( $q_query->have_posts() ) : $q_query->the_post(); 
+                                $status  = get_post_meta( get_the_ID(), '_jiggasa_status', true ) ?: 'answered';
+                                $mufti   = get_post_meta( get_the_ID(), '_jiggasa_mufti', true );
+                                $asker   = get_post_meta( get_the_ID(), '_jiggasa_asker_name', true ) ?: __( 'আনোনিমাস', 'hidayah' );
+                                $cat_terms = get_the_terms( get_the_ID(), 'dini_jiggasa_cat' );
+                                $cat_name = !empty($cat_terms) ? $cat_terms[0]->name : __( 'সাধারণ', 'hidayah' );
+                            ?>
+                                <article class="jiggasa-card <?php echo esc_attr($status); ?>">
                                 <div class="jiggasa-card-header">
                                     <span class="jiggasa-cat-badge"><?php echo esc_html($cat_name); ?></span>
                                     <span class="jiggasa-status <?php echo $status; ?>-badge">
@@ -155,16 +159,19 @@ $q_query = new WP_Query( $args );
                                     </a>
                                 <?php endif; ?>
                             </article>
-                        <?php endwhile; ?>
-                        <?php else : ?>
-                            <div class="col-full">
-                                <?php get_template_part( 'template-parts/content/content', 'none' ); ?>
-                            </div>
-                        <?php endif; ?>
+                            <?php endwhile; ?>
+                            <?php else : ?>
+                                <div class="col-full">
+                                    <?php get_template_part( 'template-parts/content/content', 'none' ); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Pagination -->
-                    <?php hidayah_pagination($q_query); ?>
+                    <div id="jiggasaPagination">
+                        <?php hidayah_pagination($q_query); ?>
+                    </div>
                 </div>
             </div>
 
@@ -211,20 +218,20 @@ $q_query = new WP_Query( $args );
                         <div class="jiggasa-stats-grid">
                             <?php
                             $total_q = wp_count_posts( 'dini_jiggasa' )->publish;
-                            $answered_q = new WP_Query( array('post_type' => 'dini_jiggasa', 'meta_key' => '_jiggasa_status', 'meta_value' => 'answered') );
-                            $pending_q = new WP_Query( array('post_type' => 'dini_jiggasa', 'meta_key' => '_jiggasa_status', 'meta_value' => 'pending') );
+                            $answered_q = $answered_count;
+                            $pending_q = $pending_count;
                             ?>
                             <div class="jiggasa-stat-item">
                                 <span class="jiggasa-stat-num"><?php echo hidayah_en_to_bn_number($total_q); ?></span>
                                 <span class="jiggasa-stat-label"><?php _e( 'মোট প্রশ্ন', 'hidayah' ); ?></span>
                             </div>
                             <div class="jiggasa-stat-item">
-                                <span class="jiggasa-stat-num answered-num"><?php echo hidayah_en_to_bn_number($answered_q->found_posts); ?></span>
-                                <span class="jiggasa-stat-label"><?php _e( 'উত্তরিত", "hidayah' ); ?></span>
+                                <span class="jiggasa-stat-num answered-num"><?php echo hidayah_en_to_bn_number($answered_q); ?></span>
+                                <span class="jiggasa-stat-label"><?php _e( 'উত্তরিত', 'hidayah' ); ?></span>
                             </div>
                             <div class="jiggasa-stat-item">
-                                <span class="jiggasa-stat-num pending-num"><?php echo hidayah_en_to_bn_number($pending_q->found_posts); ?></span>
-                                <span class="jiggasa-stat-label"><?php _e( 'অপেক্ষমাণ", "hidayah' ); ?></span>
+                                <span class="jiggasa-stat-num pending-num"><?php echo hidayah_en_to_bn_number($pending_q); ?></span>
+                                <span class="jiggasa-stat-label"><?php _e( 'অপেক্ষমাণ', 'hidayah' ); ?></span>
                             </div>
                             <?php wp_reset_postdata(); ?>
                         </div>

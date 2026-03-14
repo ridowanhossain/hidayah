@@ -44,6 +44,8 @@ $gal_query = new WP_Query( $args );
 // Total counts
 $total_albums = wp_count_posts('photo_gallery')->publish;
 // For total photos, we would need to sum a meta field, skipping for now as it's static in mockup.
+$gal_cats = get_terms( array( 'taxonomy' => 'gallery_cat' ) );
+$gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
 ?>
 
 <section class="archive-hero">
@@ -69,16 +71,16 @@ $total_albums = wp_count_posts('photo_gallery')->publish;
                     <!-- Toolbar -->
                     <div class="archive-toolbar">
                         <div class="archive-search-bar">
-                            <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
+                            <form role="search" id="gallerySearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" placeholder="<?php _e( 'এলবাম খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input class="archive-search-input" id="gallerySearchInput" placeholder="<?php _e( 'এলবাম খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="photo_gallery" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
-                            <select class="archive-sort-select" onchange="window.location.href=this.value">
-                                <option value="<?php echo add_query_arg('orderby', 'date'); ?>"><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'popular'); ?>"><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                            <select class="archive-sort-select" id="gallerySortSelect">
+                                <option value="newest"><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="popular"><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#photoGalleryGrid">
                                 <button class="view-toggle-btn active" data-view="grid">
@@ -93,26 +95,34 @@ $total_albums = wp_count_posts('photo_gallery')->publish;
 
                     <!-- Count & Filter Chips -->
                     <div class="book-archive-topbar">
-                        <div class="archive-count-badge">
+                        <div class="archive-filters-toolbar">
+                        <div class="archive-count-badge" id="galleryCountBadge">
                             <span class="material-symbols-outlined">photo_library</span>
                             <?php printf( __( 'মোট %sটি এলবাম', 'hidayah' ), hidayah_en_to_bn_number( $gal_query->found_posts ) ); ?>
                         </div>
-                        <div class="active-filter-chips">
-                            <?php if ( ! empty( $_GET['gallery_cat'] ) ) : 
-                                $term = get_term_by('slug', $_GET['gallery_cat'], 'gallery_cat');
-                            ?>
-                                <span class="filter-chip">
-                                    <?php echo esc_html($term->name); ?>
-                                    <a href="<?php echo remove_query_arg('gallery_cat'); ?>" class="filter-chip-remove">
-                                        <span class="material-symbols-outlined">close</span>
-                                    </a>
-                                </span>
-                            <?php endif; ?>
+                        <div class="archive-taxonomy-filters">
+                            <select id="galleryCatFilter">
+                                <option value=""><?php _e( 'ইভেন্ট অনুযায়ী', 'hidayah' ); ?></option>
+                                <?php foreach ( $gal_cats as $gc ) : ?>
+                                    <option value="<?php echo esc_attr( $gc->term_id ); ?>"><?php echo esc_html( $gc->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <select id="galleryYearFilter">
+                                <option value=""><?php _e( 'সাল অনুযায়ী', 'hidayah' ); ?></option>
+                                <?php foreach ( $gal_years as $gy ) : ?>
+                                    <option value="<?php echo esc_attr( $gy->term_id ); ?>"><?php echo hidayah_en_to_bn_number( $gy->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                         </div>
                     </div>
 
                     <!-- Album Grid -->
-                    <div class="gallery-album-grid" id="photoGalleryGrid">
+                    <div style="position: relative; min-height: 200px;">
+                        <div id="galleryLoader" class="archive-ajax-loader" style="display: none;">
+                            <span class="material-symbols-outlined rotating">progress_activity</span>
+                        </div>
+                        <div class="gallery-album-grid" id="photoGalleryGrid">
                         <?php if ( $gal_query->have_posts() ) : while ( $gal_query->have_posts() ) : $gal_query->the_post(); 
                             $photos = get_post_meta( get_the_ID(), '_gallery_images', true ); // CSS Framework Gallery Field
                             $count  = is_array($photos) ? count($photos) : h_bn_num(0);
@@ -163,10 +173,13 @@ $total_albums = wp_count_posts('photo_gallery')->publish;
                         <?php else : ?>
                             <?php get_template_part( 'template-parts/content/content', 'none' ); ?>
                         <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Pagination -->
-                    <?php hidayah_pagination($gal_query); ?>
+                    <div id="galleryPagination">
+                        <?php hidayah_pagination($gal_query); ?>
+                    </div>
                 </div>
             </div>
 

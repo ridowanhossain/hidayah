@@ -51,18 +51,17 @@ $video_query = new WP_Query( $args );
                     <!-- Search & Sort Bar -->
                     <div class="archive-toolbar">
                         <div class="archive-search-bar">
-                            <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
+                            <form role="search" id="videoSearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" placeholder="<?php _e( 'ভিডিও খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
+                                <input class="archive-search-input" id="videoSearchInput" placeholder="<?php _e( 'ভিডিও খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
                                 <input type="hidden" name="post_type" value="video" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
-                            <select class="archive-sort-select" onchange="window.location.href=this.value">
-                                <option value="<?php echo add_query_arg('orderby', 'newest'); ?>" <?php selected($orderby, 'newest'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'oldest'); ?>" <?php selected($orderby, 'oldest'); ?>><?php _e( 'পুরাতন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'popular'); ?>" <?php selected($orderby, 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
-                                <option value="<?php echo add_query_arg('orderby', 'most_viewed'); ?>" <?php selected($orderby, 'most_viewed'); ?>><?php _e( 'সর্বাধিক দেখা', 'hidayah' ); ?></option>
+                            <select class="archive-sort-select" id="videoSortSelect">
+                                <option value="newest" <?php selected($orderby, 'newest'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="oldest" <?php selected($orderby, 'oldest'); ?>><?php _e( 'পুরাতন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($orderby, 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#archiveVideoGrid">
                                 <button class="view-toggle-btn active" data-view="grid" title="গ্রিড ভিউ">
@@ -76,13 +75,33 @@ $video_query = new WP_Query( $args );
                     </div>
 
                     <!-- Video Count Badge -->
-                    <div class="archive-count-badge">
-                        <span class="material-symbols-outlined">videocam</span>
-                        <?php printf( __( 'মোট %sটি ভিডিও', 'hidayah' ), hidayah_en_to_bn_number( $video_query->found_posts ) ); ?>
+                    <div class="archive-filters-toolbar">
+                        <div class="archive-count-badge" id="videoCountBadge">
+                            <span class="material-symbols-outlined">videocam</span>
+                            <?php printf( __( 'মোট %sটি ভিডিও', 'hidayah' ), hidayah_en_to_bn_number( $video_query->found_posts ) ); ?>
+                        </div>
+                        <div class="archive-taxonomy-filters">
+                            <select id="videoTopicFilter">
+                                <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
+                                <?php foreach ( get_terms( array( 'taxonomy' => 'topic' ) ) as $t ) : ?>
+                                    <option value="<?php echo esc_attr( $t->term_id ); ?>"><?php echo esc_html( $t->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <select id="videoSpeakerFilter">
+                                <option value=""><?php _e( 'বক্তা অনুযায়ী', 'hidayah' ); ?></option>
+                                <?php foreach ( get_terms( array( 'taxonomy' => 'speaker' ) ) as $sp ) : ?>
+                                    <option value="<?php echo esc_attr( $sp->term_id ); ?>"><?php echo esc_html( $sp->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Video Card Grid -->
-                    <div class="archive-video-grid" id="archiveVideoGrid">
+                    <div style="position: relative; min-height: 200px;">
+                        <div id="videoLoader" class="archive-ajax-loader" style="display: none;">
+                            <span class="material-symbols-outlined rotating">progress_activity</span>
+                        </div>
+                        <div class="archive-video-grid" id="videoArchiveGrid">
                         <?php if ( $video_query->have_posts() ) : while ( $video_query->have_posts() ) : $video_query->the_post(); 
                             $video_id  = get_post_meta( get_the_ID(), '_youtube_video_id', true );
                             $duration  = get_post_meta( get_the_ID(), '_video_duration', true );
@@ -143,10 +162,13 @@ $video_query = new WP_Query( $args );
                                 <?php get_template_part( 'template-parts/content/content', 'none' ); ?>
                             </div>
                         <?php endif; ?>
+                        </div>
                     </div>
 
                     <!-- Pagination -->
-                    <?php hidayah_pagination( $video_query ); ?>
+                    <div id="videoPagination">
+                        <?php hidayah_pagination( $video_query ); ?>
+                    </div>
                 </div>
             </div>
 

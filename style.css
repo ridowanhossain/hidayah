@@ -16259,3 +16259,56 @@ nav .nav-item a.active span {
     justify-content: center;
   }
 }
+
+/* Notice expiry warning */
+.notice-expiry-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 12px;
+  background: #ecfdf5;
+  border: 1px solid rgba(6, 95, 70, 0.2);
+  color: var(--primary-green-dark);
+}
+
+.notice-expiry-warning.expired {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #b91c1c;
+}
+
+.notice-expiry-warning .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Print styles for Dini Jiggasa */
+@media print {
+  header,
+  nav,
+  footer,
+  .archive-hero,
+  .archive-breadcrumb,
+  .archive-sidebar,
+  .single-audio-share-wrap,
+  .jiggasa-vote-row,
+  .single-audio-nav,
+  .probondho-font-ctrl,
+  .comments-area,
+  .comment-respond,
+  .sidebar-widget {
+    display: none !important;
+  }
+
+  .archive-layout,
+  .archive-main {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .jiggasa-answer-body {
+    font-size: 14pt;
+  }
+}

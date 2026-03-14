@@ -55,7 +55,7 @@ while ( have_posts() ) : the_post();
                             </span>
                         </div>
                         <div class="gallery-single-actions">
-                            <a class="btn btn-sm" href="#">
+                            <a class="btn btn-sm" href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=download_gallery_zip&post_id=' . get_the_ID() ) ); ?>">
                                 <span class="material-symbols-outlined">download</span>
                                 <?php _e( 'সব ডাউনলোড (ZIP)', 'hidayah' ); ?>
                             </a>
@@ -198,7 +198,7 @@ while ( have_posts() ) : the_post();
                             <?php _e( 'ডাউনলোড করুন', 'hidayah' ); ?>
                         </h4>
                         <div style="display: flex; flex-direction: column; gap: 8px">
-                            <a class="btn btn-sm" href="#" style="display: flex; align-items: center; gap: 6px; justify-content: center">
+                            <a class="btn btn-sm" href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=download_gallery_zip&post_id=' . get_the_ID() ) ); ?>" style="display: flex; align-items: center; gap: 6px; justify-content: center">
                                 <span class="material-symbols-outlined">folder_zip</span>
                                 <?php _e( 'সম্পূর্ণ এলবাম (ZIP)', 'hidayah' ); ?>
                             </a>

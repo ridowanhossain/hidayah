@@ -177,7 +177,7 @@ while ( have_posts() ) : the_post();
                                     <span class="material-symbols-outlined">chat</span>
                                     WhatsApp
                                 </a>
-                                <button class="share-btn share-copy" onclick="navigator.clipboard.writeText(window.location.href); alert('<?php _e( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>');">
+                                <button class="share-btn share-copy" data-copy-message="<?php echo esc_attr__( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>">
                                     <span class="material-symbols-outlined">link</span>
                                     <?php _e( 'লিঙ্ক কপি করুন', 'hidayah' ); ?>
                                 </button>
@@ -186,10 +186,12 @@ while ( have_posts() ) : the_post();
                     </div>
 
                     <!-- Book Content -->
-                    <div class="sb-section entry-content">
-                        <h2 class="sb-section-title"><?php _e( 'বইয়ের সারসংক্ষেপ', 'hidayah' ); ?></h2>
-                        <?php the_content(); ?>
-                    </div>
+                    <?php if ( get_the_content() ) : ?>
+                        <div class="sb-section entry-content">
+                            <h2 class="sb-section-title"><?php _e( 'বইয়ের সারসংক্ষেপ', 'hidayah' ); ?></h2>
+                            <?php the_content(); ?>
+                        </div>
+                    <?php endif; ?>
 
                     <!-- Details Table -->
                     <div class="sb-section">

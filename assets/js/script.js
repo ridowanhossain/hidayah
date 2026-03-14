@@ -68,6 +68,22 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(updateCountdown, 60000);
   }
 
+  // 3.5 Share Copy Button (Toast)
+  document.querySelectorAll(".share-copy[data-copy-message]").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const msg = this.getAttribute("data-copy-message") || "লিঙ্ক কপি হয়েছে!";
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          if (typeof window.showToast === "function") window.showToast(msg);
+          else alert(msg);
+        });
+      } else {
+        if (typeof window.showToast === "function") window.showToast(msg);
+        else alert(msg);
+      }
+    });
+  });
+
   // 4. Book Archive - Price Range Slider & Mini Cart
   var slider = document.getElementById("priceRangeSlider");
   var maxLabel = document.getElementById("priceMax");
@@ -401,11 +417,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // 7. Tab Filters (Dini Jiggasa / Notice)
   document.querySelectorAll(".jiggasa-tab").forEach((btn) => {
     btn.addEventListener("click", function () {
+      const tab = this.dataset.tab;
+      if (!tab) return;
+
       var tabContainer = this.closest(".jiggasa-tabs-container") || this.parentElement;
       tabContainer.querySelectorAll(".jiggasa-tab").forEach((b) => b.classList.remove("active"));
       this.classList.add("active");
-
-      const tab = this.dataset.tab;
 
       // For Dini Jiggasa
       if (document.querySelectorAll(".jiggasa-card").length > 0 && !document.querySelector(".notice-list")) {
@@ -615,23 +632,50 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 11. Probondho Font Size Control
+  // 11. Probondho/Jiggasa Font Size Control
   const fontBtns = document.querySelectorAll(".probondho-font-btn");
   const articleBody = document.getElementById("articleBody");
-  if (fontBtns.length > 0 && articleBody) {
+  const jiggasaBody = document.getElementById("jiggasaAnswerBody");
+  if (fontBtns.length > 0) {
     fontBtns.forEach((btn) => {
       btn.addEventListener("click", function () {
         fontBtns.forEach((b) => b.classList.remove("active"));
         this.classList.add("active");
         const size = this.dataset.size;
-        if (size === "small") {
-          articleBody.style.fontSize = "16px";
-        } else if (size === "medium") {
-          articleBody.style.fontSize = "18px";
-        } else if (size === "large") {
-          articleBody.style.fontSize = "22px";
-        }
+        const sizes = { small: "14px", medium: "16px", large: "19px" };
+        const val = sizes[size] || "16px";
+        if (articleBody) articleBody.style.fontSize = val;
+        if (jiggasaBody) jiggasaBody.style.fontSize = val;
       });
+    });
+  }
+
+  // 12. Probondho TOC + Reading Progress
+  const toc = document.getElementById("probondhoTOC");
+  if (toc && articleBody) {
+    const headings = articleBody.querySelectorAll("h2, h3");
+    if (!headings.length) {
+      const widget = toc.closest(".sidebar-widget");
+      if (widget) widget.style.display = "none";
+    } else {
+      headings.forEach((h, i) => {
+        if (!h.id) h.id = "toc-" + i;
+        const a = document.createElement("a");
+        a.href = "#" + h.id;
+        a.className = h.tagName === "H3" ? "toc-sub-item" : "toc-main-item";
+        a.textContent = h.textContent;
+        toc.appendChild(a);
+      });
+    }
+  }
+
+  const progressFill = document.getElementById("readingProgressFill");
+  if (progressFill && articleBody) {
+    window.addEventListener("scroll", function () {
+      const top = articleBody.getBoundingClientRect().top + window.scrollY;
+      const height = articleBody.offsetHeight;
+      const pct = Math.min(100, Math.max(0, ((window.scrollY - top) / height) * 100));
+      progressFill.style.width = pct + "%";
     });
   }
 }); // ==========================================
@@ -853,52 +897,47 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeModal = document.querySelector(".close-modal");
 
   if (videoThumbs && videoModal && videoPlaceholder) {
-    videoThumbs.forEach((thumb) => {
-      thumb.addEventListener("click", function () {
-        const videoId = this.getAttribute("data-video-id");
-        if (videoId) {
-          // Create iframe dynamically with origin parameter for better compatibility
-          const origin = window.location.origin === "null" ? "*" : window.location.origin;
-          const iframe = document.createElement("iframe");
-          iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&origin=${origin}`;
-          iframe.setAttribute("frameborder", "0");
-          iframe.setAttribute("allowfullscreen", "true");
-          iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture");
-
-          // Clear placeholder and add new iframe
-          videoPlaceholder.innerHTML = "";
-          videoPlaceholder.appendChild(iframe);
-
-          videoModal.classList.add("active");
-          document.body.style.overflow = "hidden";
-        }
-      });
-    });
-
-    // In-Place Video Logic (Added)
-    const inplaceVideos = document.querySelectorAll(".video-inplace");
-    if (inplaceVideos) {
-      inplaceVideos.forEach((wrapper) => {
-        wrapper.addEventListener("click", function () {
+    window.initVideoPlayers = function () {
+      document.querySelectorAll(".video-thumb").forEach((thumb) => {
+        if (thumb.dataset.bound === "1") return;
+        thumb.dataset.bound = "1";
+        thumb.addEventListener("click", function () {
           const videoId = this.getAttribute("data-video-id");
           if (videoId) {
-            // Check if iframe already exists to prevent re-creation
-            if (this.querySelector("iframe")) return;
-
             const origin = window.location.origin === "null" ? "*" : window.location.origin;
             const iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&origin=${origin}`; // Autoplay enabled
+            iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&origin=${origin}`;
             iframe.setAttribute("frameborder", "0");
             iframe.setAttribute("allowfullscreen", "true");
             iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture");
+            videoPlaceholder.innerHTML = "";
+            videoPlaceholder.appendChild(iframe);
+            videoModal.classList.add("active");
+            document.body.style.overflow = "hidden";
+          }
+        });
+      });
 
-            // Clear existing content (overlay, cover, etc.) and append iframe
+      document.querySelectorAll(".video-inplace").forEach((wrapper) => {
+        if (wrapper.dataset.bound === "1") return;
+        wrapper.dataset.bound = "1";
+        wrapper.addEventListener("click", function () {
+          const videoId = this.getAttribute("data-video-id");
+          if (videoId) {
+            if (this.querySelector("iframe")) return;
+            const origin = window.location.origin === "null" ? "*" : window.location.origin;
+            const iframe = document.createElement("iframe");
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&origin=${origin}`;
+            iframe.setAttribute("frameborder", "0");
+            iframe.setAttribute("allowfullscreen", "true");
+            iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture");
             this.innerHTML = "";
             this.appendChild(iframe);
           }
         });
       });
-    }
+    };
+    window.initVideoPlayers();
 
     const closeVideoModal = function () {
       videoModal.classList.remove("active");
@@ -1903,7 +1942,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function showToast(message) {
+  window.showToast = function (message) {
     if (!toastContainer) return;
     const toast = document.createElement("div");
     toast.className = "toast-message";
@@ -1915,7 +1954,7 @@ document.addEventListener("DOMContentLoaded", function () {
         toast.parentNode.removeChild(toast);
       }
     }, 3000);
-  }
+  };
 
   function updateCartUI() {
     // Save to localStorage
@@ -2011,45 +2050,47 @@ document.addEventListener("DOMContentLoaded", function () {
   updateCartUI();
 
   // Bind order buttons
-  const orderButtons = document.querySelectorAll(".book-sales-order-btn");
-  orderButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
+  window.initCartButtons = function () {
+    const orderButtons = document.querySelectorAll(".book-sales-order-btn");
+    orderButtons.forEach((btn) => {
+      if (btn.dataset.bound === "1") return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
 
-      const card = btn.closest(".book-sales-card, .book-archive-card");
-      if (!card) return;
+        const card = btn.closest(".book-sales-card, .book-archive-card");
+        if (!card) return;
 
-      const title = card.querySelector("h3") ? card.querySelector("h3").innerText : "নতুন বই";
-      const img = card.querySelector("img") ? card.querySelector("img").src : "";
-      const priceStr = card.querySelector(".book-sales-price") ? card.querySelector(".book-sales-price").innerText : "0";
+        const title = card.querySelector("h3") ? card.querySelector("h3").innerText : "নতুন বই";
+        const img = card.querySelector("img") ? card.querySelector("img").src : "";
+        const priceStr = card.querySelector(".book-sales-price") ? card.querySelector(".book-sales-price").innerText : "0";
 
-      // Extract numbers from bengali string
-      let numericPriceStr = priceStr.replace(/[^০-৯0-9]/g, "");
-      // Convert mapping
-      const engDigits = numericPriceStr.replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d));
-      const price = parseInt(engDigits, 10) || 0;
+        let numericPriceStr = priceStr.replace(/[^০-৯0-9]/g, "");
+        const engDigits = numericPriceStr.replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d));
+        const price = parseInt(engDigits, 10) || 0;
 
-      // Check if item already exists in cart
-      const existingItemIndex = cartState.items.findIndex((item) => item.title === title);
+        const existingItemIndex = cartState.items.findIndex((item) => item.title === title);
 
-      if (existingItemIndex > -1) {
-        if (!cartState.items[existingItemIndex].quantity) {
-          cartState.items[existingItemIndex].quantity = 1;
+        if (existingItemIndex > -1) {
+          if (!cartState.items[existingItemIndex].quantity) {
+            cartState.items[existingItemIndex].quantity = 1;
+          }
+          cartState.items[existingItemIndex].quantity++;
+        } else {
+          cartState.items.push({
+            title,
+            img,
+            price,
+            quantity: 1,
+          });
         }
-        cartState.items[existingItemIndex].quantity++;
-      } else {
-        cartState.items.push({
-          title,
-          img,
-          price,
-          quantity: 1,
-        });
-      }
 
-      updateCartUI();
-      showToast(`${title} কার্টে যোগ করা হয়েছে!`);
+        updateCartUI();
+        if (typeof window.showToast === "function") window.showToast(`${title} কার্টে যোগ করা হয়েছে!`);
+      });
     });
-  });
+  };
+  window.initCartButtons();
 
   // ==========================================
   // Archive View Toggle (Grid / List)
@@ -2171,6 +2212,12 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Website loaded successfully.");
 
   // ==========================================
+  // Archive AJAX Helpers
+  // ==========================================
+  const ajaxUrl = window.hidayahData && hidayahData.ajaxUrl ? hidayahData.ajaxUrl : window.location.origin + "/wp-admin/admin-ajax.php";
+  const ajaxNonce = window.hidayahData && hidayahData.nonce ? hidayahData.nonce : "";
+
+  // ==========================================
   // Audio Archive AJAX Filtering
   // ==========================================
   const audioAjax = {
@@ -2221,6 +2268,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Values are now IDs (integers), so no encoding issue
       const data = new URLSearchParams({
         action: 'filter_audio',
+        nonce: ajaxNonce,
         speaker: this.$speaker ? this.$speaker.value : '',
         topic: this.$topic ? this.$topic.value : '',
         orderby: this.$sort ? this.$sort.value : 'newest',
@@ -2234,7 +2282,7 @@ document.addEventListener("DOMContentLoaded", function () {
         this.$grid.style.opacity = '0.5';
       }
 
-      fetch(window.location.origin + '/wp-admin/admin-ajax.php', {
+      fetch(ajaxUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: data.toString()
@@ -2292,5 +2340,877 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   audioAjax.init();
-});
 
+  // ==========================================
+  // Book Archive AJAX Filtering
+  // ==========================================
+  const bookAjax = {
+    $grid: document.getElementById('bookArchiveGrid'),
+    $pagination: document.getElementById('bookPagination'),
+    $loader: document.getElementById('bookLoader'),
+    $count: document.getElementById('bookCountBadge'),
+
+    $genre: document.getElementById('bookGenreFilter'),
+    $author: document.getElementById('bookAuthorFilter'),
+    $sort: document.getElementById('bookSortSelect'),
+    $searchInput: document.getElementById('bookSearchInput'),
+    $searchForm: document.getElementById('bookSearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$genre, this.$author, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#bookPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_book',
+        nonce: ajaxNonce,
+        genre: this.$genre ? this.$genre.value : '',
+        author: this.$author ? this.$author.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি বই';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          if (typeof window.initCartButtons === 'function') {
+            window.initCartButtons();
+          }
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  bookAjax.init();
+
+  // ==========================================
+  // Dini Jiggasa Archive AJAX Filtering
+  // ==========================================
+  const jiggasaAjax = {
+    $grid: document.getElementById('jiggasaList'),
+    $pagination: document.getElementById('jiggasaPagination'),
+    $loader: document.getElementById('jiggasaLoader'),
+    $count: document.getElementById('jiggasaCountBadge'),
+
+    $cat: document.getElementById('jiggasaCatFilter'),
+    $sort: document.getElementById('jiggasaSortSelect'),
+    $searchInput: document.getElementById('jiggasaSearchInput'),
+    $searchForm: document.getElementById('jiggasaSearchForm'),
+    $tabs: document.querySelectorAll('.jiggasa-tabs-container .jiggasa-tab[data-status]'),
+    status: '',
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$cat, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      this.$tabs.forEach((tab) => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          self.$tabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          self.status = tab.dataset.status || '';
+          self.filter(1);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#jiggasaPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_jiggasa',
+        nonce: ajaxNonce,
+        cat: this.$cat ? this.$cat.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        status: this.status,
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি প্রশ্ন';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  jiggasaAjax.init();
+
+  // ==========================================
+  // Monthly HD Archive AJAX Filtering
+  // ==========================================
+  const monthlyHdAjax = {
+    $grid: document.getElementById('monthlyHdGrid'),
+    $pagination: document.getElementById('monthlyHdPagination'),
+    $loader: document.getElementById('monthlyHdLoader'),
+    $count: document.getElementById('monthlyHdCountBadge'),
+
+    $year: document.getElementById('monthlyHdYearFilter'),
+    $category: document.getElementById('monthlyHdCategoryFilter'),
+    $sort: document.getElementById('monthlyHdSortSelect'),
+    $searchInput: document.getElementById('monthlyHdSearchInput'),
+    $searchForm: document.getElementById('monthlyHdSearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$year, this.$category, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#monthlyHdPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_monthly_hd',
+        nonce: ajaxNonce,
+        year: this.$year ? this.$year.value : '',
+        category: this.$category ? this.$category.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি সংখ্যা';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  monthlyHdAjax.init();
+
+  // ==========================================
+  // Notice Archive AJAX Filtering
+  // ==========================================
+  const noticeAjax = {
+    $grid: document.getElementById('noticeList'),
+    $pagination: document.getElementById('noticePagination'),
+    $loader: document.getElementById('noticeLoader'),
+    $count: document.getElementById('noticeCountBadge'),
+
+    $cat: document.getElementById('noticeCatFilter'),
+    $urgency: document.getElementById('noticeUrgencyFilter'),
+    $sort: document.getElementById('noticeSortSelect'),
+    $searchInput: document.getElementById('noticeSearchInput'),
+    $searchForm: document.getElementById('noticeSearchForm'),
+    $tabs: document.querySelectorAll('.jiggasa-tabs-container .jiggasa-tab[data-cat]'),
+    cat: '',
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$cat, this.$urgency, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => {
+          if (el === self.$cat) self.cat = self.$cat.value || '';
+          self.syncTabs();
+          self.filter(1);
+        });
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      this.$tabs.forEach((tab) => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          self.$tabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          self.cat = tab.dataset.cat || '';
+          if (self.$cat) self.$cat.value = self.cat;
+          self.filter(1);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#noticePagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    syncTabs: function() {
+      if (!this.$tabs.length) return;
+      const target = this.cat || '';
+      let matched = false;
+      this.$tabs.forEach((tab) => {
+        if (tab.dataset.cat === target) {
+          matched = true;
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      if (!matched) {
+        this.$tabs.forEach((tab) => {
+          if (!tab.dataset.cat) tab.classList.add('active');
+        });
+      }
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_notice',
+        nonce: ajaxNonce,
+        cat: this.cat || (this.$cat ? this.$cat.value : ''),
+        urgency: this.$urgency ? this.$urgency.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি নোটিশ';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  noticeAjax.init();
+
+  // ==========================================
+  // Gallery Archive AJAX Filtering
+  // ==========================================
+  const galleryAjax = {
+    $grid: document.getElementById('photoGalleryGrid'),
+    $pagination: document.getElementById('galleryPagination'),
+    $loader: document.getElementById('galleryLoader'),
+    $count: document.getElementById('galleryCountBadge'),
+
+    $cat: document.getElementById('galleryCatFilter'),
+    $year: document.getElementById('galleryYearFilter'),
+    $sort: document.getElementById('gallerySortSelect'),
+    $searchInput: document.getElementById('gallerySearchInput'),
+    $searchForm: document.getElementById('gallerySearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$cat, this.$year, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#galleryPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_gallery',
+        nonce: ajaxNonce,
+        cat: this.$cat ? this.$cat.value : '',
+        year: this.$year ? this.$year.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি এলবাম';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  galleryAjax.init();
+
+  // ==========================================
+  // Probondho Archive AJAX Filtering
+  // ==========================================
+  const probondhoAjax = {
+    $grid: document.getElementById('probondhoArchiveList'),
+    $pagination: document.getElementById('probondhoPagination'),
+    $loader: document.getElementById('probondhoLoader'),
+    $count: document.getElementById('probondhoCountBadge'),
+
+    $cat: document.getElementById('probondhoCatFilter'),
+    $sort: document.getElementById('probondhoSortSelect'),
+    $searchInput: document.getElementById('probondhoSearchInput'),
+    $searchForm: document.getElementById('probondhoSearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$cat, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#probondhoPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_probondho',
+        nonce: ajaxNonce,
+        cat: this.$cat ? this.$cat.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি প্রবন্ধ';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  probondhoAjax.init();
+
+  // ==========================================
+  // Video Archive AJAX Filtering
+  // ==========================================
+  const videoAjax = {
+    $grid: document.getElementById('videoArchiveGrid'),
+    $pagination: document.getElementById('videoPagination'),
+    $loader: document.getElementById('videoLoader'),
+    $count: document.getElementById('videoCountBadge'),
+
+    $topic: document.getElementById('videoTopicFilter'),
+    $speaker: document.getElementById('videoSpeakerFilter'),
+    $sort: document.getElementById('videoSortSelect'),
+    $searchInput: document.getElementById('videoSearchInput'),
+    $searchForm: document.getElementById('videoSearchForm'),
+
+    init: function() {
+      if (!this.$grid) return;
+
+      const self = this;
+      const triggers = [this.$topic, this.$speaker, this.$sort];
+      triggers.forEach((el) => {
+        if (el) el.addEventListener('change', () => self.filter(1));
+      });
+
+      if (this.$searchForm) {
+        this.$searchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          self.filter(1);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('#videoPagination a');
+        if (link) {
+          e.preventDefault();
+          const url = new URL(link.href);
+          const paged = url.searchParams.get('paged') || 1;
+          self.filter(paged);
+        }
+      });
+    },
+
+    filter: function(paged = 1) {
+      const self = this;
+      const data = new URLSearchParams({
+        action: 'filter_video',
+        nonce: ajaxNonce,
+        topic: this.$topic ? this.$topic.value : '',
+        speaker: this.$speaker ? this.$speaker.value : '',
+        sort: this.$sort ? this.$sort.value : 'newest',
+        search: this.$searchInput ? this.$searchInput.value : '',
+        paged: paged
+      });
+
+      if (this.$loader) {
+        this.$loader.style.display = 'flex';
+        this.$grid.style.opacity = '0.5';
+      }
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data.toString()
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = res.data.html;
+
+          const paginationData = tempDiv.querySelector('.ajax-pagination-data');
+          const countData = tempDiv.querySelector('.ajax-count-data');
+
+          if (self.$pagination) {
+            self.$pagination.innerHTML = paginationData ? paginationData.innerHTML : '';
+          }
+
+          if (self.$count && countData) {
+            const countText = countData.textContent;
+            const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
+            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি ভিডিও';
+          }
+
+          if (paginationData) paginationData.remove();
+          if (countData) countData.remove();
+
+          self.$grid.innerHTML = tempDiv.innerHTML;
+
+          if (typeof window.initVideoPlayers === 'function') {
+            window.initVideoPlayers();
+          }
+
+          window.scrollTo({
+            top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
+            behavior: 'smooth'
+          });
+        }
+      })
+      .catch(err => console.error('AJAX Error:', err))
+      .finally(() => {
+        if (self.$loader) {
+          self.$loader.style.display = 'none';
+          self.$grid.style.opacity = '1';
+        }
+      });
+    }
+  };
+
+  videoAjax.init();
+
+  // ==========================================
+  // Jiggasa Voting
+  // ==========================================
+  function initJiggasaVoting() {
+    const voteButtons = document.querySelectorAll('.jiggasa-vote-btn');
+    if (!voteButtons.length) return;
+
+    voteButtons.forEach((btn) => {
+      if (btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const postId = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        if (!postId || !type) return;
+
+        const data = new URLSearchParams({
+          action: 'jiggasa_vote',
+          nonce: ajaxNonce,
+          post_id: postId,
+          type: type
+        });
+
+        fetch(ajaxUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: data.toString()
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (!res.success) {
+            if (res.data && res.data.message === 'already_voted' && typeof window.showToast === 'function') {
+              window.showToast('আপনি ইতিমধ্যে ভোট দিয়েছেন।');
+            }
+            return;
+          }
+
+          const up = typeof res.data.up !== 'undefined' ? res.data.up : 0;
+          const down = typeof res.data.down !== 'undefined' ? res.data.down : 0;
+          const upBtn = document.querySelector('.jiggasa-vote-btn[data-type="up"]');
+          const downBtn = document.querySelector('.jiggasa-vote-btn[data-type="down"]');
+
+          if (upBtn) {
+            upBtn.innerHTML = '<span class="material-symbols-outlined">thumb_up</span> হ্যাঁ (' + toBanglaDigits(up) + ')';
+          }
+          if (downBtn) {
+            downBtn.innerHTML = '<span class="material-symbols-outlined">thumb_down</span> না (' + toBanglaDigits(down) + ')';
+          }
+        })
+        .catch(err => console.error('AJAX Error:', err));
+      });
+    });
+  }
+
+  initJiggasaVoting();
+
+  // ==========================================
+  // Monthly Download Count
+  // ==========================================
+  window.updateDownloadCount = function (postId) {
+    if (!postId) return;
+
+    const data = new URLSearchParams({
+      action: 'update_dl_count',
+      nonce: ajaxNonce,
+      post_id: postId
+    });
+
+    fetch(ajaxUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: data.toString()
+    })
+    .then(res => res.json())
+    .catch(err => console.error('AJAX Error:', err));
+  };
+});
