@@ -75,7 +75,7 @@ if ( ! function_exists( 'hidayah_register_post_types' ) ) :
             'public'       => true,
             'has_archive'  => true,
             'menu_icon'    => 'dashicons-media-document',
-            'supports'     => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+            'supports'     => array( 'title', 'editor', 'thumbnail' ),
             'rewrite'      => array( 'slug' => 'monthly-hd' ),
             'show_in_rest' => true,
         ) );

@@ -526,42 +526,39 @@ function hidayah_monthly_hd_meta_box_cb( $post ) {
     wp_nonce_field( 'hidayah_monthly_hd_save', 'hidayah_monthly_hd_nonce' );
     hidayah_meta_box_base_styles();
 
-    $pages     = get_post_meta( $post->ID, '_magazine_pages', true );
-    $pdf_url   = get_post_meta( $post->ID, '_pdf_file_url', true );
-    $pdf_size  = get_post_meta( $post->ID, '_pdf_file_size', true );
+    $vol       = get_post_meta( $post->ID, '_issue_vol', true );
+    $num       = get_post_meta( $post->ID, '_issue_num', true );
+    $month     = get_post_meta( $post->ID, '_issue_month', true );
     $special   = get_post_meta( $post->ID, '_is_special_issue', true );
     $editorial = get_post_meta( $post->ID, '_editorial_text', true );
+    $toc_short = get_post_meta( $post->ID, '_issue_toc_short', true );
     $toc       = get_post_meta( $post->ID, '_magazine_toc', true );
     $summaries = get_post_meta( $post->ID, '_article_summaries', true );
     ?>
     <table class="hidayah-meta-table">
-        <tr><td colspan="2" class="hidayah-meta-subheading">📄 <?php esc_html_e( 'PDF Details', 'hidayah' ); ?></td></tr>
+        <tr><td colspan="2" class="hidayah-meta-subheading">📅 <?php esc_html_e( 'Issue Details', 'hidayah' ); ?></td></tr>
         <tr>
-            <th><label for="_magazine_pages"><?php esc_html_e( 'Page Count', 'hidayah' ); ?></label></th>
-            <td><input type="number" id="_magazine_pages" name="_magazine_pages" value="<?php echo esc_attr( $pages ); ?>" /></td>
+            <th><label for="_issue_vol"><?php esc_html_e( 'Volume (বর্ষ)', 'hidayah' ); ?></label></th>
+            <td><input type="text" id="_issue_vol" name="_issue_vol" value="<?php echo esc_attr( $vol ); ?>" placeholder="e.g. ৯" /></td>
         </tr>
         <tr>
-            <th><label for="_pdf_file_url"><?php esc_html_e( 'PDF File URL', 'hidayah' ); ?></label></th>
-            <td>
-                <div class="hidayah-media-row">
-                    <input type="url" id="_pdf_file_url" name="_pdf_file_url" value="<?php echo esc_url( $pdf_url ); ?>" />
-                    <button type="button" class="hidayah-upload-btn" data-target="_pdf_file_url" data-library="application/pdf">📁 <?php esc_html_e( 'Upload', 'hidayah' ); ?></button>
-                    <?php if ( $pdf_url ) : ?>
-                        <button type="button" class="hidayah-clear-btn" data-target="_pdf_file_url">✕</button>
-                    <?php endif; ?>
-                </div>
-            </td>
+            <th><label for="_issue_num"><?php esc_html_e( 'Issue Number (সংখ্যা)', 'hidayah' ); ?></label></th>
+            <td><input type="text" id="_issue_num" name="_issue_num" value="<?php echo esc_attr( $num ); ?>" placeholder="e.g. ০৪" /></td>
         </tr>
         <tr>
-            <th><label for="_pdf_file_size"><?php esc_html_e( 'PDF Size (MB)', 'hidayah' ); ?></label></th>
-            <td><input type="number" id="_pdf_file_size" name="_pdf_file_size" step="0.1" value="<?php echo esc_attr( $pdf_size ); ?>" /></td>
+            <th><label for="_issue_month"><?php esc_html_e( 'Month & Year', 'hidayah' ); ?></label></th>
+            <td><input type="text" id="_issue_month" name="_issue_month" value="<?php echo esc_attr( $month ); ?>" placeholder="e.g. রামাদান-শাওয়াল ১৪৪৫" /></td>
         </tr>
         <tr>
             <th><label for="_is_special_issue"><?php esc_html_e( 'Special Issue', 'hidayah' ); ?></label></th>
             <td><input type="checkbox" id="_is_special_issue" name="_is_special_issue" value="1" <?php checked( $special, '1' ); ?> /></td>
         </tr>
         <tr>
-            <th><label for="_magazine_toc"><?php esc_html_e( 'Table of Contents', 'hidayah' ); ?></label></th>
+            <th><label for="_issue_toc_short"><?php esc_html_e( 'Short TOC (for Homepage)', 'hidayah' ); ?></label></th>
+            <td><textarea id="_issue_toc_short" name="_issue_toc_short" placeholder="bullet points for homepage..."><?php echo esc_textarea( $toc_short ); ?></textarea></td>
+        </tr>
+        <tr>
+            <th><label for="_magazine_toc"><?php esc_html_e( 'Full Table of Contents', 'hidayah' ); ?></label></th>
             <td><textarea id="_magazine_toc" name="_magazine_toc"><?php echo esc_textarea( $toc ); ?></textarea></td>
         </tr>
         <tr>
@@ -587,9 +584,10 @@ function hidayah_monthly_hd_meta_save( $post_id ) {
     if ( ! current_user_can( 'edit_post', $post_id ) ) { return; }
 
     $fields = array(
-        '_magazine_pages'   => 'number',
-        '_pdf_file_url'     => 'url',
-        '_pdf_file_size'    => 'number',
+        '_issue_vol'        => 'text',
+        '_issue_num'        => 'text',
+        '_issue_month'      => 'text',
+        '_issue_toc_short'  => 'textarea',
         '_magazine_toc'     => 'textarea',
         '_editorial_text'   => 'textarea',
         '_article_summaries'=> 'textarea',

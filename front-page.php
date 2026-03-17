@@ -404,21 +404,51 @@ get_header();
                 $num  = get_post_meta( get_the_ID(), '_issue_num', true );
                 $month = get_post_meta( get_the_ID(), '_issue_month', true );
                 $toc   = get_post_meta( get_the_ID(), '_issue_toc_short', true );
-                $pdf   = get_post_meta( get_the_ID(), '_issue_pdf', true );
-                $badge = ($i === 0) ? __( 'চলতি সংখ্যা', 'hidayah' ) : __( 'বিশেষ সংখ্যা', 'hidayah' );
-                $class = ($i === 0) ? 'current-issue' : 'special-issue';
+                $badge      = ($i === 0) ? __( 'চলতি সংখ্যা', 'hidayah' ) : __( 'বিশেষ সংখ্যা', 'hidayah' );
+                $badge_icon = ($i === 0) ? '📖' : '⭐';
+                $class      = ($i === 0) ? 'current-issue' : 'special-issue';
+                $info_label = ($i === 0) ? __( 'এই সংখ্যায়:', 'hidayah' ) : __( 'বিশেষ বিষয়সমূহ:', 'hidayah' );
+                $info_icon  = ($i === 0) ? '📝' : '📚';
+                $btn_primary = ($i === 0) ? 'btn-sm' : 'btn-white btn-sm';
+                $btn_outline = ($i === 0) ? 'btn-outline btn-sm' : 'btn-white-outline btn-sm';
             ?>
                 <div class="<?php echo $class; ?>">
-                    <h3><a href="<?php the_permalink(); ?>">📖 <?php echo $badge; ?></a></h3>
-                    <h4><a href="<?php the_permalink(); ?>"><?php echo h_bn_num($vol) . ' ' . __('বর্ষ', 'hidayah') . ' ' . h_bn_num($num) . ' ' . __('সংখ্যা', 'hidayah'); ?></a></h4>
-                    <p><?php echo esc_html($month); ?></p>
+                    <h3><a href="<?php the_permalink(); ?>"><?php echo $badge_icon . ' ' . $badge; ?></a></h3>
+                    <div class="issue-cover-wrapper" style="text-align: center; margin-bottom: 20px;">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <?php the_post_thumbnail( 'medium', array( 'style' => 'max-width: 180px; height: auto; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);' ) ); ?>
+                        <?php endif; ?>
+                    </div>
+                    <h4><a href="<?php the_permalink(); ?>"><?php 
+                        if ( $vol || $num ) {
+                            echo h_bn_num($vol) . ' ' . __('বর্ষ', 'hidayah') . ' ' . h_bn_num($num) . ' ' . __('সংখ্যা', 'hidayah'); 
+                        } else {
+                            the_title();
+                        }
+                    ?></a></h4>
+                    <p><?php echo esc_html( $month ? $month : get_the_date() ); ?></p>
                     <div class="issue-content">
-                        <h5>📝 <?php _e( 'এই সংখ্যায়:', 'hidayah' ); ?></h5>
-                        <?php if ($toc) : echo wpautop($toc); endif; ?>
+                        <h5><?php echo $info_icon . ' ' . $info_label; ?></h5>
+                        <?php 
+                            if ( $toc ) {
+                                $toc_items = explode("\n", str_replace("\r", "", strip_tags($toc)));
+                                if (!empty($toc_items)) {
+                                    echo '<ul class="issue-list">';
+                                    foreach ($toc_items as $item) {
+                                        if (trim($item)) {
+                                            echo '<li>' . esc_html(trim($item)) . '</li>';
+                                        }
+                                    }
+                                    echo '</ul>';
+                                }
+                            } else {
+                                echo wpautop( wp_trim_words( get_the_excerpt(), 20 ) );
+                            }
+                        ?>
                     </div>
                     <div class="issue-buttons">
-                        <?php if ($pdf) : ?><a href="<?php echo esc_url($pdf); ?>" class="btn btn-sm">📥 PDF ডাউনলোড →</a><?php endif; ?>
-                        <a href="<?php the_permalink(); ?>" class="btn btn-outline btn-sm">📖 অনলাইনে পড়ুন →</a>
+                        <a href="<?php the_permalink(); ?>" class="<?php echo $btn_primary; ?>">📥 PDF ডাউনলোড →</a>
+                        <a href="<?php the_permalink(); ?>" class="<?php echo $btn_outline; ?>">📖 অনলাইনে পড়ুন →</a>
                     </div>
                 </div>
             <?php $i++; endwhile; wp_reset_postdata(); ?>
@@ -426,6 +456,43 @@ get_header();
 
         <div class="text-center mt-35">
             <a href="<?php echo esc_url( h_opt( 'monthly_hd_btn_url', '#' ) ); ?>" class="btn btn-outline"><?php echo h_opt( 'monthly_hd_btn_label', 'আরও দেখুন →' ); ?></a>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Articles Section (Probondho) -->
+<section class="articles-section" style="padding: 70px 0;">
+    <div class="container">
+        <div class="section-title text-center"><?php echo h_opt( 'articles_title', 'সর্বশেষ প্রবন্ধসমূহ' ); ?></div>
+
+        <div class="articles-grid">
+            <?php
+            $articles = new WP_Query( array( 'post_type' => 'probondho', 'posts_per_page' => 4 ) );
+            while ( $articles->have_posts() ) : $articles->the_post();
+            ?>
+                <div class="card">
+                    <a href="<?php the_permalink(); ?>" class="article-img-link">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <?php the_post_thumbnail( 'medium' ); ?>
+                        <?php else : ?>
+                            <img src="<?php echo get_template_directory_uri(); ?>/assets/images/placeholder.jpg" alt="<?php the_title(); ?>">
+                        <?php endif; ?>
+                    </a>
+                    <div class="content">
+                        <a href="<?php the_permalink(); ?>" class="article-title-link">
+                            <h4><?php the_title(); ?></h4>
+                        </a>
+                        <p><?php echo wp_trim_words( get_the_excerpt(), 15 ); ?></p>
+                        <div class="meta">
+                            <span class="meta-link"><span>✍️ <?php the_author(); ?></span></span>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+
+        <div class="text-center mt-35">
+            <a href="<?php echo get_post_type_archive_link('probondho'); ?>" class="btn btn-outline"><?php echo h_opt( 'articles_btn_label', 'সকল প্রবন্ধ দেখুন →' ); ?></a>
         </div>
     </div>
 </section>

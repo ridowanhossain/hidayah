@@ -11,9 +11,6 @@ while ( have_posts() ) : the_post();
     $views = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
     update_post_meta( get_the_ID(), '_post_views_count', $views + 1 );
 
-    $pages      = get_post_meta( get_the_ID(), '_magazine_pages', true );
-    $pdf_url    = get_post_meta( get_the_ID(), '_pdf_file_url', true );
-    $pdf_size   = get_post_meta( get_the_ID(), '_pdf_file_size', true );
     $downloads  = get_post_meta( get_the_ID(), '_pdf_download_count', true ) ?: 0;
     $toc        = get_post_meta( get_the_ID(), '_magazine_toc', true );
     $editorial  = get_post_meta( get_the_ID(), '_editorial_text', true );
@@ -64,18 +61,6 @@ while ( have_posts() ) : the_post();
                                     <span class="material-symbols-outlined">calendar_month</span>
                                     <?php echo get_the_date(); ?>
                                 </span>
-                                <?php if ( $pages ) : ?>
-                                    <span class="sb-meta-chip">
-                                        <span class="material-symbols-outlined">menu_book</span>
-                                        <?php printf( __( '%s পৃষ্ঠা', 'hidayah' ), hidayah_en_to_bn_number($pages) ); ?>
-                                    </span>
-                                <?php endif; ?>
-                                <?php if ( $pdf_size ) : ?>
-                                    <span class="sb-meta-chip">
-                                        <span class="material-symbols-outlined">description</span>
-                                        <?php echo hidayah_en_to_bn_number($pdf_size); ?> MB
-                                    </span>
-                                <?php endif; ?>
                             </div>
                             <div class="mhd-single-desc">
                                 <?php the_excerpt(); ?>
@@ -90,26 +75,7 @@ while ( have_posts() ) : the_post();
                                 }
                                 ?>
                             </div>
-                            <?php if ( $pdf_url ) : ?>
-                                <a class="mhd-dl-primary" href="<?php echo esc_url($pdf_url); ?>" download onclick="updateDownloadCount(<?php the_ID(); ?>)">
-                                    <div class="mhd-dl-label">
-                                        <span class="material-symbols-outlined">download</span>
-                                        <?php _e( 'PDF ডাউনলোড করুন', 'hidayah' ); ?>
-                                    </div>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
 
-                    <!-- PDF Viewer -->
-                    <?php if ( $pdf_url ) : ?>
-                        <div class="sb-section">
-                            <h2 class="sb-section-title"><?php _e( 'পত্রিকা পড়ুন', 'hidayah' ); ?></h2>
-                            <div class="mhd-pdf-viewer">
-                                <iframe src="<?php echo esc_url( $pdf_url ); ?>#toolbar=0" width="100%" height="600px" style="border: none; border-radius: 8px;" onerror="this.parentElement.innerHTML='<p>PDF preview লোড হচ্ছে না। <a href=\'<?php echo esc_url( $pdf_url ); ?>\' target=\'_blank\'>এখানে ক্লিক করুন</a>।</p>'"></iframe>
-                            </div>
-                        </div>
-                    <?php endif; ?>
 
                     <!-- TOC -->
                     <?php if ( $toc ) : ?>
@@ -208,25 +174,7 @@ while ( have_posts() ) : the_post();
             <!-- SIDEBAR -->
             <aside class="archive-sidebar">
                 <div class="col-inner">
-                    <!-- Issue Info -->
-                    <div class="sidebar-widget">
-                        <h4 class="sidebar-widget-title">
-                            <span class="material-symbols-outlined">info</span>
-                            <?php _e( 'সংখ্যার তথ্য', 'hidayah' ); ?>
-                        </h4>
-                        <table class="sb-details-table">
-                            <tbody>
-                                <tr><th><?php _e( 'সংখ্যা', 'hidayah' ); ?></th><td><?php the_title(); ?></td></tr>
-                                <?php if ($pages) : ?>
-                                    <tr><th><?php _e( 'পৃষ্ঠা', 'hidayah' ); ?></th><td><?php echo hidayah_en_to_bn_number($pages); ?></td></tr>
-                                <?php endif; ?>
-                                <?php if ($pdf_size) : ?>
-                                    <tr><th><?php _e( 'ফাইল সাইজ', 'hidayah' ); ?></th><td><?php echo hidayah_en_to_bn_number($pdf_size); ?> MB</td></tr>
-                                <?php endif; ?>
-                                <tr><th><?php _e( 'ডাউনলোড', 'hidayah' ); ?></th><td><?php printf( __( '%s বার ডাউনলোড', 'hidayah' ), hidayah_en_to_bn_number(number_format_i18n($downloads)) ); ?></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+
 
                     <!-- Other Issues -->
                     <div class="sidebar-widget">
