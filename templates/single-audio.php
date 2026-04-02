@@ -30,8 +30,8 @@ while ( have_posts() ) : the_post();
 
     <section class="archive-hero single-audio-hero">
       <div class="archive-hero-content">
-        <h2><?php _e( 'অডিও ওয়াজ ও বয়ান', 'hidayah' ); ?></h2>
-        <p><?php _e( 'হক্বানী আলেমদের ওয়াজ, বয়ান ও দ্বীনি আলোচনা শুনুন', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Audio Waz & Lectures', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Listen to waz, lectures and religious discussions from Haqqani Ulama', 'hidayah' ); ?></p>
       </div>
     </section>
 
@@ -39,9 +39,9 @@ while ( have_posts() ) : the_post();
       <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-          <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+          <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
           <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-          <a href="<?php echo get_post_type_archive_link( 'audio' ); ?>"><?php _e( 'অডিও', 'hidayah' ); ?></a>
+          <a href="<?php echo get_post_type_archive_link( 'audio' ); ?>"><?php _e( 'Audio', 'hidayah' ); ?></a>
           <?php if ( ! empty( $topics ) ) : ?>
               <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
               <a href="<?php echo get_term_link( $topics[0] ); ?>"><?php echo esc_html( $topics[0]->name ); ?></a>
@@ -50,25 +50,28 @@ while ( have_posts() ) : the_post();
           <span class="breadcrumb-current"><?php the_title(); ?></span>
         </nav>
 
+        <!-- Single 2.75 : 1.25 Layout -->
         <div class="single-audio-layout">
-          <!-- LEFT COLUMN -->
+          <!-- ==================== LEFT COLUMN (2.75fr) ==================== -->
           <div class="single-audio-main">
             <div class="col-inner">
-              <!-- Full-size Audio Player -->
+              <!-- 1. Full-size Audio Player -->
               <div class="single-audio-player-card">
                 <div class="single-audio-cover">
                   <span class="material-symbols-outlined">graphic_eq</span>
                 </div>
                 <div class="single-audio-player-info">
+                  <!-- Title + badge -->
                   <div class="title-badge-wrapper">
-                    <h1 class="single-audio-title" style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin: 0;"><?php the_title(); ?></h1>
+                    <h1 class="single-audio-title"><?php the_title(); ?></h1>
                     <?php if ( ! empty( $topics ) ) : ?>
                         <div class="audio-badge">
-                          <span class="material-symbols-outlined">category</span>
+                          <span class="material-symbols-outlined">mosque</span>
                           <?php echo esc_html( $topics[0]->name ); ?>
                         </div>
                     <?php endif; ?>
                   </div>
+                  <!-- Meta row -->
                   <div class="single-audio-meta-row">
                     <?php if ( ! empty( $speakers ) ) : ?>
                         <span class="single-audio-meta-item">
@@ -81,28 +84,29 @@ while ( have_posts() ) : the_post();
                       <?php echo get_the_date(); ?>
                     </span>
                     <?php if ( $duration ) : ?>
-                    <span class="single-audio-meta-item">
-                      <span class="material-symbols-outlined">schedule</span>
-                      <?php echo hidayah_en_to_bn_number( $duration ); ?> <?php _e( 'মিনিট', 'hidayah' ); ?>
-                    </span>
+                        <span class="single-audio-meta-item">
+                          <span class="material-symbols-outlined">schedule</span>
+                          <?php echo $duration; ?> <?php _e( 'minutes', 'hidayah' ); ?>
+                        </span>
                     <?php endif; ?>
                     <span class="single-audio-meta-item">
                       <span class="material-symbols-outlined">headphones</span>
-                      <?php printf( __( '%s শ্রোতা', 'hidayah' ), hidayah_en_to_bn_number( number_format_i18n( $views + 1 ) ) ); ?>
+                      <?php printf( __( '%s Listeners', 'hidayah' ), number_format_i18n( $views + 1 ) ); ?>
                     </span>
                   </div>
-                  <!-- Audio / YouTube Player -->
+
+                  <!-- Audio Player -->
                   <?php if ( $yt_video_id && ! $audio_url ) : ?>
                     <!-- YouTube Audio Mode Player -->
                     <div class="audio-player yt-audio-mode" id="single-audio-player" data-ytid="<?php echo esc_attr( $yt_video_id ); ?>">
                       <div class="player-controls">
-                        <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-backward" title="<?php esc_attr_e( '10 seconds back', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">replay_10</span>
                         </button>
-                        <button class="player-btn player-btn-main yt-play-btn" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-main yt-play-btn" title="<?php esc_attr_e( 'Play / Pause', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">play_arrow</span>
                         </button>
-                        <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-forward" title="<?php esc_attr_e( '10 seconds forward', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">forward_10</span>
                         </button>
                       </div>
@@ -111,23 +115,20 @@ while ( have_posts() ) : the_post();
                         <input class="player-seek" max="0" min="0" step="1" type="range" value="0" />
                         <span class="player-time player-duration">0:00</span>
                       </div>
-                      <!-- Hidden YouTube iframe -->
                       <div id="yt-audio-iframe-wrap" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;">
                         <div id="yt-audio-iframe"></div>
                       </div>
                     </div>
-
                   <?php elseif ( $audio_url ) : ?>
-                    <!-- Standard MP3 Player -->
                     <div class="audio-player" data-src="<?php echo esc_url( $audio_url ); ?>" id="single-audio-player">
                       <div class="player-controls">
-                        <button class="player-btn player-btn-backward" title="<?php _e( '১০ সেকেন্ড পিছনে', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-backward" title="<?php esc_attr_e( '10 seconds back', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">replay_10</span>
                         </button>
-                        <button class="player-btn player-btn-main" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-main" title="<?php esc_attr_e( 'Play / Pause', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">play_arrow</span>
                         </button>
-                        <button class="player-btn player-btn-forward" title="<?php _e( '১০ সেকেন্ড সামনে', 'hidayah' ); ?>">
+                        <button class="player-btn player-btn-forward" title="<?php esc_attr_e( '10 seconds forward', 'hidayah' ); ?>">
                           <span class="material-symbols-outlined">forward_10</span>
                         </button>
                       </div>
@@ -137,9 +138,8 @@ while ( have_posts() ) : the_post();
                         <span class="player-time player-duration">0:00</span>
                       </div>
                     </div>
-
                   <?php else : ?>
-                    <p style="color:#888; font-style:italic; padding:12px 0;"><?php _e( 'এই বয়ানের অডিও শীঘ্রই যুক্ত হবে।', 'hidayah' ); ?></p>
+                    <p style="color:#888; font-style:italic; padding:12px 0;"><?php _e( 'Audio for this lecture will be added soon.', 'hidayah' ); ?></p>
                   <?php endif; ?>
                 </div>
               </div>
@@ -148,68 +148,68 @@ while ( have_posts() ) : the_post();
               <div class="single-audio-share-wrap">
                 <h3 class="section-heading-sm">
                   <span class="material-symbols-outlined">share</span>
-                  <?php _e( 'শেয়ার করুন', 'hidayah' ); ?>
+                  <?php _e( 'Share', 'hidayah' ); ?>
                 </h3>
                 <div class="main-share-buttons">
-                  <a class="share-btn share-facebook" href="https://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>" target="_blank">
-                    <span class="material-symbols-outlined">thumb_up</span>
-                    Facebook
-                  </a>
-                  <a class="share-btn share-whatsapp" href="https://api.whatsapp.com/send?text=<?php the_permalink(); ?>" target="_blank">
-                    <span class="material-symbols-outlined">chat</span>
-                    WhatsApp
-                  </a>
-                  <button class="share-btn share-copy" id="copyLinkBtn" onclick="navigator.clipboard.writeText(window.location.href); alert('<?php _e( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>');">
-                    <span class="material-symbols-outlined">link</span>
-                    <?php _e( 'লিঙ্ক কপি করুন', 'hidayah' ); ?>
-                  </button>
-                  <?php if ( $audio_url ) : ?>
-                  <a class="share-btn share-download" download href="<?php echo esc_url($audio_url); ?>" style="background:var(--primary-green); color:#fff; border-color:var(--primary-green);">
-                    <span class="material-symbols-outlined">download</span>
-                    <?php _e( 'ডাউনলোড', 'hidayah' ); ?>
-                  </a>
-                  <?php endif; ?>
+                    <a class="hq-share-btn hq-share-facebook"
+                       href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>"
+                       target="_blank" rel="noopener noreferrer">
+                        <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                        <span>Facebook</span>
+                    </a>
+                    <a class="hq-share-btn hq-share-whatsapp"
+                       href="https://api.whatsapp.com/send?text=<?php echo urlencode(get_the_title() . ' ' . get_permalink()); ?>"
+                       target="_blank" rel="noopener noreferrer">
+                        <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        <span>WhatsApp</span>
+                    </a>
+                    <button class="hq-share-btn hq-share-copy"
+                            onclick="var btn=this; var orig=btn.innerHTML; navigator.clipboard.writeText(window.location.href).then(function(){ btn.innerHTML='<span class=\'material-symbols-outlined\'>check_circle</span><span><?php echo esc_js(__('Copied!', 'hidayah')); ?></span>'; btn.classList.add('copied'); setTimeout(function(){ btn.innerHTML=orig; btn.classList.remove('copied'); }, 2500); });">
+                        <span class="material-symbols-outlined">link</span>
+                        <span><?php _e( 'Copy Link', 'hidayah' ); ?></span>
+                    </button>
                 </div>
               </div>
 
-              <!-- Audio Content -->
+              <!-- 2. Audio Description -->
               <?php if ( get_the_content() ) : ?>
-                  <div class="single-audio-description entry-content">
-                    <h3 class="section-heading-sm"><?php _e( 'বয়ানের সারসংক্ষেপ', 'hidayah' ); ?></h3>
-                    <?php the_content(); ?>
-                  </div>
-              <?php endif; ?>
-
-              <!-- Tags -->
-              <?php if ( has_tag() ) : ?>
-                  <div class="single-audio-tags">
-                    <h3 class="section-heading-sm"><?php _e( 'সম্পর্কিত বিষয়', 'hidayah' ); ?></h3>
-                    <div class="sidebar-tags">
-                      <?php the_tags('', '', ''); ?>
+                  <div class="single-audio-description">
+                    <h3 class="section-heading-sm"><?php _e( 'Lecture Summary', 'hidayah' ); ?></h3>
+                    <div class="entry-content">
+                        <?php the_content(); ?>
                     </div>
                   </div>
               <?php endif; ?>
 
-              <!-- Prev / Next Navigation -->
+              <!-- 4. Tags -->
+              <?php if ( has_tag() ) : ?>
+                  <div class="single-audio-tags">
+                    <h3 class="section-heading-sm"><?php _e( 'Related Topics', 'hidayah' ); ?></h3>
+                    <div class="sidebar-tags">
+                        <?php the_tags('', '', ''); ?>
+                    </div>
+                  </div>
+              <?php endif; ?>
+
+              <!-- 5. Prev / Next Navigation -->
               <div class="single-audio-nav">
-                <?php
-                $prev_post = get_previous_post();
-                if ( ! empty( $prev_post ) ) : ?>
+                <?php $prev_post = get_previous_post(); if ( ! empty( $prev_post ) ) : ?>
                     <a class="single-audio-nav-btn single-audio-nav-prev" href="<?php echo get_permalink( $prev_post->ID ); ?>">
                       <span class="material-symbols-outlined">arrow_back</span>
                       <div class="single-audio-nav-text">
-                        <span class="nav-label"><?php _e( 'পূর্ববর্তী', 'hidayah' ); ?></span>
+                        <span class="nav-label"><?php _e( 'Previous', 'hidayah' ); ?></span>
                         <span class="nav-title-sm"><?php echo get_the_title( $prev_post->ID ); ?></span>
                       </div>
                     </a>
                 <?php endif; ?>
-
-                <?php
-                $next_post = get_next_post();
-                if ( ! empty( $next_post ) ) : ?>
+                <?php $next_post = get_next_post(); if ( ! empty( $next_post ) ) : ?>
                     <a class="single-audio-nav-btn single-audio-nav-next" href="<?php echo get_permalink( $next_post->ID ); ?>">
                       <div class="single-audio-nav-text text-right">
-                        <span class="nav-label"><?php _e( 'পরবর্তী', 'hidayah' ); ?></span>
+                        <span class="nav-label"><?php _e( 'Next', 'hidayah' ); ?></span>
                         <span class="nav-title-sm"><?php echo get_the_title( $next_post->ID ); ?></span>
                       </div>
                       <span class="material-symbols-outlined">arrow_forward</span>
@@ -217,10 +217,10 @@ while ( have_posts() ) : the_post();
                 <?php endif; ?>
               </div>
 
-              <!-- Related Topic Audios -->
+              <!-- 6. Related Topic Audios -->
               <?php if ( ! empty( $topics ) ) : ?>
                   <div class="single-audio-related">
-                    <h3 class="section-heading-sm"><?php _e( 'সম্পর্কিত অডিও', 'hidayah' ); ?></h3>
+                    <h3 class="section-heading-sm"><?php _e( 'Related Audio', 'hidayah' ); ?></h3>
                     <div class="related-audio-grid">
                       <?php
                       $related = new WP_Query( array(
@@ -260,16 +260,16 @@ while ( have_posts() ) : the_post();
                               <?php if ($rel_dur) : ?>
                               <span class="audio-card-duration">
                                 <span class="material-symbols-outlined">schedule</span>
-                                <?php echo hidayah_en_to_bn_number($rel_dur); ?> <?php _e( 'মিনিট', 'hidayah' ); ?>
+                                <?php echo $rel_dur; ?> <?php _e( 'minutes', 'hidayah' ); ?>
                               </span>
                               <?php endif; ?>
                               <span class="audio-card-duration">
                                 <span class="material-symbols-outlined">headphones</span>
-                                <?php echo hidayah_en_to_bn_number(number_format_i18n($rel_views)); ?>
+                                <?php echo number_format_i18n($rel_views); ?>
                               </span>
                             </div>
                             <div class="player-progress">
-                              <button class="player-btn player-btn-main sidebar-player-btn-reset" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                              <button class="player-btn player-btn-main sidebar-player-btn-reset" title="<?php esc_attr_e( 'Play / Pause', 'hidayah' ); ?>">
                                 <span class="material-symbols-outlined">play_arrow</span>
                               </button>
                               <span class="player-time player-current">0:00</span>
@@ -282,22 +282,19 @@ while ( have_posts() ) : the_post();
                   </div>
               <?php endif; ?>
 
-              <!-- Comments Section -->
-              <?php
-              if ( comments_open() || get_comments_number() ) :
-                  comments_template();
-              endif;
-              ?>
+              <!-- 7. Comments Section -->
+              <?php if ( comments_open() || get_comments_number() ) : comments_template(); endif; ?>
             </div>
           </div>
+          <!-- END LEFT COLUMN -->
 
-          <!-- RIGHT SIDEBAR -->
+          <!-- ==================== RIGHT SIDEBAR (1.25fr) ==================== -->
           <aside class="single-audio-sidebar">
             <div class="col-inner">
               <!-- Speaker Info Card -->
               <?php if ( ! empty( $speakers ) ) : 
                   $speaker = $speakers[0];
-                  $speaker_avatar = get_term_meta( $speaker->term_id, '_speaker_avatar', true ); // If you have this field
+                  $speaker_avatar = get_term_meta( $speaker->term_id, '_speaker_avatar', true );
               ?>
                   <div class="sidebar-widget single-speaker-card">
                     <div class="speaker-avatar">
@@ -315,9 +312,8 @@ while ( have_posts() ) : the_post();
                           <p class="speaker-role"><?php echo esc_html($speaker->description); ?></p>
                       <?php endif; ?>
                       <div class="speaker-stats">
-                        <span>
                           <span class="material-symbols-outlined">headphones</span>
-                          <?php printf( __( 'মোট %sটি অডিও', 'hidayah' ), hidayah_en_to_bn_number($speaker->count) ); ?>
+                          <?php printf( __( 'Total %s Audios', 'hidayah' ), $speaker->count ); ?>
                         </span>
                       </div>
                     </div>
@@ -327,7 +323,7 @@ while ( have_posts() ) : the_post();
                   <div class="sidebar-widget">
                     <h4 class="sidebar-widget-title">
                       <span class="material-symbols-outlined">mic</span>
-                      <?php printf( __( 'বক্তার অন্যান্য অডিও', 'hidayah' ) ); ?>
+                      <?php _e( 'Other Audios by Speaker', 'hidayah' ); ?>
                     </h4>
                     <ul class="sidebar-speaker-audios">
                       <?php
@@ -352,7 +348,7 @@ while ( have_posts() ) : the_post();
                             <div class="sidebar-audio-info">
                               <span class="sidebar-audio-title"><?php the_title(); ?></span>
                               <?php if ($other_dur) : ?>
-                                <span class="sidebar-audio-meta"><?php echo hidayah_en_to_bn_number($other_dur); ?> <?php _e( 'মিনিট', 'hidayah' ); ?></span>
+                                <span class="sidebar-audio-meta"><?php echo $other_dur; ?> <?php _e( 'minutes', 'hidayah' ); ?></span>
                               <?php endif; ?>
                             </div>
                           </a>
@@ -362,24 +358,40 @@ while ( have_posts() ) : the_post();
                   </div>
               <?php endif; ?>
 
-
-
-
+              <!-- Download Widget -->
+              <?php if ( $audio_url ) : 
+                    $dl_count = get_post_meta( get_the_ID(), '_audio_download_count', true ) ?: 0;
+              ?>
+              <div class="sidebar-widget">
+                <h4 class="sidebar-widget-title">
+                  <span class="material-symbols-outlined">download</span>
+                  <?php _e( 'Download', 'hidayah' ); ?>
+                </h4>
+                <a class="sidebar-download-btn" download href="<?php echo esc_url($audio_url); ?>">
+                  <span class="material-symbols-outlined">download</span>
+                  <?php _e( 'Download MP3', 'hidayah' ); ?>
+                  <?php if ($dl_count > 0) : ?>
+                    <span class="download-count"><?php printf( __( '%s Downloads', 'hidayah' ), number_format_i18n($dl_count) ); ?></span>
+                  <?php endif; ?>
+                </a>
+              </div>
+              <?php endif; ?>
 
               <!-- All Audios CTA -->
               <div class="sidebar-widget sidebar-cta-widget">
                 <a class="sidebar-all-audios-btn" href="<?php echo get_post_type_archive_link( 'audio' ); ?>">
                   <span class="material-symbols-outlined">headphones</span>
-                  <?php _e( 'সব অডিও দেখুন', 'hidayah' ); ?>
+                  <?php _e( 'View All Audios', 'hidayah' ); ?>
                   <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
               </div>
             </div>
           </aside>
+          <!-- END RIGHT SIDEBAR -->
         </div>
+        <!-- END single-audio-layout -->
       </div>
     </section>
-
 <?php endwhile; ?>
 
 <?php if ( $yt_video_id && ! $audio_url ) : ?>

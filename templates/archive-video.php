@@ -30,8 +30,8 @@ $video_query = new WP_Query( $args );
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'ভিডিও ওয়াজ ও বয়ান', 'hidayah' ); ?></h2>
-        <p><?php _e( 'হক্বানী আলেমদের ওয়াজ, বয়ান ও মাহফিলের সম্পূর্ণ ভিডিও আর্কাইভ। দেখুন, শিখুন এবং আমল করুন।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Video Waz & Lectures', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Complete video archive of Waz, lectures, and Mahfils by Haqqani Ulama. Watch, learn, and implement.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -39,9 +39,9 @@ $video_query = new WP_Query( $args );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <span class="breadcrumb-current"><?php _e( 'ওয়াজ ও বয়ান', 'hidayah' ); ?></span>
+            <span class="breadcrumb-current"><?php _e( 'Waz & Lectures', 'hidayah' ); ?></span>
         </nav>
 
         <div class="archive-layout">
@@ -53,21 +53,21 @@ $video_query = new WP_Query( $args );
                         <div class="archive-search-bar">
                             <form role="search" id="videoSearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="videoSearchInput" placeholder="<?php _e( 'ভিডিও খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
+                                <input class="archive-search-input" id="videoSearchInput" placeholder="<?php _e( 'Search videos...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
                                 <input type="hidden" name="post_type" value="video" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="videoSortSelect">
-                                <option value="newest" <?php selected($orderby, 'newest'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="oldest" <?php selected($orderby, 'oldest'); ?>><?php _e( 'পুরাতন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="popular" <?php selected($orderby, 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                                <option value="newest" <?php selected($orderby, 'newest'); ?>><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="oldest" <?php selected($orderby, 'oldest'); ?>><?php _e( 'Oldest First', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($orderby, 'popular'); ?>><?php _e( 'Popular', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#archiveVideoGrid">
-                                <button class="view-toggle-btn active" data-view="grid" title="গ্রিড ভিউ">
+                                <button class="view-toggle-btn active" data-view="grid" title="Grid View">
                                     <span class="material-symbols-outlined">grid_view</span>
                                 </button>
-                                <button class="view-toggle-btn" data-view="list" title="লিস্ট ভিউ">
+                                <button class="view-toggle-btn" data-view="list" title="List View">
                                     <span class="material-symbols-outlined">view_list</span>
                                 </button>
                             </div>
@@ -78,17 +78,17 @@ $video_query = new WP_Query( $args );
                     <div class="archive-filters-toolbar">
                         <div class="archive-count-badge" id="videoCountBadge">
                             <span class="material-symbols-outlined">videocam</span>
-                            <?php printf( __( 'মোট %sটি ভিডিও', 'hidayah' ), hidayah_en_to_bn_number( $video_query->found_posts ) ); ?>
+                            <?php printf( __( 'Total %s Videos', 'hidayah' ), $video_query->found_posts ); ?>
                         </div>
                         <div class="archive-taxonomy-filters">
                             <select id="videoTopicFilter">
-                                <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'By Topic', 'hidayah' ); ?></option>
                                 <?php foreach ( get_terms( array( 'taxonomy' => 'topic' ) ) as $t ) : ?>
                                     <option value="<?php echo esc_attr( $t->term_id ); ?>"><?php echo esc_html( $t->name ); ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <select id="videoSpeakerFilter">
-                                <option value=""><?php _e( 'বক্তা অনুযায়ী', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'By Speaker', 'hidayah' ); ?></option>
                                 <?php foreach ( get_terms( array( 'taxonomy' => 'speaker' ) ) as $sp ) : ?>
                                     <option value="<?php echo esc_attr( $sp->term_id ); ?>"><?php echo esc_html( $sp->name ); ?></option>
                                 <?php endforeach; ?>
@@ -119,7 +119,7 @@ $video_query = new WP_Query( $args );
                                             <span class="material-symbols-outlined play-icon-lg">play_circle</span>
                                         </div>
                                         <?php if ($duration) : ?>
-                                            <span class="video-duration-badge"><?php echo hidayah_en_to_bn_number($duration); ?></span>
+                                            <span class="video-duration-badge"><?php echo $duration; ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@ $video_query = new WP_Query( $args );
                                         <?php if ($is_featured) : ?>
                                             <div class="video-badge">
                                                 <span class="material-symbols-outlined" style="font-size: 14px;">star</span>
-                                                <?php _e( 'বিশেষ বয়ান', 'hidayah' ); ?>
+                                                <?php _e( 'Special Lecture', 'hidayah' ); ?>
                                             </div>
                                         <?php elseif ( ! empty($topics) ) : ?>
                                             <div class="video-badge" style="background: rgba(6, 95, 70, 0.1); color: var(--primary-green-dark);">
@@ -147,7 +147,7 @@ $video_query = new WP_Query( $args );
                                     <div class="archive-video-meta">
                                         <span>
                                             <span class="material-symbols-outlined">visibility</span>
-                                            <?php printf( __( '%s ভিউ', 'hidayah' ), hidayah_en_to_bn_number( number_format_i18n( $views ) ) ); ?>
+                                            <?php printf( __( '%s Views', 'hidayah' ), number_format_i18n( $views ) ); ?>
                                         </span>
                                         <span>
                                             <span class="material-symbols-outlined">calendar_today</span>
@@ -179,11 +179,11 @@ $video_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">search</span>
-                            <?php _e( 'অনুসন্ধান', 'hidayah' ); ?>
+                            <?php _e( 'Search', 'hidayah' ); ?>
                         </h4>
                         <div class="sidebar-search-box">
                             <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-                                <input placeholder="<?php _e( 'ভিডিও খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
+                                <input placeholder="<?php _e( 'Search videos...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
                                 <input type="hidden" name="post_type" value="video" />
                                 <button type="submit">
                                     <span class="material-symbols-outlined">search</span>
@@ -196,7 +196,7 @@ $video_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">person</span>
-                            <?php _e( 'বক্তা অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Speaker', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php
@@ -205,7 +205,7 @@ $video_query = new WP_Query( $args );
                                 <li>
                                     <a href="<?php echo get_term_link($speaker); ?>">
                                         <span><?php echo esc_html($speaker->name); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number($speaker->count); ?></span>
+                                        <span class="filter-count"><?php echo $speaker->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -216,7 +216,7 @@ $video_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">category</span>
-                            <?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Topic', 'hidayah' ); ?>
                         </h4>
                         <div class="sidebar-tags">
                             <?php
@@ -231,7 +231,7 @@ $video_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">trending_up</span>
-                            <?php _e( 'সর্বাধিক দেখা ভিডিও', 'hidayah' ); ?>
+                            <?php _e( 'Most Viewed Videos', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-popular-list">
                             <?php
@@ -248,10 +248,10 @@ $video_query = new WP_Query( $args );
                             ?>
                                 <li>
                                     <a href="<?php the_permalink(); ?>">
-                                        <span class="popular-rank"><?php echo hidayah_en_to_bn_number($rank++); ?></span>
+                                        <span class="popular-rank"><?php echo $rank++; ?></span>
                                         <div class="popular-info">
                                             <h5><?php the_title(); ?></h5>
-                                            <span><?php printf( __( '%s ভিউ', 'hidayah' ), hidayah_en_to_bn_number( number_format_i18n( $p_views ) ) ); ?></span>
+                                            <span><?php printf( __( '%s Views', 'hidayah' ), number_format_i18n( $p_views ) ); ?></span>
                                         </div>
                                         <span class="material-symbols-outlined popular-play">play_circle</span>
                                     </a>
@@ -265,16 +265,16 @@ $video_query = new WP_Query( $args );
                         <div class="youtube-card-icon">
                             <span class="material-symbols-outlined">play_circle</span>
                         </div>
-                        <h4><?php _e( 'ইউটিউব চ্যানেল', 'hidayah' ); ?></h4>
-                        <p><?php echo h_opt('youtube_desc', 'আমাদের অফিসিয়াল ইউটিউব চ্যানেলে সাবস্ক্রাইব করুন এবং নতুন ভিডিও সবার আগে পান।'); ?></p>
+                        <h4><?php _e( 'YouTube Channel', 'hidayah' ); ?></h4>
+                        <p><?php echo h_opt('youtube_desc', 'Subscribe to our official YouTube channel and get new videos first.'); ?></p>
                         <div class="youtube-subscriber-count">
                             <span class="material-symbols-outlined">group</span>
-                            <strong><?php echo h_opt('youtube_subs', '৫০,০০০+'); ?></strong>
-                            <?php _e( 'সাবস্ক্রাইবার', 'hidayah' ); ?>
+                            <strong><?php echo h_opt('youtube_subs', '50,000+'); ?></strong>
+                            <?php _e( 'Subscribers', 'hidayah' ); ?>
                         </div>
                         <a class="youtube-subscribe-btn" href="<?php echo esc_url(h_opt('social_youtube', '#')); ?>" rel="noopener" target="_blank">
                             <span class="material-symbols-outlined">play_circle</span>
-                            <?php _e( 'সাবস্ক্রাইব করুন', 'hidayah' ); ?>
+                            <?php _e( 'Subscribe Now', 'hidayah' ); ?>
                         </a>
                     </div>
                 </div>

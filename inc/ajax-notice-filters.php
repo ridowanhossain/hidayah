@@ -60,20 +60,20 @@ function hidayah_filter_notice_callback() {
             hidayah_render_notice_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো নোটিশ পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no notices were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $notice_query );
     echo '</div>';
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $notice_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $notice_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $notice_query->found_posts ),
+        'count' => $notice_query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_notice', 'hidayah_filter_notice_callback' );
@@ -92,9 +92,9 @@ if ( ! function_exists( 'hidayah_render_notice_card' ) ) {
                         <?php echo ( $urgency === 'urgent' ) ? 'emergency' : ( ( $urgency === 'important' ) ? 'priority_high' : 'info' ); ?>
                     </span>
                     <?php
-                    if ( $urgency === 'urgent' ) _e( 'জরুরি', 'hidayah' );
-                    elseif ( $urgency === 'important' ) _e( 'গুরুত্বপূর্ণ', 'hidayah' );
-                    else _e( 'সাধারণ', 'hidayah' );
+                    if ( $urgency === 'urgent' ) _e( 'Urgent', 'hidayah' );
+                    elseif ( $urgency === 'important' ) _e( 'Important', 'hidayah' );
+                    else _e( 'General', 'hidayah' );
                     ?>
                 </span>
                 <?php if ( ! empty( $cats ) ) : ?>
@@ -105,14 +105,14 @@ if ( ! function_exists( 'hidayah_render_notice_card' ) ) {
                 <?php endif; ?>
             </div>
             <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-            <p><?php echo wp_trim_words( get_the_excerpt(), 20 ); ?></p>
+
             <div class="notice-card-footer">
                 <span class="notice-date">
                     <span class="material-symbols-outlined">calendar_month</span>
                     <?php echo get_the_date(); ?>
                 </span>
                 <a class="notice-read-link" href="<?php the_permalink(); ?>">
-                    <?php _e( 'বিস্তারিত', 'hidayah' ); ?>
+                    <?php _e( 'Details', 'hidayah' ); ?>
                     <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
             </div>

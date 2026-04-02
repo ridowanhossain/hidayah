@@ -55,7 +55,7 @@ $notice_query = new WP_Query( $args );
 <section class="archive-hero">
     <div class="archive-hero-content">
         <h2><?php echo hidayah_get_archive_title(); ?></h2>
-        <p><?php _e( 'দরবার শরীফের সকল সরকারি নোটিশ, জরুরি ঘোষণা ও মাহফিলের সময়সূচি।', 'hidayah' ); ?></p>
+        <p><?php _e( 'All official notices, emergency announcements, and Mahfil schedules of Darbar Sharif.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -63,7 +63,7 @@ $notice_query = new WP_Query( $args );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
             <span class="breadcrumb-current"><?php echo hidayah_get_archive_title(); ?></span>
         </nav>
@@ -77,21 +77,21 @@ $notice_query = new WP_Query( $args );
                         <div class="archive-search-bar">
                             <form id="noticeSearchForm" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="noticeSearchInput" name="s" placeholder="<?php _e( 'নোটিশ খুঁজুন...', 'hidayah' ); ?>" type="text" value="<?php echo esc_attr( $search ); ?>" />
+                                <input class="archive-search-input" id="noticeSearchInput" name="s" placeholder="<?php _e( 'Search notices...', 'hidayah' ); ?>" type="text" value="<?php echo esc_attr( $search ); ?>" />
                                 <input type="hidden" name="post_type" value="notice" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="noticeSortSelect">
-                                <option value="newest" <?php selected( $orderby, 'newest' ); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="oldest" <?php selected( $orderby, 'oldest' ); ?>><?php _e( 'পুরাতন প্রথমে', 'hidayah' ); ?></option>
+                                <option value="newest" <?php selected( $orderby, 'newest' ); ?>><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="oldest" <?php selected( $orderby, 'oldest' ); ?>><?php _e( 'Oldest First', 'hidayah' ); ?></option>
                             </select>
                         </div>
                     </div>
 
                     <!-- Tabs / Filter -->
                     <div class="jiggasa-tabs jiggasa-tabs-container">
-                        <button class="jiggasa-tab <?php echo $cat_id ? '' : 'active'; ?>" data-cat=""><?php _e( 'সকল', 'hidayah' ); ?></button>
+                        <button class="jiggasa-tab <?php echo $cat_id ? '' : 'active'; ?>" data-cat=""><?php _e( 'All', 'hidayah' ); ?></button>
                         <?php foreach ( $notice_cats as $cat ) : ?>
                             <button class="jiggasa-tab <?php echo $cat_id === (int) $cat->term_id ? 'active' : ''; ?>" data-cat="<?php echo esc_attr( $cat->term_id ); ?>">
                                 <?php echo esc_html( $cat->name ); ?>
@@ -103,20 +103,20 @@ $notice_query = new WP_Query( $args );
                         <div class="archive-filters-toolbar">
                             <div class="archive-count-badge" id="noticeCountBadge">
                                 <span class="material-symbols-outlined">campaign</span>
-                                <?php printf( __( 'মোট %sটি নোটিশ', 'hidayah' ), hidayah_en_to_bn_number( $notice_query->found_posts ) ); ?>
+                                <?php printf( __( 'Total %s Notices', 'hidayah' ), $notice_query->found_posts ); ?>
                             </div>
                             <div class="archive-taxonomy-filters">
                                 <select id="noticeCatFilter">
-                                    <option value=""><?php _e( 'ক্যাটাগরি অনুযায়ী', 'hidayah' ); ?></option>
+                                    <option value=""><?php _e( 'By Category', 'hidayah' ); ?></option>
                                     <?php foreach ( $notice_cats as $cat ) : ?>
                                         <option value="<?php echo esc_attr( $cat->term_id ); ?>" <?php selected( $cat_id, (int) $cat->term_id ); ?>><?php echo esc_html( $cat->name ); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <select id="noticeUrgencyFilter">
-                                    <option value=""><?php _e( 'সব ধরণ', 'hidayah' ); ?></option>
-                                    <option value="urgent" <?php selected( $urgency, 'urgent' ); ?>><?php _e( 'জরুরি', 'hidayah' ); ?></option>
-                                    <option value="important" <?php selected( $urgency, 'important' ); ?>><?php _e( 'গুরুত্বপূর্ণ', 'hidayah' ); ?></option>
-                                    <option value="general" <?php selected( $urgency, 'general' ); ?>><?php _e( 'সাধারণ', 'hidayah' ); ?></option>
+                                    <option value=""><?php _e( 'All Types', 'hidayah' ); ?></option>
+                                    <option value="urgent" <?php selected( $urgency, 'urgent' ); ?>><?php _e( 'Urgent', 'hidayah' ); ?></option>
+                                    <option value="important" <?php selected( $urgency, 'important' ); ?>><?php _e( 'Important', 'hidayah' ); ?></option>
+                                    <option value="general" <?php selected( $urgency, 'general' ); ?>><?php _e( 'General', 'hidayah' ); ?></option>
                                 </select>
                             </div>
                         </div>
@@ -136,7 +136,7 @@ $notice_query = new WP_Query( $args );
                             <div class="notice-pinned-section">
                                 <h4 class="notice-pinned-label">
                                     <span class="material-symbols-outlined">push_pin</span>
-                                    <?php _e( 'পিন করা নোটিশ', 'hidayah' ); ?>
+                                    <?php _e( 'Pinned Notices', 'hidayah' ); ?>
                                 </h4>
                                 <?php while ( $sticky_query->have_posts() ) : $sticky_query->the_post();
                                     $s_urgency = get_post_meta( get_the_ID(), '_notice_urgency', true ) ?: 'general';
@@ -150,9 +150,9 @@ $notice_query = new WP_Query( $args );
                                                     <?php echo ( $s_urgency === 'urgent' ) ? 'emergency' : ( ( $s_urgency === 'important' ) ? 'priority_high' : 'info' ); ?>
                                                 </span>
                                                 <?php
-                                                if ( $s_urgency === 'urgent' ) _e( 'জরুরি', 'hidayah' );
-                                                elseif ( $s_urgency === 'important' ) _e( 'গুরুত্বপূর্ণ', 'hidayah' );
-                                                else _e( 'সাধারণ', 'hidayah' );
+                                                if ( $s_urgency === 'urgent' ) _e( 'Urgent', 'hidayah' );
+                                                elseif ( $s_urgency === 'important' ) _e( 'Important', 'hidayah' );
+                                                else _e( 'General', 'hidayah' );
                                                 ?>
                                             </span>
                                             <?php if ( ! empty( $cats ) ) : ?>
@@ -163,14 +163,14 @@ $notice_query = new WP_Query( $args );
                                             <?php endif; ?>
                                         </div>
                                         <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                                        <p><?php echo wp_trim_words( get_the_excerpt(), 20 ); ?></p>
+
                                         <div class="notice-card-footer">
                                             <span class="notice-date">
                                                 <span class="material-symbols-outlined">calendar_month</span>
                                                 <?php echo get_the_date(); ?>
                                             </span>
                                             <a class="notice-read-link" href="<?php the_permalink(); ?>">
-                                                <?php _e( 'বিস্তারিত', 'hidayah' ); ?>
+                                                <?php _e( 'Details', 'hidayah' ); ?>
                                                 <span class="material-symbols-outlined">arrow_forward</span>
                                             </a>
                                         </div>
@@ -198,9 +198,9 @@ $notice_query = new WP_Query( $args );
                                                 <?php echo ( $n_urgency === 'urgent' ) ? 'emergency' : ( ( $n_urgency === 'important' ) ? 'priority_high' : 'info' ); ?>
                                             </span>
                                             <?php
-                                            if ( $n_urgency === 'urgent' ) _e( 'জরুরি', 'hidayah' );
-                                            elseif ( $n_urgency === 'important' ) _e( 'গুরুত্বপূর্ণ', 'hidayah' );
-                                            else _e( 'সাধারণ', 'hidayah' );
+                                            if ( $n_urgency === 'urgent' ) _e( 'Urgent', 'hidayah' );
+                                            elseif ( $n_urgency === 'important' ) _e( 'Important', 'hidayah' );
+                                            else _e( 'General', 'hidayah' );
                                             ?>
                                         </span>
                                         <?php if ( ! empty( $cats ) ) : ?>
@@ -211,14 +211,14 @@ $notice_query = new WP_Query( $args );
                                         <?php endif; ?>
                                     </div>
                                     <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                                    <p><?php echo wp_trim_words( get_the_excerpt(), 20 ); ?></p>
+
                                     <div class="notice-card-footer">
                                         <span class="notice-date">
                                             <span class="material-symbols-outlined">calendar_month</span>
                                             <?php echo get_the_date(); ?>
                                         </span>
                                         <a class="notice-read-link" href="<?php the_permalink(); ?>">
-                                            <?php _e( 'বিস্তারিত', 'hidayah' ); ?>
+                                            <?php _e( 'Details', 'hidayah' ); ?>
                                             <span class="material-symbols-outlined">arrow_forward</span>
                                         </a>
                                     </div>
@@ -242,11 +242,11 @@ $notice_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">search</span>
-                            <?php _e( 'অনুসন্ধান', 'hidayah' ); ?>
+                            <?php _e( 'Search', 'hidayah' ); ?>
                         </h4>
                         <div class="sidebar-search-box">
                             <form action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get">
-                                <input name="s" placeholder="<?php _e( 'নোটিশ খুঁজুন...', 'hidayah' ); ?>" type="text" />
+                                <input name="s" placeholder="<?php _e( 'Search notices...', 'hidayah' ); ?>" type="text" />
                                 <input type="hidden" name="post_type" value="notice" />
                                 <button type="submit"><span class="material-symbols-outlined">search</span></button>
                             </form>
@@ -257,14 +257,14 @@ $notice_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">category</span>
-                            <?php _e( 'ক্যাটাগরি অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Category', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php foreach ( $notice_cats as $cat ) : ?>
                                 <li>
                                     <a href="<?php echo esc_url( get_term_link( $cat ) ); ?>">
                                         <span><?php echo esc_html( $cat->name ); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number( $cat->count ); ?></span>
+                                        <span class="filter-count"><?php echo $cat->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -275,7 +275,7 @@ $notice_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">schedule</span>
-                            <?php _e( 'সর্বশেষ নোটিশ', 'hidayah' ); ?>
+                            <?php _e( 'Latest Notices', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-recent-list">
                             <?php
@@ -303,7 +303,7 @@ $notice_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">download</span>
-                            <?php _e( 'ডাউনলোড সেন্টার', 'hidayah' ); ?>
+                            <?php _e( 'Download Center', 'hidayah' ); ?>
                         </h4>
                         <ul class="notice-download-list">
                             <?php

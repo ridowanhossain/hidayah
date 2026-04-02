@@ -49,20 +49,20 @@ function hidayah_filter_probondho_callback() {
             hidayah_render_probondho_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো প্রবন্ধ পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no articles were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $art_query );
     echo '</div>';
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $art_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $art_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $art_query->found_posts ),
+        'count' => $art_query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_probondho', 'hidayah_filter_probondho_callback' );
@@ -70,9 +70,9 @@ add_action( 'wp_ajax_nopriv_filter_probondho', 'hidayah_filter_probondho_callbac
 
 if ( ! function_exists( 'hidayah_render_probondho_card' ) ) {
     function hidayah_render_probondho_card() {
-        $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '৫';
+        $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '5';
         $cats      = get_the_terms( get_the_ID(), 'probondho_cat' );
-        $cat_name  = ! empty( $cats ) ? $cats[0]->name : __( 'সাধারণ', 'hidayah' );
+        $cat_name  = ! empty( $cats ) ? $cats[0]->name : __( 'General', 'hidayah' );
         ?>
         <article class="probondho-card">
             <div class="probondho-card-img">
@@ -96,12 +96,12 @@ if ( ! function_exists( 'hidayah_render_probondho_card' ) ) {
                     </span>
                     <span>
                         <span class="material-symbols-outlined">schedule</span>
-                        <?php printf( __( '%s মিনিট', 'hidayah' ), hidayah_en_to_bn_number( $read_time ) ); ?>
+                        <?php printf( __( '%s mins', 'hidayah' ), $read_time ); ?>
                     </span>
                 </div>
                 <p><?php echo wp_trim_words( get_the_excerpt(), 20 ); ?></p>
                 <a class="probondho-read-more" href="<?php the_permalink(); ?>">
-                    <?php _e( 'বিস্তারিত পড়ুন', 'hidayah' ); ?>
+                    <?php _e( 'Read More', 'hidayah' ); ?>
                     <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
             </div>

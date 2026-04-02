@@ -10,7 +10,7 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
     function hidayah_register_taxonomies() {
 
         // ── Topic — for Audio, Video, Book, Article, Q&A ─────
-        register_taxonomy( 'topic', array( 'audio', 'video', 'book', 'probondho', 'dini_jiggasa' ), array(
+        register_taxonomy( 'topic', array( 'audio', 'video', 'probondho', 'dini_jiggasa', 'product' ), array(
             'labels'       => array(
                 'name'          => __( 'Topics', 'hidayah' ),
                 'singular_name' => __( 'Topic', 'hidayah' ),
@@ -41,7 +41,7 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
         ) );
 
         // ── Author Taxonomy — for Books, Articles ─────────────
-        register_taxonomy( 'book_author', array( 'book', 'probondho' ), array(
+        register_taxonomy( 'book_author', array( 'probondho', 'product' ), array(
             'labels'       => array(
                 'name'          => __( 'Authors', 'hidayah' ),
                 'singular_name' => __( 'Author', 'hidayah' ),
@@ -55,9 +55,9 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
         ) );
 
         // ── Publication Year — for Monthly Hidayah ────────────
-        register_taxonomy( 'pub_year', array( 'monthly_hd' ), array(
+        register_taxonomy( 'pub_year', array( 'monthly_magazine' ), array(
             'labels'       => array(
-                'name'          => __( 'Publication Years', 'hidayah' ),
+                'name'          => __( 'Magazine Years', 'hidayah' ),
                 'singular_name' => __( 'Year', 'hidayah' ),
                 'all_items'     => __( 'All Years', 'hidayah' ),
                 'add_new_item'  => __( 'Add New Year', 'hidayah' ),
@@ -69,10 +69,10 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
         ) );
 
         // ── Issue Year — for Monthly Hidayah (UI filters) ──────
-        register_taxonomy( 'issue_year', array( 'monthly_hd' ), array(
+        register_taxonomy( 'issue_year', array( 'monthly_magazine' ), array(
             'labels'       => array(
-                'name'          => __( 'Issue Years', 'hidayah' ),
-                'singular_name' => __( 'Issue Year', 'hidayah' ),
+                'name'          => __( 'Magazine Years', 'hidayah' ),
+                'singular_name' => __( 'Magazine Year', 'hidayah' ),
                 'all_items'     => __( 'All Years', 'hidayah' ),
                 'add_new_item'  => __( 'Add New Year', 'hidayah' ),
             ),
@@ -83,10 +83,10 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
         ) );
 
         // ── Issue Category — for Monthly Hidayah ───────────────
-        register_taxonomy( 'issue_category', array( 'monthly_hd' ), array(
+        register_taxonomy( 'issue_category', array( 'monthly_magazine' ), array(
             'labels'       => array(
-                'name'          => __( 'Issue Categories', 'hidayah' ),
-                'singular_name' => __( 'Issue Category', 'hidayah' ),
+                'name'          => __( 'Magazine Categories', 'hidayah' ),
+                'singular_name' => __( 'Magazine Category', 'hidayah' ),
                 'all_items'     => __( 'All Categories', 'hidayah' ),
                 'add_new_item'  => __( 'Add New Category', 'hidayah' ),
             ),
@@ -97,7 +97,7 @@ if ( ! function_exists( 'hidayah_register_taxonomies' ) ) :
         ) );
 
         // ── Genre — for Books ─────────────────────────────────
-        register_taxonomy( 'genre', array( 'book' ), array(
+        register_taxonomy( 'genre', array( 'product' ), array(
             'labels'       => array(
                 'name'          => __( 'Genres', 'hidayah' ),
                 'singular_name' => __( 'Genre', 'hidayah' ),

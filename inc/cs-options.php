@@ -76,7 +76,6 @@ CSF::createSection( 'hidayah_options', array(
             'type'    => 'text',
             'title'   => __( 'Site Title (Header)', 'hidayah' ),
             'desc'    => __( 'Main title shown in the header beside the logo.', 'hidayah' ),
-            'default' => "হক্বের দা'ওয়াত সিদ্দীক্বিয়া দরবার শরীফ",
         ),
 
         array(
@@ -84,22 +83,19 @@ CSF::createSection( 'hidayah_options', array(
             'type'    => 'text',
             'title'   => __( 'Site Subtitle (Header)', 'hidayah' ),
             'desc'    => __( 'Tagline shown below the site title in the header.', 'hidayah' ),
-            'default' => "একটি দ্বীনি ও তরিকত ভিত্তিক প্রকাশনা এবং সেবা কেন্দ্র",
         ),
 
         array(
             'id'      => 'header_donation_url',
             'type'    => 'text',
             'title'   => __( 'Donation / Hadiya Button URL', 'hidayah' ),
-            'desc'    => __( 'Link for the "হাদিয়া" button in the header.', 'hidayah' ),
-            'default' => '#',
+            'desc'    => __( 'Link for the "Donation" button in the header.', 'hidayah' ),
         ),
 
         array(
             'id'      => 'header_donation_label',
             'type'    => 'text',
             'title'   => __( 'Donation Button Label', 'hidayah' ),
-            'default' => 'হাদিয়া',
         ),
 
         array(
@@ -113,7 +109,7 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'header_hide_donation_mobile',
             'type'    => 'switcher',
             'title'   => __( 'Hide Donation Button on Mobile', 'hidayah' ),
-            'desc'    => __( 'If enabled, the donation button (হাদিয়া) will be hidden on screens smaller than 992px.', 'hidayah' ),
+            'desc'    => __( 'If enabled, the donation button (Donation) will be hidden on screens smaller than 992px.', 'hidayah' ),
             'default' => false,
         ),
 
@@ -139,14 +135,6 @@ CSF::createSection( 'hidayah_options', array(
     'fields' => array(
 
         array(
-            'id'    => 'footer_about_text',
-            'type'  => 'textarea',
-            'title' => __( 'Footer Description', 'hidayah' ),
-            'desc'  => __( 'Short text shown in the footer brand column.', 'hidayah' ),
-            'default' => 'আমরা সত্যের পথে আহবান জানাই। হক্কানী আলেমদের সরাসরি বয়ান ও নির্ভরযোগ্য কন্টেন্ট সরবরাহ করাই আমাদের মূল লক্ষ্য।',
-        ),
-
-        array(
             'type'    => 'subheading',
             'content' => __( 'Contact Bridge CTA', 'hidayah' ),
         ),
@@ -155,21 +143,18 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'footer_cta_kicker',
             'type'    => 'text',
             'title'   => __( 'CTA Kicker (Badge)', 'hidayah' ),
-            'default' => 'যোগাযোগ শুরু করুন',
         ),
 
         array(
             'id'      => 'footer_cta_title',
             'type'    => 'text',
             'title'   => __( 'CTA Title', 'hidayah' ),
-            'default' => 'দ্বীনি জিজ্ঞাসা বা সহায়তা দরকার?',
         ),
 
         array(
             'id'      => 'footer_cta_desc',
             'type'    => 'textarea',
             'title'   => __( 'CTA Description', 'hidayah' ),
-            'default' => 'আপনি প্রশ্ন করতে চাইলে, বিস্তারিত বার্তা পাঠাতে চাইলে বা সরাসরি কল করতে চাইলে নিচের অপশনগুলো থেকে একটি বেছে নিতে পারেন।',
         ),
 
         // Statistics Group (Simplified as separate fields)
@@ -182,39 +167,33 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'footer_cta_stat1_num',
             'type'    => 'text',
             'title'   => __( 'Stat 1 Number', 'hidayah' ),
-            'default' => '২৪/৭',
         ),
         array(
             'id'      => 'footer_cta_stat1_label',
             'type'    => 'text',
             'title'   => __( 'Stat 1 Label', 'hidayah' ),
-            'default' => 'অনলাইন সেবা',
         ),
 
         array(
             'id'      => 'footer_cta_stat2_num',
             'type'    => 'text',
             'title'   => __( 'Stat 2 Number', 'hidayah' ),
-            'default' => '১০০+',
         ),
         array(
             'id'      => 'footer_cta_stat2_label',
             'type'    => 'text',
             'title'   => __( 'Stat 2 Label', 'hidayah' ),
-            'default' => 'দ্বীনি প্রশ্নের উত্তর',
         ),
 
         array(
             'id'      => 'footer_cta_stat3_num',
             'type'    => 'text',
             'title'   => __( 'Stat 3 Number', 'hidayah' ),
-            'default' => '৫০০০+',
         ),
         array(
             'id'      => 'footer_cta_stat3_label',
             'type'    => 'text',
             'title'   => __( 'Stat 3 Label', 'hidayah' ),
-            'default' => 'সন্তুষ্ট মুসলিম',
         ),
 
         // Contact Cards Group
@@ -227,45 +206,141 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'footer_cta_card1_title',
             'type'    => 'text',
             'title'   => __( 'Card 1 Title', 'hidayah' ),
-            'default' => 'যোগাযোগ ফর্ম',
         ),
         array(
             'id'      => 'footer_cta_card1_desc',
             'type'    => 'text',
             'title'   => __( 'Card 1 Desc', 'hidayah' ),
-            'default' => 'বিস্তারিত মেসেজ পাঠানোর জন্য',
         ),
         array(
             'id'      => 'footer_cta_card1_url',
             'type'    => 'text',
             'title'   => __( 'Card 1 URL', 'hidayah' ),
-            'default' => '/contact',
         ),
 
         array(
             'id'      => 'footer_cta_card2_title',
             'type'    => 'text',
             'title'   => __( 'Card 2 Title', 'hidayah' ),
-            'default' => 'ইমেইল সাপোর্ট',
         ),
         array(
             'id'      => 'footer_cta_card2_desc',
             'type'    => 'text',
             'title'   => __( 'Card 2 Desc', 'hidayah' ),
-            'default' => 'ডকুমেন্ট বা লিখিত জিজ্ঞাসার জন্য',
         ),
 
         array(
             'id'      => 'footer_cta_card3_title',
             'type'    => 'text',
             'title'   => __( 'Card 3 Title', 'hidayah' ),
-            'default' => 'ফোন কল',
         ),
         array(
             'id'      => 'footer_cta_card3_desc',
             'type'    => 'text',
             'title'   => __( 'Card 3 Desc', 'hidayah' ),
-            'default' => 'তাৎক্ষণিক সহায়তার জন্য',
+        ),
+
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Footer Brand', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_use_logo',
+            'type'    => 'switcher',
+            'title'   => __( 'Use Logo Instead of Text', 'hidayah' ),
+            'desc'    => __( 'ON = Show logo image. OFF = Show mosque icon + brand name text.', 'hidayah' ),
+            'default' => false,
+        ),
+
+        array(
+            'id'         => 'footer_logo',
+            'type'       => 'media',
+            'title'      => __( 'Footer Logo', 'hidayah' ),
+            'desc'       => __( 'Upload logo image for the footer brand area.', 'hidayah' ),
+            'dependency' => array( 'footer_use_logo', '==', 'true' ),
+        ),
+
+        array(
+            'id'         => 'footer_brand_name',
+            'type'       => 'text',
+            'title'      => __( 'Footer Brand Name', 'hidayah' ),
+            'desc'       => __( 'Text shown next to the mosque icon (e.g., Hoquer Dawat).', 'hidayah' ),
+            'default'    => '',
+            'dependency' => array( 'footer_use_logo', '==', 'false' ),
+        ),
+
+        array(
+            'id'    => 'footer_about_text',
+            'type'  => 'textarea',
+            'title' => __( 'Footer Description', 'hidayah' ),
+            'desc'  => __( 'Short text shown in the footer brand column.', 'hidayah' ),
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Social Media Links', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'social_facebook',
+            'type'    => 'text',
+            'title'   => __( 'Facebook Page URL', 'hidayah' ),
+            'desc'    => __( 'Shown as the Facebook icon in the footer.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'social_youtube',
+            'type'    => 'text',
+            'title'   => __( 'YouTube Channel URL', 'hidayah' ),
+            'desc'    => __( 'Shown as the YouTube icon in the footer.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'social_twitter',
+            'type'    => 'text',
+            'title'   => __( 'X (Twitter) Profile URL', 'hidayah' ),
+            'desc'    => __( 'Shown as the X icon in the footer.', 'hidayah' ),
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Contact Information', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'contact_email',
+            'type'    => 'text',
+            'title'   => __( 'Email Address', 'hidayah' ),
+            'desc'    => __( 'Shown in the footer contact column.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'contact_phone',
+            'type'    => 'text',
+            'title'   => __( 'Phone Number (Display)', 'hidayah' ),
+            'desc'    => __( 'Displayed in the footer.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'contact_phone_raw',
+            'type'    => 'text',
+            'title'   => __( 'Phone Number (Link)', 'hidayah' ),
+            'desc'    => __( 'Used in tel: links — must use English digits only.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'contact_address',
+            'type'    => 'text',
+            'title'   => __( 'Address', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'contact_whatsapp',
+            'type'    => 'text',
+            'title'   => __( 'WhatsApp Number', 'hidayah' ),
+            'desc'    => __( 'Used in WhatsApp links. English digits only.', 'hidayah' ),
         ),
 
         array(
@@ -273,7 +348,52 @@ CSF::createSection( 'hidayah_options', array(
             'type'    => 'text',
             'title'   => __( 'Copyright Text', 'hidayah' ),
             'desc'    => __( 'Shown in the footer bottom bar after the site name and year.', 'hidayah' ),
-            'default' => 'All rights reserved.',
+        ),
+
+        array(
+            'id'      => 'footer_col2_title',
+            'type'    => 'text',
+            'title'   => __( 'Footer Column 2 Title', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_col3_title',
+            'type'    => 'text',
+            'title'   => __( 'Footer Column 3 Title', 'hidayah' ),
+        ),
+        array(
+            'id'      => 'footer_col4_title',
+            'type'    => 'text',
+            'title'   => __( 'Footer Column 4 Title', 'hidayah' ),
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Legal Links (Footer Bottom Bar)', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_privacy_text',
+            'type'    => 'text',
+            'title'   => __( 'Privacy Policy Text', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_privacy_url',
+            'type'    => 'text',
+            'title'   => __( 'Privacy Policy URL', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_terms_text',
+            'type'    => 'text',
+            'title'   => __( 'Terms & Conditions Text', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'footer_terms_url',
+            'type'    => 'text',
+            'title'   => __( 'Terms & Conditions URL', 'hidayah' ),
         ),
 
         array(
@@ -301,14 +421,12 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'hero_title',
             'type'    => 'text',
             'title'   => __( 'Hero Title', 'hidayah' ),
-            'default' => "কুরআন-সুন্নাহ ভিত্তিক খাঁটি ঈমান, আমল, আক্বিদা ও আখলাক গঠনে",
         ),
 
         array(
             'id'      => 'hero_subtitle',
             'type'    => 'textarea',
             'title'   => __( 'Hero Subtitle', 'hidayah' ),
-            'default' => "হক্বানী আলেম ও অলী হওয়ার নিয়তে বায়াত ও ভর্তি হোন।",
         ),
 
         array(
@@ -320,28 +438,24 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'book_sales_title',
             'type'    => 'text',
             'title'   => __( 'Book Corner Title', 'hidayah' ),
-            'default' => 'বই বিক্রয় কর্নার',
         ),
 
         array(
             'id'      => 'book_sales_subtitle',
             'type'    => 'textarea',
             'title'   => __( 'Book Corner Subtitle', 'hidayah' ),
-            'default' => '',
         ),
 
         array(
             'id'      => 'book_sales_btn_label',
             'type'    => 'text',
             'title'   => __( 'View More Button Label', 'hidayah' ),
-            'default' => 'আরও দেখুন',
         ),
 
         array(
             'id'      => 'book_sales_btn_url',
             'type'    => 'text',
             'title'   => __( 'View More Button URL', 'hidayah' ),
-            'default' => '#',
         ),
 
         array(
@@ -353,75 +467,182 @@ CSF::createSection( 'hidayah_options', array(
             'id'      => 'about_title',
             'type'    => 'text',
             'title'   => __( 'About Title', 'hidayah' ),
-            'default' => "দরবার ও দাওয়াত সম্পর্কে",
         ),
 
         array(
             'id'      => 'about_desc',
             'type'    => 'textarea',
             'title'   => __( 'About Description', 'hidayah' ),
-            'default' => "দরবার ও দাওয়াত একটি দলীলভিত্তিক, মার্জিত ও দায়িত্বশীল দ্বীনি মারকাজ। আমাদের লক্ষ্য হলো পবিত্র কুরআন ও সহীহ হাদীসের আলোকে বিশুদ্ধ ইসলামী জ্ঞান প্রচার করা এবং তরবিয়ত ও তাযকিয়ার মাধ্যমে প্রকৃত মুসলিম হিসেবে গড়ে তোলা।",
         ),
 
         array(
             'id'      => 'about_btn1_label',
             'type'    => 'text',
             'title'   => __( 'Button 1 Label', 'hidayah' ),
-            'default' => 'বিস্তারিত জানুন →',
         ),
 
         array(
             'id'      => 'about_btn1_url',
             'type'    => 'text',
             'title'   => __( 'Button 1 URL', 'hidayah' ),
-            'default' => '#',
         ),
 
         array(
             'id'      => 'about_btn2_label',
             'type'    => 'text',
             'title'   => __( 'Button 2 Label', 'hidayah' ),
-            'default' => 'যোগাযোগ করুন →',
         ),
 
         array(
             'id'      => 'about_btn2_url',
             'type'    => 'text',
             'title'   => __( 'Button 2 URL', 'hidayah' ),
-            'default' => '#',
         ),
 
         array(
             'type'    => 'subheading',
-            'content' => __( 'Monthly Publication Section', 'hidayah' ),
+            'content' => __( 'Monthly Magazine Section', 'hidayah' ),
         ),
 
         array(
-            'id'      => 'monthly_hd_title',
+            'id'      => 'monthly_magazine_title',
             'type'    => 'text',
             'title'   => __( 'Section Title', 'hidayah' ),
-            'default' => 'মাসিক হক্বের দাওয়াত - প্রকাশনা',
         ),
 
         array(
-            'id'      => 'monthly_hd_subtitle',
+            'id'      => 'monthly_magazine_subtitle',
             'type'    => 'textarea',
             'title'   => __( 'Section Subtitle', 'hidayah' ),
-            'default' => 'সহীহ আকিদা, ইবাদত ও তাযকিয়াহভিত্তিক মাসিক দলীলসমৃদ্ধ প্রকাশনা',
         ),
 
         array(
-            'id'      => 'monthly_hd_btn_label',
+            'id'      => 'monthly_magazine_btn_label',
             'type'    => 'text',
             'title'   => __( 'View More Button Label', 'hidayah' ),
-            'default' => 'আরও দেখুন →',
         ),
 
         array(
-            'id'      => 'monthly_hd_btn_url',
+            'id'      => 'monthly_magazine_btn_url',
             'type'    => 'text',
             'title'   => __( 'View More Button URL', 'hidayah' ),
-            'default' => '#',
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Articles Section (Probondho)', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'articles_title',
+            'type'    => 'text',
+            'title'   => __( 'Section Title', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'articles_btn_label',
+            'type'    => 'text',
+            'title'   => __( 'View All Button Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'articles_btn_url',
+            'type'    => 'text',
+            'title'   => __( 'View All Button URL', 'hidayah' ),
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Promo Wide Section', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_title',
+            'type'    => 'text',
+            'title'   => __( 'Promo Title', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_desc',
+            'type'    => 'textarea',
+            'title'   => __( 'Promo Description', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_btn1_label',
+            'type'    => 'text',
+            'title'   => __( 'Button 1 Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_btn1_url',
+            'type'    => 'text',
+            'title'   => __( 'Button 1 URL', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_btn2_label',
+            'type'    => 'text',
+            'title'   => __( 'Button 2 Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'promo_btn2_url',
+            'type'    => 'text',
+            'title'   => __( 'Button 2 URL', 'hidayah' ),
+        ),
+
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Q&A Section (Islamic Q&A)', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_title',
+            'type'    => 'text',
+            'title'   => __( 'Section Title', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_subtitle',
+            'type'    => 'text',
+            'title'   => __( 'Section Subtitle', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_view_all_label',
+            'type'    => 'text',
+            'title'   => __( 'View All Button Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_view_all_url',
+            'type'    => 'text',
+            'title'   => __( 'View All Button URL', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_ask_label',
+            'type'    => 'text',
+            'title'   => __( 'Ask Question Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_ask_url',
+            'type'    => 'text',
+            'title'   => __( 'Ask Question URL', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_msg_label',
+            'type'    => 'text',
+            'title'   => __( 'Message Label', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'qa_msg_url',
+            'type'    => 'text',
+            'title'   => __( 'Message URL', 'hidayah' ),
         ),
 
         array(
@@ -444,6 +665,13 @@ CSF::createSection( 'hidayah_options', array(
         ),
 
         array(
+            'id'      => 'show_about_section',
+            'type'    => 'switcher',
+            'title'   => __( 'Show About Section', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
             'id'      => 'show_book_section',
             'type'    => 'switcher',
             'title'   => __( 'Show Books Section', 'hidayah' ),
@@ -453,7 +681,21 @@ CSF::createSection( 'hidayah_options', array(
         array(
             'id'      => 'show_monthly_hd_section',
             'type'    => 'switcher',
-            'title'   => __( 'Show Monthly Hidayah Section', 'hidayah' ),
+            'title'   => __( 'Show Monthly Magazine Section', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
+            'id'      => 'show_probondho_section',
+            'type'    => 'switcher',
+            'title'   => __( 'Show Articles Section', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
+            'id'      => 'show_promo_section',
+            'type'    => 'switcher',
+            'title'   => __( 'Show Promo Section', 'hidayah' ),
             'default' => true,
         ),
 
@@ -468,97 +710,8 @@ CSF::createSection( 'hidayah_options', array(
 ) );
 
 
-// ══════════════════════════════════════════════════════
-// 5. Contact Information
-// ══════════════════════════════════════════════════════
-CSF::createSection( 'hidayah_options', array(
-    'id'     => 'contact',
-    'title'  => __( 'Contact Information', 'hidayah' ),
-    'icon'   => 'fa fa-phone',
-    'fields' => array(
-
-        array(
-            'id'      => 'contact_email',
-            'type'    => 'text',
-            'title'   => __( 'Email Address', 'hidayah' ),
-            'desc'    => __( 'Shown in the footer and contact section.', 'hidayah' ),
-            'default' => 'info@hoquerdawat.com',
-        ),
-
-        array(
-            'id'      => 'contact_phone',
-            'type'    => 'text',
-            'title'   => __( 'Phone Number (Display)', 'hidayah' ),
-            'desc'    => __( 'Displayed in the footer (can use Bangla numerals).', 'hidayah' ),
-            'default' => '+৮৮০ ১২৩৪ ৫৬৭৮৯০',
-        ),
-
-        array(
-            'id'      => 'contact_phone_raw',
-            'type'    => 'text',
-            'title'   => __( 'Phone Number (Link)', 'hidayah' ),
-            'desc'    => __( 'Used in tel: links — must use English digits only.', 'hidayah' ),
-            'default' => '+8801234567890',
-        ),
-
-        array(
-            'id'      => 'contact_address',
-            'type'    => 'text',
-            'title'   => __( 'Address', 'hidayah' ),
-            'default' => 'Dhaka, Bangladesh',
-        ),
-
-        array(
-            'id'      => 'contact_whatsapp',
-            'type'    => 'text',
-            'title'   => __( 'WhatsApp Number', 'hidayah' ),
-            'desc'    => __( 'Used in WhatsApp links. English digits only.', 'hidayah' ),
-            'default' => '+8801234567890',
-        ),
-
-    ),
-) );
 
 
-// ══════════════════════════════════════════════════════
-// 4. Social Media Links
-// ══════════════════════════════════════════════════════
-CSF::createSection( 'hidayah_options', array(
-    'id'     => 'social',
-    'title'  => __( 'Social Media', 'hidayah' ),
-    'icon'   => 'fa fa-share-alt',
-    'fields' => array(
-
-        array(
-            'id'      => 'social_facebook',
-            'type'    => 'text',
-            'title'   => __( 'Facebook Page URL', 'hidayah' ),
-            'default' => 'https://facebook.com/',
-        ),
-
-        array(
-            'id'      => 'social_youtube',
-            'type'    => 'text',
-            'title'   => __( 'YouTube Channel URL', 'hidayah' ),
-            'default' => 'https://youtube.com/',
-        ),
-
-        array(
-            'id'      => 'social_whatsapp',
-            'type'    => 'text',
-            'title'   => __( 'WhatsApp Group Link', 'hidayah' ),
-            'default' => 'https://whatsapp.com/',
-        ),
-
-        array(
-            'id'      => 'social_telegram',
-            'type'    => 'text',
-            'title'   => __( 'Telegram Channel URL', 'hidayah' ),
-            'default' => '',
-        ),
-
-    ),
-) );
 
 
 // ══════════════════════════════════════════════════════
@@ -631,6 +784,187 @@ CSF::createSection( 'hidayah_options', array(
             'title' => __( 'Footer Code', 'hidayah' ),
             'desc'  => __( 'Inserted before &lt;/body&gt; — use for analytics or chat widgets.', 'hidayah' ),
             'settings' => array( 'mode' => 'html' ),
+        ),
+
+    ),
+) );
+
+
+// ══════════════════════════════════════════════════════
+// 8. SEO Settings
+// ══════════════════════════════════════════════════════
+CSF::createSection( 'hidayah_options', array(
+    'id'     => 'seo',
+    'title'  => __( 'SEO Settings', 'hidayah' ),
+    'icon'   => 'fa fa-search',
+    'fields' => array(
+
+        // ── Site-wide Meta ──────────────────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Site-wide Meta', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_site_description',
+            'type'    => 'textarea',
+            'title'   => __( 'Default Meta Description', 'hidayah' ),
+            'desc'    => __( 'Used on the homepage and when a post has no excerpt. Keep under 160 characters.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_title_separator',
+            'type'    => 'text',
+            'title'   => __( 'Title Separator', 'hidayah' ),
+            'desc'    => __( 'Character between post title and site name, e.g.  |  or  –  or  »', 'hidayah' ),
+            'default' => '|',
+        ),
+
+        array(
+            'id'      => 'seo_default_og_image',
+            'type'    => 'media',
+            'title'   => __( 'Default OG / Share Image', 'hidayah' ),
+            'desc'    => __( 'Shown when sharing a page that has no featured image. Recommended 1200×630 px.', 'hidayah' ),
+        ),
+
+        // ── Verification Codes ──────────────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Search Engine Verification', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_google_verification',
+            'type'    => 'text',
+            'title'   => __( 'Google Search Console Verification Code', 'hidayah' ),
+            'desc'    => __( 'Paste only the content value from the meta tag, e.g. abc123XYZ', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_bing_verification',
+            'type'    => 'text',
+            'title'   => __( 'Bing Webmaster Verification Code', 'hidayah' ),
+            'desc'    => __( 'Paste only the content value from the meta tag.', 'hidayah' ),
+        ),
+
+        // ── Organization Info (Schema) ───────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Organization / Schema Info', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_org_name',
+            'type'    => 'text',
+            'title'   => __( 'Organization Name', 'hidayah' ),
+            'desc'    => __( 'Used in JSON-LD schema markup, e.g. Hoquer Dawat', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_org_type',
+            'type'    => 'select',
+            'title'   => __( 'Organization Type', 'hidayah' ),
+            'desc'    => __( 'Helps Google understand the site category.', 'hidayah' ),
+            'default' => 'ReligiousOrganization',
+            'options' => array(
+                'ReligiousOrganization' => __( 'Religious Organization', 'hidayah' ),
+                'Organization'          => __( 'General Organization', 'hidayah' ),
+                'EducationalOrganization' => __( 'Educational Organization', 'hidayah' ),
+                'NGO'                   => __( 'NGO / Non-Profit', 'hidayah' ),
+            ),
+        ),
+
+        array(
+            'id'      => 'seo_org_description',
+            'type'    => 'textarea',
+            'title'   => __( 'Organization Description', 'hidayah' ),
+            'desc'    => __( 'Brief description used in schema markup.', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_founder_name',
+            'type'    => 'text',
+            'title'   => __( 'Founder / Sheikh Name', 'hidayah' ),
+            'desc'    => __( 'Used as author name in article schema, e.g. Sheikh Ibrahim', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_founding_year',
+            'type'    => 'text',
+            'title'   => __( 'Founded Year', 'hidayah' ),
+            'desc'    => __( 'e.g. 2015', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_org_logo',
+            'type'    => 'media',
+            'title'   => __( 'Organization Logo (Schema)', 'hidayah' ),
+            'desc'    => __( 'Used in Google Knowledge Panel schema. If empty, Site Logo is used.', 'hidayah' ),
+        ),
+
+        // ── Social Profiles (for Schema) ─────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Social Profiles (Schema / Sameās)', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_twitter_handle',
+            'type'    => 'text',
+            'title'   => __( 'Twitter / X Handle', 'hidayah' ),
+            'desc'    => __( 'Without @, e.g. hoquerDawat', 'hidayah' ),
+        ),
+
+        // ── Schema Toggle ────────────────────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Schema & Structured Data', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_enable_schema',
+            'type'    => 'switcher',
+            'title'   => __( 'Enable JSON-LD Schema', 'hidayah' ),
+            'desc'    => __( 'Outputs structured data for posts (Article, AudioObject, VideoObject, FAQPage, etc.) to help Google understand content.', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
+            'id'      => 'seo_enable_breadcrumb_schema',
+            'type'    => 'switcher',
+            'title'   => __( 'Enable BreadcrumbList Schema', 'hidayah' ),
+            'desc'    => __( 'Adds breadcrumb structured data so Google displays breadcrumbs in search results.', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
+            'id'      => 'seo_enable_org_schema',
+            'type'    => 'switcher',
+            'title'   => __( 'Enable Organization Schema (Homepage)', 'hidayah' ),
+            'desc'    => __( 'Outputs Organization/WebSite schema on the homepage for Google Knowledge Panel.', 'hidayah' ),
+            'default' => true,
+        ),
+
+        // ── Canonical & Robots ───────────────────────────
+        array(
+            'type'    => 'subheading',
+            'content' => __( 'Canonical & Robots', 'hidayah' ),
+        ),
+
+        array(
+            'id'      => 'seo_enable_canonical',
+            'type'    => 'switcher',
+            'title'   => __( 'Output Canonical URL Tags', 'hidayah' ),
+            'desc'    => __( 'Prevents duplicate content issues by specifying the preferred URL.', 'hidayah' ),
+            'default' => true,
+        ),
+
+        array(
+            'id'      => 'seo_noindex_archives',
+            'type'    => 'switcher',
+            'title'   => __( 'No-Index Archive / Category Pages', 'hidayah' ),
+            'desc'    => __( 'Adds noindex to taxonomy archive and date archive pages to avoid thin content penalties.', 'hidayah' ),
+            'default' => false,
         ),
 
     ),

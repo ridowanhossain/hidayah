@@ -1,6 +1,6 @@
 <?php
 /**
- * Archive Template for Book
+ * Archive Template for Products (Books)
  *
  * @package Hidayah
  */
@@ -13,11 +13,11 @@ $order = 'DESC';
 $meta_key = '';
 
 if ($orderby === 'price-asc') {
-    $meta_key = '_book_price';
+    $meta_key = '_price';
     $orderby = 'meta_value_num';
     $order = 'ASC';
 } elseif ($orderby === 'price-desc') {
-    $meta_key = '_book_price';
+    $meta_key = '_price';
     $orderby = 'meta_value_num';
     $order = 'DESC';
 } elseif ($orderby === 'popular') {
@@ -26,7 +26,7 @@ if ($orderby === 'price-asc') {
 }
 
 $args = array(
-    'post_type'      => 'book',
+    'post_type'      => 'product',
     'posts_per_page' => 12,
     'paged'          => get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1,
     's'              => $s,
@@ -43,8 +43,8 @@ $book_query = new WP_Query( $args );
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'বই বিক্রয় কর্নার', 'hidayah' ); ?></h2>
-        <p><?php _e( 'দরবার শরীফ অনুমোদিত ইসলামী কিতাব, তাফসীর, হাদীস ও তাসাউফ বিষয়ক বই সংগ্রহ করুন। বিশ্বস্ত উৎস থেকে, সরাসরি আপনার দোরগোড়ায়।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Book Sales Corner', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Collect Darbar Sharif approved Islamic books, Tafsir, Hadith, and Tasawwuf literature. Directly from trusted sources to your doorstep.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -52,9 +52,9 @@ $book_query = new WP_Query( $args );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <span class="breadcrumb-current"><?php _e( 'সকল বই', 'hidayah' ); ?></span>
+            <span class="breadcrumb-current"><?php _e( 'All Books', 'hidayah' ); ?></span>
         </nav>
 
         <div class="archive-layout">
@@ -66,22 +66,22 @@ $book_query = new WP_Query( $args );
                         <div class="archive-search-bar">
                             <form id="bookSearchForm" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="bookSearchInput" placeholder="<?php _e( 'বই খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
-                                <input type="hidden" name="post_type" value="book" />
+                                <input class="archive-search-input" id="bookSearchInput" placeholder="<?php _e( 'Search books...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
+                                <input type="hidden" name="post_type" value="product" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="bookSortSelect">
-                                <option value="newest" <?php selected($_GET['orderby'] ?? '', 'newest'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="price-asc" <?php selected($_GET['orderby'] ?? '', 'price-asc'); ?>><?php _e( 'মূল্য: কম → বেশি', 'hidayah' ); ?></option>
-                                <option value="price-desc" <?php selected($_GET['orderby'] ?? '', 'price-desc'); ?>><?php _e( 'মূল্য: বেশি → কম', 'hidayah' ); ?></option>
-                                <option value="popular" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                                <option value="newest" <?php selected($_GET['orderby'] ?? '', 'newest'); ?>><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="price-asc" <?php selected($_GET['orderby'] ?? '', 'price-asc'); ?>><?php _e( 'Price: Low → High', 'hidayah' ); ?></option>
+                                <option value="price-desc" <?php selected($_GET['orderby'] ?? '', 'price-desc'); ?>><?php _e( 'Price: High → Low', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'Popular', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#bookArchiveGrid">
-                                <button class="view-toggle-btn active" data-view="grid" title="গ্রিড ভিউ">
+                                <button class="view-toggle-btn active" data-view="grid" title="Grid View">
                                     <span class="material-symbols-outlined">grid_view</span>
                                 </button>
-                                <button class="view-toggle-btn" data-view="list" title="লিস্ট ভিউ">
+                                <button class="view-toggle-btn" data-view="list" title="List View">
                                     <span class="material-symbols-outlined">view_list</span>
                                 </button>
                             </div>
@@ -93,17 +93,17 @@ $book_query = new WP_Query( $args );
                         <div class="archive-filters-toolbar">
                             <div class="archive-count-badge" id="bookCountBadge">
                                 <span class="material-symbols-outlined">menu_book</span>
-                                <?php printf( __( 'মোট %sটি বই', 'hidayah' ), hidayah_en_to_bn_number( $book_query->found_posts ) ); ?>
+                                <?php printf( __( 'Total %s Books', 'hidayah' ), $book_query->found_posts ); ?>
                             </div>
                             <div class="archive-taxonomy-filters">
                                 <select id="bookGenreFilter">
-                                    <option value=""><?php _e( 'ধরণ অনুযায়ী', 'hidayah' ); ?></option>
+                                    <option value=""><?php _e( 'By Genre', 'hidayah' ); ?></option>
                                     <?php foreach ( get_terms( array( 'taxonomy' => 'genre' ) ) as $g ) : ?>
                                         <option value="<?php echo esc_attr( $g->term_id ); ?>"><?php echo esc_html( $g->name ); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                                 <select id="bookAuthorFilter">
-                                    <option value=""><?php _e( 'লেখক অনুযায়ী', 'hidayah' ); ?></option>
+                                    <option value=""><?php _e( 'By Author', 'hidayah' ); ?></option>
                                     <?php foreach ( get_terms( array( 'taxonomy' => 'book_author' ) ) as $a ) : ?>
                                         <option value="<?php echo esc_attr( $a->term_id ); ?>"><?php echo esc_html( $a->name ); ?></option>
                                     <?php endforeach; ?>
@@ -119,12 +119,15 @@ $book_query = new WP_Query( $args );
                         </div>
                         <div class="book-archive-grid" id="bookArchiveGrid">
                             <?php if ( $book_query->have_posts() ) : while ( $book_query->have_posts() ) : $book_query->the_post(); 
-                            $price      = get_post_meta( get_the_ID(), '_book_price', true );
-                            $old_price  = get_post_meta( get_the_ID(), '_book_old_price', true );
-                            $badge      = get_post_meta( get_the_ID(), '_book_badge', true );
-                            $rating     = get_post_meta( get_the_ID(), '_book_rating', true ) ?: 0;
-                            $rating_cnt = get_post_meta( get_the_ID(), '_book_rating_count', true ) ?: 0;
-                            $stock_status = get_post_meta( get_the_ID(), '_stock_status', true ) ?: 'instock';
+                            $product = wc_get_product( get_the_ID() );
+                            if ( ! $product ) continue;
+
+                            $price         = $product->get_price();
+                            $regular_price = $product->get_regular_price();
+                            $badge         = get_post_meta( get_the_ID(), '_book_badge', true );
+                            $rating        = $product->get_average_rating() ?: 0;
+                            $rating_cnt    = $product->get_review_count() ?: 0;
+                            $stock_status  = $product->get_stock_status();
                         ?>
                             <article class="book-archive-card">
                                 <a class="book-sales-link" href="<?php the_permalink(); ?>">
@@ -138,7 +141,7 @@ $book_query = new WP_Query( $args );
                                             <span class="book-sales-badge"><?php echo esc_html( $badge ); ?></span>
                                         <?php endif; ?>
                                         <?php if ( $stock_status === 'outofstock' ) : ?>
-                                            <span class="book-sales-badge book-badge-out"><?php _e( 'স্টক শেষ', 'hidayah' ); ?></span>
+                                            <span class="book-sales-badge book-badge-out"><?php _e( 'Out of Stock', 'hidayah' ); ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </a>
@@ -158,27 +161,30 @@ $book_query = new WP_Query( $args );
                                             }
                                         }
                                         ?>
-                                        <span class="star-count">(<?php echo hidayah_en_to_bn_number($rating_cnt); ?>)</span>
+                                        <span class="star-count">(<?php echo $rating_cnt; ?>)</span>
                                     </div>
 
                                     <div class="book-sales-meta">
                                         <div class="book-sales-pricing">
-                                            <?php if ( $old_price ) : ?>
-                                                <span class="book-sales-old-price">৳ <?php echo hidayah_en_to_bn_number($old_price); ?></span>
+                                            <?php if ( $product->is_on_sale() && $regular_price ) : ?>
+                                                <span class="book-sales-old-price"><?php echo __('Tk.', 'hidayah'); ?> <?php echo $regular_price; ?></span>
                                             <?php endif; ?>
-                                            <span class="book-sales-price">৳ <?php echo hidayah_en_to_bn_number($price); ?></span>
+                                            <span class="book-sales-price"><?php echo __('Tk.', 'hidayah'); ?> <?php echo $price; ?></span>
                                         </div>
-                                        <?php if ( $stock_status !== 'outofstock' ) : ?>
-                                            <button class="book-sales-order-btn" data-book-id="<?php the_ID(); ?>" data-book-price="<?php echo esc_attr( $price ); ?>" data-book-title="<?php the_title_attribute(); ?>">
-                                                <span class="material-symbols-outlined">shopping_cart</span>
-                                                <?php _e( 'কার্টে যোগ', 'hidayah' ); ?>
-                                            </button>
-                                        <?php else : ?>
-                                            <button class="book-sales-order-btn" disabled>
-                                                <span class="material-symbols-outlined">inventory_2</span>
-                                                <?php _e( 'স্টক নেই', 'hidayah' ); ?>
-                                            </button>
-                                        <?php endif; ?>
+                                        <div class="book-sales-buy-woo">
+                                            <?php 
+                                            if ( function_exists( 'woocommerce_template_loop_add_to_cart' ) ) {
+                                                woocommerce_template_loop_add_to_cart();
+                                            } else {
+                                                ?>
+                                                <button class="book-sales-order-btn" data-book-id="<?php the_ID(); ?>" data-book-price="<?php echo esc_attr( $price ); ?>" data-book-title="<?php the_title_attribute(); ?>">
+                                                    <span class="material-symbols-outlined">shopping_cart</span>
+                                                    <?php _e( 'Add to Cart', 'hidayah' ); ?>
+                                                </button>
+                                                <?php
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -205,7 +211,7 @@ $book_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">category</span>
-                            <?php _e( 'বইয়ের ধরণ', 'hidayah' ); ?>
+                            <?php _e( 'By Genre', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php
@@ -214,7 +220,7 @@ $book_query = new WP_Query( $args );
                                 <li>
                                     <a href="<?php echo get_term_link($genre); ?>">
                                         <span><?php echo esc_html($genre->name); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number($genre->count); ?></span>
+                                        <span class="filter-count"><?php echo $genre->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -225,7 +231,7 @@ $book_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">person</span>
-                            <?php _e( 'লেখক অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Author', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php
@@ -234,7 +240,7 @@ $book_query = new WP_Query( $args );
                                 <li>
                                     <a href="<?php echo get_term_link($author); ?>">
                                         <span><?php echo esc_html($author->name); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number($author->count); ?></span>
+                                        <span class="filter-count"><?php echo $author->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>

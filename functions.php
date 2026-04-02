@@ -26,7 +26,10 @@ require_once HIDAYAH_DIR . '/inc/taxonomies.php';
 require_once HIDAYAH_DIR . '/inc/widgets.php';
 require_once HIDAYAH_DIR . '/inc/shortcodes.php';
 require_once HIDAYAH_DIR . '/inc/helpers.php';
+require_once HIDAYAH_DIR . '/inc/open-graph.php';
+require_once HIDAYAH_DIR . '/inc/seo.php';
 require_once HIDAYAH_DIR . '/inc/template-loader.php';
+require_once HIDAYAH_DIR . '/inc/woocommerce-integration.php';
 
 // ── Theme Options Panel (Codestar) ────────────────────────
 require_once HIDAYAH_DIR . '/inc/cs-options.php';
@@ -123,3 +126,38 @@ function hidayah_download_gallery_zip() {
 }
 add_action( 'wp_ajax_download_gallery_zip', 'hidayah_download_gallery_zip' );
 add_action( 'wp_ajax_nopriv_download_gallery_zip', 'hidayah_download_gallery_zip' );
+
+// ── Save Book Review Rating ─────────────────
+function hidayah_save_book_rating( $comment_id, $comment_approved ) {
+    if ( isset( $_POST['rating'] ) ) {
+        $rating = absint( $_POST['rating'] );
+        if ( $rating >= 1 && $rating <= 5 ) {
+            add_comment_meta( $comment_id, 'rating', $rating );
+            
+            // Optional: update average rating on post meta
+            $post_id = get_comment($comment_id)->comment_post_ID;
+            $comments = get_comments(array('post_id' => $post_id, 'status' => 'approve'));
+            $total = 0; $count = 0;
+            foreach($comments as $c) {
+                $r = intval(get_comment_meta($c->comment_ID, 'rating', true));
+                if($r >= 1 && $r <= 5) {
+                    $total += $r;
+                    $count++;
+                }
+            }
+            if($count > 0) {
+                update_post_meta($post_id, '_rating', round($total/$count, 1));
+                update_post_meta($post_id, '_rating_count', $count);
+            }
+        }
+    }
+}
+add_action( 'comment_post', 'hidayah_save_book_rating', 10, 2 );
+
+// ── Force Comments Open for Books (Products) ─────────────────
+add_filter( 'comments_open', function( $open, $post_id ) {
+    if ( get_post_type( $post_id ) === 'product' ) {
+        return true;
+    }
+    return $open;
+}, 10, 2 );

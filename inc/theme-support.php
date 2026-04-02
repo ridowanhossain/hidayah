@@ -37,8 +37,8 @@ if ( ! function_exists( 'hidayah_setup' ) ) :
             'flex-width'  => true,
         ) );
 
-        // WooCommerce support (uncomment when WooCommerce is active)
-        // add_theme_support( 'woocommerce' );
+        // WooCommerce support
+        add_theme_support( 'woocommerce' );
 
         // Post formats
         add_theme_support( 'post-formats', array( 'audio', 'video', 'gallery' ) );

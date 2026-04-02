@@ -13,7 +13,18 @@ get_header();
     $expiry_date     = get_post_meta( get_the_ID(), '_notice_expiry_date', true );
     $important_dates = get_post_meta( get_the_ID(), '_notice_important_dates', true ); // Assuming it's a formatted string or array
     $cats            = get_the_terms( get_the_ID(), 'notice_category' );
-    $file_url         = $attachment_id ? wp_get_attachment_url( $attachment_id ) : '';
+
+    $file_url = '';
+    if ( ! empty( $attachment_id ) ) {
+        if ( is_numeric( $attachment_id ) ) {
+            $file_url = wp_get_attachment_url( $attachment_id );
+        } else {
+            $file_url = $attachment_id;
+            // Try to recover ID from URL for title and size
+            $attachment_id = attachment_url_to_postid( $file_url );
+        }
+    }
+
     $file_name        = $attachment_id ? get_the_title( $attachment_id ) : '';
     $attached_path    = $attachment_id ? get_attached_file( $attachment_id ) : '';
     $file_size        = $attached_path && file_exists( $attached_path ) ? size_format( filesize( $attached_path ) ) : '';
@@ -22,8 +33,8 @@ get_header();
 
     <section class="archive-hero">
       <div class="archive-hero-content">
-        <h2><?php _e( 'নোটিশ ও ঘোষণা', 'hidayah' ); ?></h2>
-        <p><?php _e( 'দরবার শরীফের সরকারি নোটিশ ও জরুরি ঘোষণা।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Notices & Announcements', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Official notices and urgent announcements.', 'hidayah' ); ?></p>
       </div>
     </section>
 
@@ -31,9 +42,9 @@ get_header();
       <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-          <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+          <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
           <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-          <a href="<?php echo get_post_type_archive_link( 'notice' ); ?>"><?php _e( 'নোটিশ ও ঘোষণা', 'hidayah' ); ?></a>
+          <a href="<?php echo get_post_type_archive_link( 'notice' ); ?>"><?php _e( 'Notices', 'hidayah' ); ?></a>
           <?php if ( ! empty( $cats ) ) : ?>
               <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
               <a href="<?php echo get_term_link( $cats[0] ); ?>"><?php echo esc_html( $cats[0]->name ); ?></a>
@@ -47,16 +58,16 @@ get_header();
           <div class="archive-main">
             <div class="col-inner">
               <!-- Notice Header -->
-              <div class="notice-single-header">
+              <div class="notice-single-header" itemscope itemtype="https://schema.org/SpecialAnnouncement">
                 <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap">
                   <span class="notice-urgency-badge <?php echo esc_attr($urgency); ?>">
                     <span class="material-symbols-outlined">
                         <?php echo ($urgency === 'urgent') ? 'emergency' : (($urgency === 'important') ? 'priority_high' : 'info'); ?>
                     </span>
                     <?php 
-                    if ($urgency === 'urgent') _e( 'জরুরি', 'hidayah' );
-                    elseif ($urgency === 'important') _e( 'গুরুত্বপূর্ণ', 'hidayah' );
-                    else _e( 'সাধারণ', 'hidayah' );
+                    if ($urgency === 'urgent') _e( 'Urgent', 'hidayah' );
+                    elseif ($urgency === 'important') _e( 'Important', 'hidayah' );
+                    else _e( 'General', 'hidayah' );
                     ?>
                   </span>
                   <?php if ( ! empty( $cats ) ) : ?>
@@ -65,24 +76,24 @@ get_header();
                   <?php if ( $attachment_id ) : ?>
                       <span class="notice-attach-icon">
                         <span class="material-symbols-outlined">attach_file</span>
-                        <?php _e( 'সংযুক্তি', 'hidayah' ); ?>
+                        <?php _e( 'Attachment', 'hidayah' ); ?>
                       </span>
                   <?php endif; ?>
                 </div>
-                <h1 class="notice-single-title"><?php the_title(); ?></h1>
+                <h1 class="notice-single-title" itemprop="name"><?php the_title(); ?></h1>
                 <div class="notice-single-meta">
                   <span>
                     <span class="material-symbols-outlined">calendar_month</span>
-                    <?php printf( __( 'প্রকাশ: %s', 'hidayah' ), get_the_date() ); ?>
+                    <?php printf( __( 'Published: %s', 'hidayah' ), get_the_date() ); ?>
                   </span>
                   <span>
                     <span class="material-symbols-outlined">update</span>
-                    <?php printf( __( 'আপডেট: %s', 'hidayah' ), get_the_modified_date() ); ?>
+                    <?php printf( __( 'Updated: %s', 'hidayah' ), get_the_modified_date() ); ?>
                   </span>
                   <?php if ( $expiry_date ) : ?>
                   <span>
                     <span class="material-symbols-outlined">event_available</span>
-                    <?php printf( __( 'মেয়াদ: %s পর্যন্ত', 'hidayah' ), esc_html($expiry_date) ); ?>
+                    <?php printf( __( 'Expires: %s', 'hidayah' ), esc_html($expiry_date) ); ?>
                   </span>
                   <?php endif; ?>
                 </div>
@@ -94,9 +105,9 @@ get_header();
                             <?php echo $expired ? 'event_busy' : 'event_available'; ?>
                         </span>
                         <?php if ( $expired ) : ?>
-                            <strong><?php _e( 'এই নোটিশের মেয়াদ শেষ হয়েছে।', 'hidayah' ); ?></strong>
+                            <strong><?php _e( 'This notice has expired.', 'hidayah' ); ?></strong>
                         <?php else : ?>
-                            <strong><?php printf( __( 'মেয়াদ: %s পর্যন্ত', 'hidayah' ), esc_html( $expiry_date ) ); ?></strong>
+                            <strong><?php printf( __( 'Expires: %s', 'hidayah' ), esc_html( $expiry_date ) ); ?></strong>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -107,32 +118,39 @@ get_header();
                 <?php the_content(); ?>
               </div>
 
-              <!-- Important Dates (If applicable) -->
-              <?php if ( $important_dates ) : ?>
-                  <div class="notice-important-dates">
-                    <h3>
-                      <span class="material-symbols-outlined">event_note</span>
-                      <?php _e( 'গুরুত্বপূর্ণ তারিখসমূহ', 'hidayah' ); ?>
-                    </h3>
-                    <div class="jiggasa-references">
-                        <?php echo wp_kses_post($important_dates); ?>
-                    </div>
-                  </div>
-              <?php endif; ?>
+              <!-- Important Dates -->
+              <?php
+              if ( ! empty( $important_dates ) ) :
+                  $dates = explode( "\n", str_replace( "\r", "", $important_dates ) );
+                  $dates = array_filter( array_map( 'trim', $dates ) );
+                  if ( ! empty( $dates ) ) : ?>
+                      <div class="sb-section">
+                          <h3 class="sb-section-title">
+                            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">info</span>
+                            <?php _e( 'Important Information', 'hidayah' ); ?>
+                          </h3>
+                          <ol class="mhd-toc-list">
+                              <?php foreach ( $dates as $date ) : ?>
+                                  <li style="justify-content: flex-start; text-align: left;"><?php echo esc_html( $date ); ?></li>
+                              <?php endforeach; ?>
+                          </ol>
+                      </div>
+                  <?php endif;
+              endif; ?>
 
               <!-- Attachments -->
               <?php if ( $attachment_id ) : ?>
                   <div class="notice-attachments">
                     <h3>
                       <span class="material-symbols-outlined">attach_file</span>
-                      <?php _e( 'সংযুক্তিসমূহ', 'hidayah' ); ?>
+                      <?php _e( 'Attachments', 'hidayah' ); ?>
                     </h3>
                     <div class="notice-attach-list">
                       <a class="notice-attach-item" href="<?php echo esc_url($file_url); ?>" download>
                         <span class="material-symbols-outlined notice-attach-icon-lg">picture_as_pdf</span>
                         <div class="notice-attach-info">
                           <strong><?php echo esc_html($file_name); ?></strong>
-                          <span><?php echo $file_ext; ?> · <?php echo hidayah_en_to_bn_number($file_size); ?></span>
+                          <span><?php echo $file_ext; ?> · <?php echo $file_size; ?></span>
                         </div>
                         <span class="material-symbols-outlined">download</span>
                       </a>
@@ -157,7 +175,7 @@ get_header();
                     <a class="single-audio-nav-btn single-audio-nav-prev" href="<?php echo get_permalink( $prev_post->ID ); ?>">
                       <span class="material-symbols-outlined">arrow_back</span>
                       <div class="single-audio-nav-text">
-                        <span class="nav-label"><?php _e( 'পূর্ববর্তী নোটিশ', 'hidayah' ); ?></span>
+                        <span class="nav-label"><?php _e( 'Previous Notice', 'hidayah' ); ?></span>
                         <span class="nav-title-sm"><?php echo get_the_title( $prev_post->ID ); ?></span>
                       </div>
                     </a>
@@ -168,7 +186,7 @@ get_header();
                 if ( ! empty( $next_post ) ) : ?>
                     <a class="single-audio-nav-btn single-audio-nav-next" href="<?php echo get_permalink( $next_post->ID ); ?>">
                       <div class="single-audio-nav-text">
-                        <span class="nav-label"><?php _e( 'পরবর্তী নোটিশ', 'hidayah' ); ?></span>
+                        <span class="nav-label"><?php _e( 'Next Notice', 'hidayah' ); ?></span>
                         <span class="nav-title-sm"><?php echo get_the_title( $next_post->ID ); ?></span>
                       </div>
                       <span class="material-symbols-outlined">arrow_forward</span>
@@ -179,7 +197,7 @@ get_header();
               <!-- Related Notices -->
               <?php if ( ! empty( $cats ) ) : ?>
               <div>
-                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 14px"><?php _e( 'সম্পর্কিত নোটিশ', 'hidayah' ); ?></h3>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 14px"><?php _e( 'Related Notices', 'hidayah' ); ?></h3>
                 <div class="notice-list" style="gap: 12px">
                   <?php
                   $related = new WP_Query( array(
@@ -204,9 +222,9 @@ get_header();
                                 <?php echo ($rel_urgency === 'urgent') ? 'emergency' : (($rel_urgency === 'important') ? 'priority_high' : 'info'); ?>
                             </span>
                             <?php 
-                            if ($rel_urgency === 'urgent') _e( 'জরুরি', 'hidayah' );
-                            elseif ($rel_urgency === 'important') _e( 'গুরুত্বপূর্ণ', 'hidayah' );
-                            else _e( 'সাধারণ', 'hidayah' );
+                            if ($rel_urgency === 'urgent') _e( 'Urgent', 'hidayah' );
+                            elseif ($rel_urgency === 'important') _e( 'Important', 'hidayah' );
+                            else _e( 'General', 'hidayah' );
                             ?>
                           </span>
                         </div>
@@ -214,7 +232,7 @@ get_header();
                         <div class="notice-card-footer">
                           <span class="notice-date"><?php echo get_the_date(); ?></span>
                           <a class="notice-read-link" href="<?php the_permalink(); ?>">
-                            <?php _e( 'বিস্তারিত', 'hidayah' ); ?>
+                            <?php _e( 'Details', 'hidayah' ); ?>
                             <span class="material-symbols-outlined">arrow_forward</span>
                           </a>
                         </div>
@@ -225,26 +243,7 @@ get_header();
               <?php endif; ?>
 
               <!-- Share Buttons -->
-              <div class="single-audio-share-wrap mb-4">
-                <h3 class="section-heading-sm">
-                  <span class="material-symbols-outlined">share</span>
-                  <?php _e( 'শেয়ার করুন', 'hidayah' ); ?>
-                </h3>
-                <div class="main-share-buttons">
-                  <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>" target="_blank">
-                    <span class="material-symbols-outlined">thumb_up</span>
-                    Facebook
-                  </a>
-                  <a class="share-btn whatsapp" href="https://api.whatsapp.com/send?text=<?php the_permalink(); ?>" target="_blank">
-                    <span class="material-symbols-outlined">chat</span>
-                    WhatsApp
-                  </a>
-                  <button class="share-btn copy-link" onclick="navigator.clipboard.writeText(window.location.href); alert('<?php _e( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>');">
-                    <span class="material-symbols-outlined">link</span>
-                    <?php _e( 'লিঙ্ক কপি', 'hidayah' ); ?>
-                  </button>
-                </div>
-              </div>
+              <?php get_template_part( 'template-parts/content/share-section' ); ?>
 
               <!-- Comments -->
               <?php
@@ -262,20 +261,20 @@ get_header();
               <div class="sidebar-widget">
                 <h4 class="sidebar-widget-title">
                   <span class="material-symbols-outlined">info</span>
-                  <?php _e( 'নোটিশের তথ্য', 'hidayah' ); ?>
+                  <?php _e( 'Notice Information', 'hidayah' ); ?>
                 </h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">
                   <li style="display: flex; gap: 10px; font-size: 13px">
                     <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">calendar_month</span>
                     <div>
-                      <strong style="display: block"><?php _e( 'প্রকাশ তারিখ', 'hidayah' ); ?></strong>
+                      <strong style="display: block"><?php _e( 'Publish Date', 'hidayah' ); ?></strong>
                       <span style="color: var(--text-light)"><?php echo get_the_date(); ?></span>
                     </div>
                   </li>
                   <li style="display: flex; gap: 10px; font-size: 13px">
                     <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">update</span>
                     <div>
-                      <strong style="display: block"><?php _e( 'সর্বশেষ আপডেট', 'hidayah' ); ?></strong>
+                      <strong style="display: block"><?php _e( 'Last Updated', 'hidayah' ); ?></strong>
                       <span style="color: var(--text-light)"><?php echo get_the_modified_date(); ?></span>
                     </div>
                   </li>
@@ -283,7 +282,7 @@ get_header();
                   <li style="display: flex; gap: 10px; font-size: 13px">
                     <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">category</span>
                     <div>
-                      <strong style="display: block"><?php _e( 'ক্যাটাগরি', 'hidayah' ); ?></strong>
+                      <strong style="display: block"><?php _e( 'Category', 'hidayah' ); ?></strong>
                       <span style="color: var(--text-light)"><?php echo esc_html($cats[0]->name); ?></span>
                     </div>
                   </li>
@@ -292,7 +291,7 @@ get_header();
                   <li style="display: flex; gap: 10px; font-size: 13px">
                     <span class="material-symbols-outlined" style="font-size: 17px; color: #ef4444; flex-shrink: 0">event_available</span>
                     <div>
-                      <strong style="display: block"><?php _e( 'মেয়াদ', 'hidayah' ); ?></strong>
+                      <strong style="display: block"><?php _e( 'Expires', 'hidayah' ); ?></strong>
                       <span style="color: #ef4444; font-weight: 600"><?php echo esc_html($expiry_date); ?></span>
                     </div>
                   </li>
@@ -305,7 +304,7 @@ get_header();
                   <div class="sidebar-widget">
                     <h4 class="sidebar-widget-title">
                       <span class="material-symbols-outlined">download</span>
-                      <?php _e( 'সংযুক্তি ডাউনলোড', 'hidayah' ); ?>
+                      <?php _e( 'Download Attachment', 'hidayah' ); ?>
                     </h4>
                     <ul class="notice-download-list">
                       <li>
@@ -313,7 +312,7 @@ get_header();
                           <span class="material-symbols-outlined">picture_as_pdf</span>
                           <div>
                             <span><?php echo esc_html($file_name); ?></span>
-                            <small><?php echo $file_ext; ?> · <?php echo hidayah_en_to_bn_number($file_size); ?></small>
+                            <small><?php echo $file_ext; ?> · <?php echo $file_size; ?></small>
                           </div>
                           <span class="material-symbols-outlined">download</span>
                         </a>
@@ -326,7 +325,7 @@ get_header();
               <div class="sidebar-widget">
                 <h4 class="sidebar-widget-title">
                   <span class="material-symbols-outlined">campaign</span>
-                  <?php _e( 'সাম্প্রতিক নোটিশ', 'hidayah' ); ?>
+                  <?php _e( 'Recent Notices', 'hidayah' ); ?>
                 </h4>
                 <ul class="sidebar-recent-list">
                   <?php
@@ -355,7 +354,7 @@ get_header();
               <div class="sidebar-widget">
                 <button class="btn" onclick="window.print()" style="width: 100%; display: flex; align-items: center; gap: 8px; justify-content: center">
                   <span class="material-symbols-outlined">print</span>
-                  <?php _e( 'প্রিন্ট করুন', 'hidayah' ); ?>
+                  <?php _e( 'Print Now', 'hidayah' ); ?>
                 </button>
               </div>
 
@@ -363,7 +362,7 @@ get_header();
               <div class="sidebar-widget" style="text-align: center">
                 <a class="probondho-read-link" href="<?php echo get_post_type_archive_link( 'notice' ); ?>">
                   <span class="material-symbols-outlined">arrow_back</span>
-                  <?php _e( 'সব নোটিশ দেখুন', 'hidayah' ); ?>
+                  <?php _e( 'View All Notices', 'hidayah' ); ?>
                 </a>
               </div>
             </div>

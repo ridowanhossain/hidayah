@@ -9,7 +9,7 @@
 add_filter( 'template_include', function( $template ) {
     
     // If it's already a full path to a file that exists, we're good.
-    // But WordPress just found index.php or front-page.php in the root.
+    // But WordPress just found index.php in the root.
     // We want to check if a more specific template exists in /templates/
     
     $file_name = basename( $template );
@@ -20,6 +20,15 @@ add_filter( 'template_include', function( $template ) {
     // 1. Check for specific post type templates if we are on a single or archive
     if ( is_single() ) {
         $post_type = get_post_type();
+        
+        // 1.1 WooCommerce Specific Template in /woocommerce/ folder
+        if ( $post_type === 'product' ) {
+            $woo_template = HIDAYAH_DIR . '/woocommerce/single-product.php';
+            if ( file_exists( $woo_template ) ) {
+                return $woo_template;
+            }
+        }
+
         $specific = $templates_dir . "single-{$post_type}.php";
         if ( file_exists( $specific ) ) {
             return $specific;
@@ -49,7 +58,7 @@ add_filter( 'template_include', function( $template ) {
         }
     }
 
-    if ( is_page() ) {
+    if ( is_page() && ! is_front_page() ) {
         $slug = get_post_field( 'post_name', get_queried_object_id() );
         $specific = $templates_dir . "page-{$slug}.php";
         if ( file_exists( $specific ) ) {

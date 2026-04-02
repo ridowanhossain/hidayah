@@ -64,20 +64,20 @@ function hidayah_filter_video_callback() {
             hidayah_render_video_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'কোনো ভিডিও পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'No videos were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $query );
     echo '</div>';
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $query->found_posts ),
+        'count' => $query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_video', 'hidayah_filter_video_callback' );
@@ -102,17 +102,17 @@ if ( ! function_exists( 'hidayah_render_video_card' ) ) {
         ?>
         <article class="video-card" data-video-id="<?php echo esc_attr( $yt_id ); ?>">
             <a class="video-card-thumb-link" href="<?php the_permalink(); ?>">
-                <div class="video-thumb-wrapper">
-                    <?php if ( $thumb_url ) : ?>
-                        <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
-                    <?php endif; ?>
-                    <div class="video-play-overlay">
-                        <span class="material-symbols-outlined">play_circle</span>
-                    </div>
-                    <?php if ( $duration ) : ?>
-                        <span class="video-duration-badge"><?php echo esc_html( $duration ); ?></span>
-                    <?php endif; ?>
-                </div>
+                        <div class="video-thumb-wrapper video-thumb" data-video-id="<?php echo esc_attr( $yt_id ); ?>">
+                            <?php if ( $thumb_url ) : ?>
+                                <img src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" />
+                            <?php endif; ?>
+                            <div class="video-play-overlay">
+                                <span class="material-symbols-outlined">play_circle</span>
+                            </div>
+                            <?php if ( $duration ) : ?>
+                                <span class="video-duration-badge"><?php echo esc_html( $duration ); ?></span>
+                            <?php endif; ?>
+                        </div>
             </a>
             <div class="video-card-content">
                 <?php if ( ! empty( $topics ) ) : ?>
@@ -139,7 +139,7 @@ if ( ! function_exists( 'hidayah_render_video_card' ) ) {
                     <?php if ( $views ) : ?>
                         <span>
                             <span class="material-symbols-outlined">visibility</span>
-                            <?php echo hidayah_en_to_bn_number( number_format_i18n( $views ) ); ?>
+                            <?php echo number_format_i18n( $views ); ?>
                         </span>
                     <?php endif; ?>
                 </div>

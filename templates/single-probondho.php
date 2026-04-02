@@ -11,15 +11,15 @@ while ( have_posts() ) : the_post();
     $views = get_post_meta( get_the_ID(), '_post_views_count', true ) ?: 0;
     update_post_meta( get_the_ID(), '_post_views_count', $views + 1 );
 
-    $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '৫';
+    $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '5';
     $cats      = get_the_terms( get_the_ID(), 'probondho_cat' );
     $cat       = ! empty( $cats ) ? $cats[0] : null;
 ?>
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'প্রবন্ধ ও লেখনি', 'hidayah' ); ?></h2>
-        <p><?php _e( 'ইসলামের বিভিন্ন বিষয়ে হক্কানী আলেমদের লেখা প্রবন্ধ ও বিশ্লেষণধর্মী রচনা।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Articles & Writings', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Articles and analytical compositions written by Haqqani scholars on various Islamic topics.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -27,9 +27,9 @@ while ( have_posts() ) : the_post();
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <a href="<?php echo get_post_type_archive_link( 'probondho' ); ?>"><?php _e( 'প্রবন্ধ', 'hidayah' ); ?></a>
+            <a href="<?php echo get_post_type_archive_link( 'probondho' ); ?>"><?php _e( 'Articles', 'hidayah' ); ?></a>
             <?php if ( $cat ) : ?>
                 <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
                 <a href="<?php echo get_term_link( $cat ); ?>"><?php echo esc_html( $cat->name ); ?></a>
@@ -46,13 +46,13 @@ while ( have_posts() ) : the_post();
         <div class="archive-layout">
             <!-- LEFT -->
             <div class="archive-main">
-                <div class="col-inner">
+                <div class="col-inner" itemscope itemtype="https://schema.org/Article">
                     <!-- Article Title -->
                     <div class="probondho-article-header">
                         <?php if ( $cat ) : ?>
                             <span class="probondho-cat-badge"><?php echo esc_html( $cat->name ); ?></span>
                         <?php endif; ?>
-                        <h1 class="probondho-article-title"><?php the_title(); ?></h1>
+                        <h1 class="probondho-article-title" itemprop="headline"><?php the_title(); ?></h1>
                         
                         <!-- Author Strip -->
                         <div class="probondho-author-strip">
@@ -68,11 +68,11 @@ while ( have_posts() ) : the_post();
                                     </span>
                                     <span>
                                         <span class="material-symbols-outlined">schedule</span>
-                                        <?php printf( __( '%s মিনিটে পড়ুন', 'hidayah' ), hidayah_en_to_bn_number($read_time) ); ?>
+                                        <?php printf( __( '%s Min Read', 'hidayah' ), $read_time ); ?>
                                     </span>
                                     <span>
                                         <span class="material-symbols-outlined">visibility</span>
-                                        <?php printf( __( '%s পাঠক', 'hidayah' ), hidayah_en_to_bn_number(number_format_i18n($views)) ); ?>
+                                        <?php printf( __( '%s Readers', 'hidayah' ), number_format_i18n($views) ); ?>
                                     </span>
                                 </div>
                             </div>
@@ -80,17 +80,17 @@ while ( have_posts() ) : the_post();
 
                         <!-- Font Size Control -->
                         <div class="probondho-font-ctrl">
-                            <span style="font-size: 12px; color: var(--text-light)"><?php _e( 'ফন্ট সাইজ:', 'hidayah' ); ?></span>
-                            <button class="probondho-font-btn" data-size="small"><?php _e( 'ছোট', 'hidayah' ); ?></button>
-                            <button class="probondho-font-btn active" data-size="medium"><?php _e( 'মাঝারি', 'hidayah' ); ?></button>
-                            <button class="probondho-font-btn" data-size="large"><?php _e( 'বড়', 'hidayah' ); ?></button>
+                            <span style="font-size: 12px; color: var(--text-light)"><?php _e( 'Font Size:', 'hidayah' ); ?></span>
+                            <button class="probondho-font-btn" data-size="small"><?php _e( 'Small', 'hidayah' ); ?></button>
+                            <button class="probondho-font-btn active" data-size="medium"><?php _e( 'Medium', 'hidayah' ); ?></button>
+                            <button class="probondho-font-btn" data-size="large"><?php _e( 'Large', 'hidayah' ); ?></button>
                         </div>
                     </div>
 
                     <!-- Featured Image -->
                     <?php if ( has_post_thumbnail() ) : ?>
                         <figure class="probondho-featured-img-wrap">
-                            <?php the_post_thumbnail( 'large' ); ?>
+                            <?php the_post_thumbnail( 'full' ); ?>
                             <?php if ( get_the_post_thumbnail_caption() ) : ?>
                                 <figcaption><?php the_post_thumbnail_caption(); ?></figcaption>
                             <?php endif; ?>
@@ -107,7 +107,7 @@ while ( have_posts() ) : the_post();
                     $tags = get_the_terms( get_the_ID(), 'post_tag' );
                     if ( ! empty( $tags ) ) : ?>
                         <div class="sb-section">
-                            <h3 class="sb-section-title"><?php _e( 'ট্যাগসমূহ', 'hidayah' ); ?></h3>
+                            <h3 class="sb-section-title"><?php _e( 'Tags', 'hidayah' ); ?></h3>
                             <div class="single-audio-tags">
                                 <?php foreach ($tags as $tag) : ?>
                                     <a class="single-audio-tag" href="<?php echo get_term_link($tag); ?>"><?php echo esc_html($tag->name); ?></a>
@@ -115,10 +115,28 @@ while ( have_posts() ) : the_post();
                             </div>
                         </div>
                     <?php endif; ?>
+                    
+                    <!-- References -->
+                    <?php
+                    $references_raw = get_post_meta( get_the_ID(), '_probondho_references', true );
+                    if ( ! empty( $references_raw ) ) :
+                        $refs = explode( "\n", str_replace( "\r", "", $references_raw ) );
+                        $refs = array_filter( array_map( 'trim', $refs ) );
+                        if ( ! empty( $refs ) ) : ?>
+                            <div class="sb-section">
+                                <h3 class="sb-section-title"><?php _e( 'References', 'hidayah' ); ?></h3>
+                                <ol class="mhd-toc-list">
+                                    <?php foreach ( $refs as $ref ) : ?>
+                                        <li style="justify-content: flex-start; text-align: left;"><?php echo esc_html( $ref ); ?></li>
+                                    <?php endforeach; ?>
+                                </ol>
+                            </div>
+                        <?php endif;
+                    endif; ?>
 
                     <!-- Author Bio -->
                     <div class="sb-section sb-author-card" style="border: 1px solid rgba(6, 95, 70, 0.1); border-radius: 14px; padding: 20px">
-                        <h3 class="sb-section-title"><?php _e( 'লেখক পরিচিতি', 'hidayah' ); ?></h3>
+                        <h3 class="sb-section-title"><?php _e( 'About the Author', 'hidayah' ); ?></h3>
                         <div class="sb-author-inner">
                             <div class="sb-author-avatar">
                                 <?php echo get_avatar( get_the_author_meta( 'ID' ), 100 ); ?>
@@ -126,7 +144,7 @@ while ( have_posts() ) : the_post();
                             <div class="sb-author-meta">
                                 <h5><?php the_author(); ?></h5>
                                 <p><?php the_author_meta( 'description' ); ?></p>
-                                <a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>" style="font-size: 13px; color: var(--primary-green-dark); font-weight: 600"><?php _e( 'এই লেখকের সকল প্রবন্ধ →', 'hidayah' ); ?></a>
+                                <a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>" style="font-size: 13px; color: var(--primary-green-dark); font-weight: 600"><?php _e( 'All articles by this author →', 'hidayah' ); ?></a>
                             </div>
                         </div>
                     </div>
@@ -139,7 +157,7 @@ while ( have_posts() ) : the_post();
                             <a class="single-audio-nav-btn single-audio-nav-prev" href="<?php echo get_permalink( $prev_post->ID ); ?>">
                                 <span class="material-symbols-outlined">arrow_back</span>
                                 <div class="single-audio-nav-text">
-                                    <span class="nav-label"><?php _e( 'পূর্ববর্তী প্রবন্ধ', 'hidayah' ); ?></span>
+                                    <span class="nav-label"><?php _e( 'Previous Article', 'hidayah' ); ?></span>
                                     <span class="nav-title-sm"><?php echo wp_trim_words( get_the_title( $prev_post->ID ), 5 ); ?>...</span>
                                 </div>
                             </a>
@@ -150,7 +168,7 @@ while ( have_posts() ) : the_post();
                         if ( ! empty( $next_post ) ) : ?>
                             <a class="single-audio-nav-btn single-audio-nav-next" href="<?php echo get_permalink( $next_post->ID ); ?>">
                                 <div class="single-audio-nav-text">
-                                    <span class="nav-label"><?php _e( 'পরবর্তী প্রবন্ধ', 'hidayah' ); ?></span>
+                                    <span class="nav-label"><?php _e( 'Next Article', 'hidayah' ); ?></span>
                                     <span class="nav-title-sm"><?php echo wp_trim_words( get_the_title( $next_post->ID ), 5 ); ?>...</span>
                                 </div>
                                 <span class="material-symbols-outlined">arrow_forward</span>
@@ -160,7 +178,7 @@ while ( have_posts() ) : the_post();
 
                     <!-- Related Articles -->
                     <div class="sb-section">
-                        <h3 class="sb-section-title"><?php _e( 'সম্পর্কিত প্রবন্ধ', 'hidayah' ); ?></h3>
+                        <h3 class="sb-section-title"><?php _e( 'Related Articles', 'hidayah' ); ?></h3>
                         <div class="probondho-related-grid">
                             <?php
                             $related = new WP_Query( array(
@@ -185,7 +203,7 @@ while ( have_posts() ) : the_post();
                                         <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                                         <p><?php echo wp_trim_words( get_the_excerpt(), 15 ); ?></p>
                                         <a class="probondho-read-more" href="<?php the_permalink(); ?>">
-                                            <?php _e( 'পড়ুন', 'hidayah' ); ?>
+                                            <?php _e( 'Read More', 'hidayah' ); ?>
                                             <span class="material-symbols-outlined">arrow_forward</span>
                                         </a>
                                     </div>
@@ -195,26 +213,7 @@ while ( have_posts() ) : the_post();
                     </div>
 
                     <!-- Share -->
-                    <div class="single-audio-share-wrap mb-4">
-                        <h3 class="section-heading-sm">
-                            <span class="material-symbols-outlined">share</span>
-                            <?php _e( 'শেয়ার করুন', 'hidayah' ); ?>
-                        </h3>
-                        <div class="main-share-buttons">
-                            <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>" target="_blank">
-                                <span class="material-symbols-outlined">thumb_up</span>
-                                Facebook
-                            </a>
-                            <a class="share-btn whatsapp" href="https://api.whatsapp.com/send?text=<?php the_permalink(); ?>" target="_blank">
-                                <span class="material-symbols-outlined">chat</span>
-                                WhatsApp
-                            </a>
-                            <button class="share-btn copy-link" onclick="navigator.clipboard.writeText(window.location.href); alert('<?php _e( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>');">
-                                <span class="material-symbols-outlined">link</span>
-                                <?php _e( 'লিঙ্ক কপি', 'hidayah' ); ?>
-                            </button>
-                        </div>
-                    </div>
+                    <?php get_template_part( 'template-parts/content/share-section' ); ?>
 
                     <!-- Comments -->
                     <?php
@@ -232,7 +231,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget sb-author-card">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">person</span>
-                            <?php _e( 'লেখকের তথ্য', 'hidayah' ); ?>
+                            <?php _e( 'Author Info', 'hidayah' ); ?>
                         </h4>
                         <div class="sb-author-inner">
                             <div class="sb-author-avatar">
@@ -243,7 +242,7 @@ while ( have_posts() ) : the_post();
                                 <?php
                                 $author_posts_count = count_user_posts( get_the_author_meta( 'ID' ), 'probondho' );
                                 ?>
-                                <p><?php printf( __( 'ইসলামী লেখক। মোট %sটি প্রবন্ধ প্রকাশিত।', 'hidayah' ), hidayah_en_to_bn_number($author_posts_count) ); ?></p>
+                                <p><?php printf( __( 'Islamic Author. Total %s articles published.', 'hidayah' ), $author_posts_count ); ?></p>
                             </div>
                         </div>
                     </div>
@@ -252,7 +251,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">list</span>
-                            <?php _e( 'সূচীপত্র', 'hidayah' ); ?>
+                            <?php _e( 'Table of Contents', 'hidayah' ); ?>
                         </h4>
                         <div id="probondhoTOC" class="sb-toc-list" style="display: block">
                             <!-- TOC items will be injected by JS or hardcoded if meta exists -->
@@ -263,7 +262,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">article</span>
-                            <?php _e( 'সম্পর্কিত প্রবন্ধ', 'hidayah' ); ?>
+                            <?php _e( 'Related Articles', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-recent-list">
                             <?php
@@ -280,14 +279,14 @@ while ( have_posts() ) : the_post();
                                 ) : array(),
                             ) );
                             while ( $related_sb->have_posts() ) : $related_sb->the_post();
-                                $rb_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '৫';
+                                $rb_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '5';
                             ?>
                                 <li>
                                     <a href="<?php the_permalink(); ?>">
                                         <span class="material-symbols-outlined recent-icon">article</span>
                                         <div class="recent-info">
                                             <h5><?php the_title(); ?></h5>
-                                            <span><?php echo ($cat ? esc_html($cat->name) : 'সাধারণ') . ' • ' . h_bn_num($rb_time) . ' ' . __( 'মিনিট', 'hidayah' ); ?></span>
+                                            <span><?php echo ($cat ? esc_html($cat->name) : 'General') . ' • ' . $rb_time . ' ' . __( 'Min', 'hidayah' ); ?></span>
                                         </div>
                                     </a>
                                 </li>
@@ -299,7 +298,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <button class="sb-submit-btn" onclick="window.print()" style="width: 100%; justify-content: center">
                             <span class="material-symbols-outlined">print</span>
-                            <?php _e( 'প্রিন্ট করুন', 'hidayah' ); ?>
+                            <?php _e( 'Print', 'hidayah' ); ?>
                         </button>
                     </div>
 
@@ -307,7 +306,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <a class="sb-all-books-cta" href="<?php echo esc_url( home_url( '/submit-article' ) ); ?>">
                             <span class="material-symbols-outlined">edit_note</span>
-                            <?php _e( 'লেখা পাঠান', 'hidayah' ); ?>
+                            <?php _e( 'Submit Article', 'hidayah' ); ?>
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </a>
                     </div>
@@ -316,7 +315,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <a class="sb-all-books-cta" href="<?php echo get_post_type_archive_link( 'probondho' ); ?>" style="background: var(--gold-accent)">
                             <span class="material-symbols-outlined">article</span>
-                            <?php _e( 'সব প্রবন্ধ দেখুন', 'hidayah' ); ?>
+                            <?php _e( 'View All Articles', 'hidayah' ); ?>
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </a>
                     </div>
@@ -327,5 +326,62 @@ while ( have_posts() ) : the_post();
 </section>
 
 <?php endwhile; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const content = document.getElementById('articleBody');
+    const toc = document.getElementById('probondhoTOC');
+    if (!content || !toc) return;
+
+    const headings = content.querySelectorAll('h2');
+    if (headings.length === 0) {
+        const widget = toc.closest('.sidebar-widget');
+        if (widget) widget.style.display = 'none';
+        return;
+    }
+
+    const ol = document.createElement('ol');
+    ol.className = 'sb-toc-listm'; // Using a helper class or style
+    ol.style.listStyle = 'none';
+    ol.style.padding = '0';
+    ol.style.margin = '0';
+
+    headings.forEach((heading, index) => {
+        const id = 'heading-' + index;
+        heading.setAttribute('id', id);
+
+        const li = document.createElement('li');
+        li.style.marginBottom = '10px';
+        li.style.paddingBottom = '10px';
+        li.style.borderBottom = '1px dashed rgba(6, 95, 70, 0.1)';
+
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = heading.textContent;
+        a.style.color = 'var(--primary-green-dark)';
+        a.style.textDecoration = 'none';
+        a.style.fontSize = '14px';
+        a.style.fontWeight = '500';
+        a.style.display = 'block';
+        
+        li.appendChild(a);
+        ol.appendChild(li);
+    });
+
+    toc.innerHTML = '';
+    toc.appendChild(ol);
+
+    // Reading Progress Bar
+    window.onscroll = function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        const progressFill = document.getElementById("readingProgressFill");
+        if (progressFill) {
+            progressFill.style.width = scrolled + "%";
+        }
+    };
+});
+</script>
 
 <?php get_footer(); ?>

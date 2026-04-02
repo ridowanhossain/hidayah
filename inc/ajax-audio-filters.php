@@ -66,7 +66,7 @@ function hidayah_filter_audio_callback() {
             hidayah_render_audio_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো অডিও পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no audio was found.', 'hidayah' ) . '</p></div>';
     endif;
 
     // Always append sync data even if no posts found
@@ -74,14 +74,14 @@ function hidayah_filter_audio_callback() {
     hidayah_pagination( $audio_query );
     echo '</div>';
     
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $audio_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $audio_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $audio_query->found_posts )
+        'count' => $audio_query->found_posts
     ) );
 }
 add_action( 'wp_ajax_filter_audio', 'hidayah_filter_audio_callback' );
@@ -120,7 +120,7 @@ if ( ! function_exists( 'hidayah_render_audio_card' ) ) {
                         <?php if ($is_featured) : ?>
                             <div class="audio-badge" style="padding: 4px 10px; font-size: 10px; gap: 4px; background: rgba(6, 95, 70, 0.1); color: var(--primary-green-dark); border-radius: 4px;">
                                 <span class="material-symbols-outlined" style="font-size: 12px;">star</span>
-                                <?php _e( 'বিশেষ বয়ান', 'hidayah' ); ?>
+                                <?php _e( 'Featured Lecture', 'hidayah' ); ?>
                             </div>
                         <?php elseif ( ! empty( $topics ) ) : ?>
                             <div class="audio-badge" style="padding: 4px 10px; font-size: 10px; gap: 4px; background: rgba(6, 95, 70, 0.1); color: var(--primary-green-dark); border-radius: 4px;">
@@ -142,12 +142,12 @@ if ( ! function_exists( 'hidayah_render_audio_card' ) ) {
                 <?php if ($duration) : ?>
                 <span class="audio-card-duration">
                     <span class="material-symbols-outlined">schedule</span>
-                    <?php echo hidayah_en_to_bn_number($duration); ?> <?php _e( 'মিনিট', 'hidayah' ); ?>
+                    <?php echo $duration; ?> <?php _e( 'minutes', 'hidayah' ); ?>
                 </span>
                 <?php endif; ?>
                 <span class="audio-card-duration">
                     <span class="material-symbols-outlined">headphones</span>
-                    <?php echo hidayah_en_to_bn_number(number_format_i18n($views)); ?>
+                    <?php echo number_format_i18n($views); ?>
                 </span>
                 <span class="audio-card-duration">
                     <span class="material-symbols-outlined">calendar_today</span>
@@ -155,7 +155,7 @@ if ( ! function_exists( 'hidayah_render_audio_card' ) ) {
                 </span>
             </div>
             <div class="player-progress">
-                <button class="player-btn player-btn-main sidebar-player-btn-reset" title="<?php _e( 'চালান / থামান', 'hidayah' ); ?>">
+                <button class="player-btn player-btn-main sidebar-player-btn-reset" title="<?php _e( 'Play / Pause', 'hidayah' ); ?>">
                     <span class="material-symbols-outlined">play_arrow</span>
                 </button>
                 <span class="player-time player-current">0:00</span>

@@ -58,11 +58,12 @@ endif;
  */
 if ( ! function_exists( 'hidayah_en_to_bn_number' ) ) :
     function hidayah_en_to_bn_number( $number ) {
-        $en = array( '0','1','2','3','4','5','6','7','8','9' );
-        $bn = array( '০','১','২','৩','৪','৫','৬','৭','৮','৯' );
+        $en = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
+        $bn = array( '০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯' );
         return str_replace( $en, $bn, $number );
     }
 endif;
+
 
 /**
  * Returns the archive/page title for banner headings.
@@ -126,7 +127,7 @@ if ( ! function_exists( 'hidayah_asset' ) ) :
 endif;
 
 
-// ── Short Aliases (used in front-page.php and other templates) ──────────────
+// ── Short Aliases (used in index.php and other templates) ──────────────
 
 /**
  * Short alias for hidayah_opt().
@@ -224,7 +225,6 @@ if ( ! function_exists( 'h_get_video_duration' ) ) :
                             $dur = $h > 0
                                 ? sprintf( '%d:%02d:%02d', $h, $min, $sec )
                                 : sprintf( '%d:%02d', $min, $sec );
-                            $dur = hidayah_en_to_bn_number( $dur );
                             set_transient( $cache_key, $dur, DAY_IN_SECONDS );
                             update_post_meta( $post_id, '_video_duration', $dur );
                             return $dur;
@@ -235,5 +235,53 @@ if ( ! function_exists( 'h_get_video_duration' ) ) :
         }
 
         return '';
+    }
+endif;
+
+/**
+ * Returns the total number of answered questions for a specific uttordata term.
+ *
+ * @param int $uttordata_id The ID of the uttordata taxonomy term.
+ * @return int
+ */
+if ( ! function_exists( 'h_get_uttordata_ans_count' ) ) :
+    function h_get_uttordata_ans_count( $uttordata_id ) {
+        if ( empty( $uttordata_id ) ) return 0;
+        
+        $cache_key = 'uttordata_count_tax_' . $uttordata_id;
+        $cached    = get_transient( $cache_key );
+        
+        if ( false !== $cached ) {
+            return (int) $cached;
+        }
+
+        $args = array(
+            'post_type'      => 'dini_jiggasa',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'tax_query'      => array(
+                array(
+                    'taxonomy' => 'uttordata',
+                    'field'    => 'term_id',
+                    'terms'    => $uttordata_id,
+                ),
+            ),
+            'meta_query'     => array(
+                array(
+                    'key'     => '_jiggasa_status',
+                    'value'   => 'answered',
+                    'compare' => '='
+                )
+            )
+        );
+        
+        $query = new WP_Query( $args );
+        $count = $query->found_posts;
+        
+        // Cache the result for 12 hours
+        set_transient( $cache_key, $count, 12 * HOUR_IN_SECONDS );
+        
+        return $count;
     }
 endif;

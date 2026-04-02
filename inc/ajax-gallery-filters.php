@@ -62,20 +62,20 @@ function hidayah_filter_gallery_callback() {
             hidayah_render_gallery_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো এলবাম পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no albums were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $gal_query );
     echo '</div>';
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $gal_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $gal_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $gal_query->found_posts ),
+        'count' => $gal_query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_gallery', 'hidayah_filter_gallery_callback' );
@@ -96,7 +96,7 @@ if ( ! function_exists( 'hidayah_render_gallery_card' ) ) {
                 <?php endif; ?>
                 <span class="gallery-photo-count">
                     <span class="material-symbols-outlined">photo_camera</span>
-                    <?php echo hidayah_en_to_bn_number( $count ); ?>
+                    <?php echo $count; ?>
                 </span>
                 <div class="gallery-album-hover">
                     <span class="material-symbols-outlined">open_in_full</span>

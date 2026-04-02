@@ -59,21 +59,21 @@ function hidayah_filter_jiggasa_callback() {
             hidayah_render_jiggasa_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো প্রশ্ন পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no questions were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $q_query );
     echo '</div>';
 
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $q_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $q_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $q_query->found_posts ),
+        'count' => $q_query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_jiggasa', 'hidayah_filter_jiggasa_callback' );
@@ -83,16 +83,16 @@ if ( ! function_exists( 'hidayah_render_jiggasa_card' ) ) {
     function hidayah_render_jiggasa_card() {
         $status    = get_post_meta( get_the_ID(), '_jiggasa_status', true ) ?: 'answered';
         $mufti     = get_post_meta( get_the_ID(), '_jiggasa_mufti', true );
-        $asker     = get_post_meta( get_the_ID(), '_jiggasa_asker_name', true ) ?: __( 'আনোনিমাস', 'hidayah' );
+        $asker     = get_post_meta( get_the_ID(), '_jiggasa_asker_name', true ) ?: __( 'Anonymous', 'hidayah' );
         $cat_terms = get_the_terms( get_the_ID(), 'dini_jiggasa_cat' );
-        $cat_name  = ! empty( $cat_terms ) ? $cat_terms[0]->name : __( 'সাধারণ', 'hidayah' );
+        $cat_name  = ! empty( $cat_terms ) ? $cat_terms[0]->name : __( 'General', 'hidayah' );
         ?>
         <article class="jiggasa-card <?php echo esc_attr( $status ); ?>">
             <div class="jiggasa-card-header">
                 <span class="jiggasa-cat-badge"><?php echo esc_html( $cat_name ); ?></span>
                 <span class="jiggasa-status <?php echo esc_attr( $status ); ?>-badge">
                     <span class="material-symbols-outlined"><?php echo $status === 'answered' ? 'check_circle' : 'schedule'; ?></span>
-                    <?php echo $status === 'answered' ? __( 'উত্তরিত', 'hidayah' ) : __( 'অপেক্ষমাণ', 'hidayah' ); ?>
+                    <?php echo $status === 'answered' ? __( 'Answered', 'hidayah' ) : __( 'Pending', 'hidayah' ); ?>
                 </span>
             </div>
             <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
@@ -105,7 +105,7 @@ if ( ! function_exists( 'hidayah_render_jiggasa_card' ) ) {
             </div>
             <?php if ( $status === 'answered' ) : ?>
                 <a class="jiggasa-read-link" href="<?php the_permalink(); ?>">
-                    <?php _e( 'উত্তর পড়ুন', 'hidayah' ); ?>
+                    <?php _e( 'Read Answer', 'hidayah' ); ?>
                     <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
             <?php endif; ?>

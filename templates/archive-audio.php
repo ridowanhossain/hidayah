@@ -30,8 +30,8 @@ $audio_query = new WP_Query( $args );
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'অডিও ওয়াজ ও বয়ান', 'hidayah' ); ?></h2>
-        <p><?php _e( 'হক্বানী আলেমদের ওয়াজ, বয়ান, তিলাওয়াত ও দ্বীনি আলোচনার সম্পূর্ণ অডিও আর্কাইভ। শুনুন, শিখুন এবং আমল করুন।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Audio Wazan & Lectures', 'hidayah' ); ?></h2>
+        <p><?php _e( 'A complete audio archive of lectures, sermons, recitations, and religious discussions by Haqqani scholars. Listen, learn, and implement.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -39,9 +39,9 @@ $audio_query = new WP_Query( $args );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <span class="breadcrumb-current"><?php _e( 'ওয়াজ ও বয়ান', 'hidayah' ); ?></span>
+            <span class="breadcrumb-current"><?php _e( 'Wazan & Lectures', 'hidayah' ); ?></span>
         </nav>
 
         <div class="archive-layout">
@@ -53,21 +53,21 @@ $audio_query = new WP_Query( $args );
                         <div class="archive-search-bar">
                             <form role="search" method="get" id="audioSearchForm" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="audioSearchInput" placeholder="<?php _e( 'অডিও খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
+                                <input class="archive-search-input" id="audioSearchInput" placeholder="<?php _e( 'Search audio...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo esc_attr($s); ?>" />
                                 <input type="hidden" name="post_type" value="audio" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="audioSortSelect">
-                                <option value="newest" <?php selected($orderby, 'newest'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="oldest" <?php selected($orderby, 'oldest'); ?>><?php _e( 'পুরাতন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="popular" <?php selected($orderby, 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                                <option value="newest" <?php selected($orderby, 'newest'); ?>><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="oldest" <?php selected($orderby, 'oldest'); ?>><?php _e( 'Oldest First', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($orderby, 'popular'); ?>><?php _e( 'Popular', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#archiveAudioGrid">
-                                <button class="view-toggle-btn active" data-view="grid" title="গ্রিড ভিউ">
+                                <button class="view-toggle-btn active" data-view="grid" title="<?php esc_attr_e( 'Grid View', 'hidayah' ); ?>">
                                     <span class="material-symbols-outlined">grid_view</span>
                                 </button>
-                                <button class="view-toggle-btn" data-view="list" title="লিস্ট ভিউ">
+                                <button class="view-toggle-btn" data-view="list" title="<?php esc_attr_e( 'List View', 'hidayah' ); ?>">
                                     <span class="material-symbols-outlined">view_list</span>
                                 </button>
                             </div>
@@ -78,18 +78,18 @@ $audio_query = new WP_Query( $args );
                     <div class="archive-filters-toolbar" style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-bottom: 20px;">
                         <div class="archive-count-badge" style="margin-bottom: 0;">
                             <span class="material-symbols-outlined">headphones</span>
-                            <?php printf( __( 'মোট %sটি অডিও', 'hidayah' ), hidayah_en_to_bn_number( $audio_query->found_posts ) ); ?>
+                            <?php printf( __( 'Total %s Audios', 'hidayah' ), $audio_query->found_posts ); ?>
                         </div>
 
                         <div class="archive-taxonomy-filters" style="display: flex; gap: 10px; flex-grow: 1;">
                             <!-- Speaker Filter -->
                             <select class="archive-filter-select" id="audioSpeakerFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; background: #fff; min-width: 160px; outline: none; cursor: pointer;">
-                                <option value=""><?php _e( 'বক্তা নির্বাচন করুন', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'Select Speaker', 'hidayah' ); ?></option>
                                 <?php
                                 $all_speakers = get_terms( array( 'taxonomy' => 'speaker', 'hide_empty' => true ) );
                                 if ( ! empty( $all_speakers ) && ! is_wp_error( $all_speakers ) ) :
                                     foreach ( $all_speakers as $spk ) :
-                                        echo '<option value="' . esc_attr( $spk->term_id ) . '">' . esc_html( $spk->name ) . ' (' . hidayah_en_to_bn_number($spk->count) . ')</option>';
+                                        echo '<option value="' . esc_attr( $spk->term_id ) . '">' . esc_html( $spk->name ) . ' (' . $spk->count . ')</option>';
                                     endforeach;
                                 endif;
                                 ?>
@@ -97,12 +97,12 @@ $audio_query = new WP_Query( $args );
 
                             <!-- Topic Filter -->
                             <select class="archive-filter-select" id="audioTopicFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; background: #fff; min-width: 160px; outline: none; cursor: pointer;">
-                                <option value=""><?php _e( 'বিষয় নির্বাচন করুন', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'Select Topic', 'hidayah' ); ?></option>
                                 <?php
                                 $all_topics = get_terms( array( 'taxonomy' => 'topic', 'hide_empty' => true ) );
                                 if ( ! empty( $all_topics ) && ! is_wp_error( $all_topics ) ) :
                                     foreach ( $all_topics as $tpc ) :
-                                        echo '<option value="' . esc_attr( $tpc->term_id ) . '">' . esc_html( $tpc->name ) . ' (' . hidayah_en_to_bn_number($tpc->count) . ')</option>';
+                                        echo '<option value="' . esc_attr( $tpc->term_id ) . '">' . esc_html( $tpc->name ) . ' (' . $tpc->count . ')</option>';
                                     endforeach;
                                 endif;
                                 ?>
@@ -146,7 +146,7 @@ $audio_query = new WP_Query( $args );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">tag</span>
-                            <?php _e( 'ট্যাগসমূহ', 'hidayah' ); ?>
+                            <?php _e( 'Tags', 'hidayah' ); ?>
                         </h4>
                         <div class="sidebar-tags">
                             <?php wp_tag_cloud( array( 'smallest' => 12, 'largest' => 12, 'unit' => 'px' ) ); ?>

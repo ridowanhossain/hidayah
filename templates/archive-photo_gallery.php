@@ -50,8 +50,8 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'ফটো গ্যালারি', 'hidayah' ); ?></h2>
-        <p><?php _e( 'দরবার শরীফের মাহফিল, অনুষ্ঠান ও বিশেষ মুহূর্তের স্মৃতিময় ছবির সংগ্রহ।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Photo Gallery', 'hidayah' ); ?></h2>
+        <p><?php _e( 'A collection of memorable photos from Darbar Sharif\'s Mahfils, events, and special moments.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -59,9 +59,9 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <span class="breadcrumb-current"><?php _e( 'ফটো গ্যালারি', 'hidayah' ); ?></span>
+            <span class="breadcrumb-current"><?php _e( 'Photo Gallery', 'hidayah' ); ?></span>
         </nav>
 
         <div class="archive-layout">
@@ -73,14 +73,14 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                         <div class="archive-search-bar">
                             <form role="search" id="gallerySearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="gallerySearchInput" placeholder="<?php _e( 'এলবাম খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input class="archive-search-input" id="gallerySearchInput" placeholder="<?php _e( 'Search albums...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="photo_gallery" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="gallerySortSelect">
-                                <option value="newest"><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="popular"><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                                <option value="newest"><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="popular"><?php _e( 'Popular', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#photoGalleryGrid">
                                 <button class="view-toggle-btn active" data-view="grid">
@@ -98,19 +98,19 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                         <div class="archive-filters-toolbar">
                         <div class="archive-count-badge" id="galleryCountBadge">
                             <span class="material-symbols-outlined">photo_library</span>
-                            <?php printf( __( 'মোট %sটি এলবাম', 'hidayah' ), hidayah_en_to_bn_number( $gal_query->found_posts ) ); ?>
+                            <?php printf( __( 'Total %s Albums', 'hidayah' ), $gal_query->found_posts ); ?>
                         </div>
                         <div class="archive-taxonomy-filters">
                             <select id="galleryCatFilter">
-                                <option value=""><?php _e( 'ইভেন্ট অনুযায়ী', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'By Event', 'hidayah' ); ?></option>
                                 <?php foreach ( $gal_cats as $gc ) : ?>
                                     <option value="<?php echo esc_attr( $gc->term_id ); ?>"><?php echo esc_html( $gc->name ); ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <select id="galleryYearFilter">
-                                <option value=""><?php _e( 'সাল অনুযায়ী', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'By Year', 'hidayah' ); ?></option>
                                 <?php foreach ( $gal_years as $gy ) : ?>
-                                    <option value="<?php echo esc_attr( $gy->term_id ); ?>"><?php echo hidayah_en_to_bn_number( $gy->name ); ?></option>
+                                    <option value="<?php echo esc_attr( $gy->term_id ); ?>"><?php echo $gy->name; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -125,7 +125,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                         <div class="gallery-album-grid" id="photoGalleryGrid">
                         <?php if ( $gal_query->have_posts() ) : while ( $gal_query->have_posts() ) : $gal_query->the_post(); 
                             $photos = get_post_meta( get_the_ID(), '_gallery_images', true ); // CSS Framework Gallery Field
-                            $count  = is_array($photos) ? count($photos) : h_bn_num(0);
+                            $count  = is_array($photos) ? count($photos) : 0;
                             $loc    = get_post_meta( get_the_ID(), '_gallery_location', true );
                         ?>
                             <article class="gallery-album-card">
@@ -137,7 +137,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                                     <?php endif; ?>
                                     <span class="gallery-photo-count">
                                         <span class="material-symbols-outlined">photo_camera</span>
-                                        <?php echo hidayah_en_to_bn_number($count); ?>
+                                        <?php echo $count; ?>
                                     </span>
                                     <div class="gallery-album-hover">
                                         <span class="material-symbols-outlined">open_in_full</span>
@@ -190,11 +190,11 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">search</span>
-                            <?php _e( 'অনুসন্ধান', 'hidayah' ); ?>
+                            <?php _e( 'Search', 'hidayah' ); ?>
                         </h4>
                         <div class="sidebar-search-box">
                             <form method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%;">
-                                <input placeholder="<?php _e( 'এলবাম খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input placeholder="<?php _e( 'Search albums...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="photo_gallery" />
                                 <button type="submit">
                                     <span class="material-symbols-outlined">search</span>
@@ -207,7 +207,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">category</span>
-                            <?php _e( 'ইভেন্ট অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Event', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php
@@ -216,7 +216,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                                 <li>
                                     <a href="<?php echo add_query_arg('gallery_cat', $gc->slug); ?>">
                                         <span><?php echo esc_html($gc->name); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number($gc->count); ?></span>
+                                        <span class="filter-count"><?php echo $gc->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -227,7 +227,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">calendar_month</span>
-                            <?php _e( 'সাল অনুযায়ী', 'hidayah' ); ?>
+                            <?php _e( 'By Year', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-filter-list">
                             <?php
@@ -236,7 +236,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                                 <li>
                                     <a href="<?php echo add_query_arg('gallery_year', $gy->slug); ?>">
                                         <span><?php echo esc_html($gy->name); ?></span>
-                                        <span class="filter-count"><?php echo hidayah_en_to_bn_number($gy->count); ?></span>
+                                        <span class="filter-count"><?php echo $gy->count; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -247,7 +247,7 @@ $gal_years = get_terms( array( 'taxonomy' => 'gallery_year' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">schedule</span>
-                            <?php _e( 'সাম্প্রতিক এলবাম', 'hidayah' ); ?>
+                            <?php _e( 'Recent Albums', 'hidayah' ); ?>
                         </h4>
                         <div class="gallery-sidebar-thumbs">
                             <?php

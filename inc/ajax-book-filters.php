@@ -16,7 +16,7 @@ function hidayah_filter_book_callback() {
     $paged    = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
 
     $args = array(
-        'post_type'      => 'book',
+        'post_type'      => 'product',
         'posts_per_page' => 12,
         'paged'          => $paged,
         'orderby'        => 'date',
@@ -31,11 +31,11 @@ function hidayah_filter_book_callback() {
     if ( $sort === 'oldest' ) {
         $args['order'] = 'ASC';
     } elseif ( $sort === 'price-asc' ) {
-        $args['meta_key'] = '_book_price';
+        $args['meta_key'] = '_price';
         $args['orderby']  = 'meta_value_num';
         $args['order']    = 'ASC';
     } elseif ( $sort === 'price-desc' ) {
-        $args['meta_key'] = '_book_price';
+        $args['meta_key'] = '_price';
         $args['orderby']  = 'meta_value_num';
         $args['order']    = 'DESC';
     } elseif ( $sort === 'popular' ) {
@@ -74,21 +74,21 @@ function hidayah_filter_book_callback() {
             hidayah_render_book_card();
         endwhile;
     else :
-        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'দুঃখিত, কোনো বই পাওয়া যায়নি।', 'hidayah' ) . '</p></div>';
+        echo '<div class="col-full no-results-found"><p class="no-results">' . __( 'Sorry, no books were found.', 'hidayah' ) . '</p></div>';
     endif;
 
     echo '<div class="ajax-pagination-data" style="display:none;">';
     hidayah_pagination( $book_query );
     echo '</div>';
 
-    echo '<div class="ajax-count-data" style="display:none;">' . hidayah_en_to_bn_number( $book_query->found_posts ) . '</div>';
+    echo '<div class="ajax-count-data" style="display:none;">' . $book_query->found_posts . '</div>';
 
     $html = ob_get_clean();
     wp_reset_postdata();
 
     wp_send_json_success( array(
         'html'  => $html,
-        'count' => hidayah_en_to_bn_number( $book_query->found_posts ),
+        'count' => $book_query->found_posts,
     ) );
 }
 add_action( 'wp_ajax_filter_book', 'hidayah_filter_book_callback' );
@@ -96,12 +96,15 @@ add_action( 'wp_ajax_nopriv_filter_book', 'hidayah_filter_book_callback' );
 
 if ( ! function_exists( 'hidayah_render_book_card' ) ) {
     function hidayah_render_book_card() {
-        $price        = get_post_meta( get_the_ID(), '_book_price', true );
-        $old_price    = get_post_meta( get_the_ID(), '_book_old_price', true );
+        $product = wc_get_product( get_the_ID() );
+        if ( ! $product ) return;
+
+        $price        = $product->get_price();
+        $regular_price = $product->get_regular_price();
         $badge        = get_post_meta( get_the_ID(), '_book_badge', true );
-        $rating       = get_post_meta( get_the_ID(), '_book_rating', true ) ?: 0;
-        $rating_cnt   = get_post_meta( get_the_ID(), '_book_rating_count', true ) ?: 0;
-        $stock_status = get_post_meta( get_the_ID(), '_stock_status', true ) ?: 'instock';
+        $rating       = $product->get_average_rating() ?: 0;
+        $rating_cnt   = $product->get_review_count() ?: 0;
+        $stock_status = $product->get_stock_status();
         ?>
         <article class="book-archive-card">
             <a class="book-sales-link" href="<?php the_permalink(); ?>">
@@ -115,7 +118,7 @@ if ( ! function_exists( 'hidayah_render_book_card' ) ) {
                         <span class="book-sales-badge"><?php echo esc_html( $badge ); ?></span>
                     <?php endif; ?>
                     <?php if ( $stock_status === 'outofstock' ) : ?>
-                        <span class="book-sales-badge book-badge-out"><?php _e( 'স্টক শেষ', 'hidayah' ); ?></span>
+                        <span class="book-sales-badge book-badge-out"><?php _e( 'Out of stock', 'hidayah' ); ?></span>
                     <?php endif; ?>
                 </div>
             </a>
@@ -135,25 +138,25 @@ if ( ! function_exists( 'hidayah_render_book_card' ) ) {
                         }
                     }
                     ?>
-                    <span class="star-count"><?php echo sprintf( '(%s)', hidayah_en_to_bn_number( $rating_cnt ) ); ?></span>
+                    <span class="star-count"><?php echo sprintf( '(%s)', $rating_cnt ); ?></span>
                 </div>
 
                 <div class="book-sales-meta">
                     <div class="book-sales-pricing">
-                        <?php if ( $old_price ) : ?>
-                            <span class="book-sales-old-price">৳ <?php echo hidayah_en_to_bn_number( $old_price ); ?></span>
+                        <?php if ( $product->is_on_sale() && $regular_price ) : ?>
+                            <span class="book-sales-old-price"><?php echo __('Tk.', 'hidayah'); ?> <?php echo $regular_price; ?></span>
                         <?php endif; ?>
-                        <span class="book-sales-price">৳ <?php echo hidayah_en_to_bn_number( $price ); ?></span>
+                        <span class="book-sales-price"><?php echo __('Tk.', 'hidayah'); ?> <?php echo $price; ?></span>
                     </div>
-                    <?php if ( $stock_status !== 'outofstock' ) : ?>
-                        <button class="book-sales-order-btn" data-book-id="<?php the_ID(); ?>" data-book-price="<?php echo esc_attr( $price ); ?>" data-book-title="<?php the_title_attribute(); ?>">
+                    <?php if ( $product->is_purchasable() && $product->is_in_stock() ) : ?>
+                        <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" class="book-sales-order-btn ajax_add_to_cart add_to_cart_button" data-product_id="<?php the_ID(); ?>" aria-label="<?php esc_attr_e( 'Add to cart', 'hidayah' ); ?>">
                             <span class="material-symbols-outlined">shopping_cart</span>
-                            <?php _e( 'কার্টে যোগ', 'hidayah' ); ?>
-                        </button>
+                            <?php _e( 'Add to Cart', 'hidayah' ); ?>
+                        </a>
                     <?php else : ?>
                         <button class="book-sales-order-btn" disabled>
                             <span class="material-symbols-outlined">inventory_2</span>
-                            <?php _e( 'স্টক নেই', 'hidayah' ); ?>
+                            <?php _e( 'Out of stock', 'hidayah' ); ?>
                         </button>
                     <?php endif; ?>
                 </div>

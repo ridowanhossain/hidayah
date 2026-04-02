@@ -10,13 +10,13 @@ while ( have_posts() ) : the_post();
     $photos = get_post_meta( get_the_ID(), '_gallery_images', true );
     $count  = is_array($photos) ? count($photos) : 0;
     $loc    = get_post_meta( get_the_ID(), '_gallery_location', true );
-    $photog = get_post_meta( get_the_ID(), '_gallery_photographer', true ) ?: __( 'দরবার মিডিয়া টিম', 'hidayah' );
+    $photog = get_post_meta( get_the_ID(), '_gallery_photographer', true ) ?: __( 'Media Team', 'hidayah' );
 ?>
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'ফটো গ্যালারি', 'hidayah' ); ?></h2>
-        <p><?php _e( 'দরবার শরীফের বিশেষ অনুষ্ঠানের ছবির সংগ্রহ।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Photo Gallery', 'hidayah' ); ?></h2>
+        <p><?php _e( 'A collection of photos from special events and programs.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -24,9 +24,9 @@ while ( have_posts() ) : the_post();
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <a href="<?php echo get_post_type_archive_link('photo_gallery'); ?>"><?php _e( 'ফটো গ্যালারি', 'hidayah' ); ?></a>
+            <a href="<?php echo get_post_type_archive_link('photo_gallery'); ?>"><?php _e( 'Photo Gallery', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
             <span class="breadcrumb-current"><?php the_title(); ?></span>
         </nav>
@@ -36,8 +36,8 @@ while ( have_posts() ) : the_post();
             <div class="archive-main">
                 <div class="col-inner">
                     <!-- Album Header -->
-                    <div class="gallery-single-header">
-                        <h1 class="gallery-single-title"><?php the_title(); ?></h1>
+                    <div class="gallery-single-header" itemscope itemtype="https://schema.org/ImageGallery">
+                        <h1 class="gallery-single-title" itemprop="name"><?php the_title(); ?></h1>
                         <div class="gallery-album-meta" style="margin-bottom: 16px">
                             <span>
                                 <span class="material-symbols-outlined">event</span>
@@ -51,19 +51,19 @@ while ( have_posts() ) : the_post();
                             <?php endif; ?>
                             <span>
                                 <span class="material-symbols-outlined">photo_camera</span>
-                                <?php printf( __( '%sটি ছবি', 'hidayah' ), h_bn_num($count) ); ?>
+                                <?php printf( _n( '%s Photo', '%s Photos', $count, 'hidayah' ), $count ); ?>
                             </span>
                         </div>
                         <div class="gallery-single-actions">
                             <a class="btn btn-sm" href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=download_gallery_zip&post_id=' . get_the_ID() ) ); ?>">
                                 <span class="material-symbols-outlined">download</span>
-                                <?php _e( 'সব ডাউনলোড (ZIP)', 'hidayah' ); ?>
+                                <?php _e( 'Download All (ZIP)', 'hidayah' ); ?>
                             </a>
                             <div class="archive-view-toggle" data-view-target="#photoGrid">
-                                <button class="view-toggle-btn active" data-view="grid" title="<?php _e( 'গ্রিড ভিউ', 'hidayah' ); ?>">
+                                <button class="view-toggle-btn active" data-view="grid" title="<?php esc_attr_e( 'Grid View', 'hidayah' ); ?>">
                                     <span class="material-symbols-outlined">grid_view</span>
                                 </button>
-                                <button class="view-toggle-btn" data-view="list" title="<?php _e( 'লিস্ট ভিউ', 'hidayah' ); ?>">
+                                <button class="view-toggle-btn" data-view="list" title="<?php esc_attr_e( 'List View', 'hidayah' ); ?>">
                                     <span class="material-symbols-outlined">view_list</span>
                                 </button>
                             </div>
@@ -74,7 +74,7 @@ while ( have_posts() ) : the_post();
                     <div class="gallery-photo-grid" id="photoGrid">
                         <?php if ( is_array($photos) ) : foreach ( $photos as $index => $photo_id ) : 
                             $img_url = wp_get_attachment_image_url($photo_id, 'full');
-                            $thumb_url = wp_get_attachment_image_url($photo_id, 'medium');
+                            $thumb_url = wp_get_attachment_image_url($photo_id, 'medium_large');
                             $caption = wp_get_attachment_caption($photo_id);
                         ?>
                             <div class="gallery-photo-item" data-caption="<?php echo esc_attr($caption); ?>" data-date="<?php echo get_the_date(); ?>" data-index="<?php echo $index; ?>" data-full="<?php echo esc_url($img_url); ?>">
@@ -88,7 +88,7 @@ while ( have_posts() ) : the_post();
 
                     <!-- Album Description -->
                     <div class="sidebar-widget" style="margin-top: 28px; margin-bottom: 20px">
-                        <h3 style="font-size: 17px; font-weight: 700; color: var(--text-dark); margin: 0 0 12px"><?php _e( 'এলবামের বিবরণ', 'hidayah' ); ?></h3>
+                        <h3 style="font-size: 17px; font-weight: 700; color: var(--text-dark); margin: 0 0 12px"><?php _e( 'Album Description', 'hidayah' ); ?></h3>
                         <div style="font-size: 14px; line-height: 1.8; color: var(--text-dark);">
                             <?php the_content(); ?>
                         </div>
@@ -102,7 +102,7 @@ while ( have_posts() ) : the_post();
                             <a class="single-audio-nav-btn single-audio-nav-prev" href="<?php echo get_permalink($prev_post->ID); ?>">
                                 <span class="material-symbols-outlined">arrow_back</span>
                                 <div class="single-audio-nav-text">
-                                    <span class="nav-label"><?php _e( 'পূর্ববর্তী এলবাম', 'hidayah' ); ?></span>
+                                    <span class="nav-label"><?php _e( 'Previous Album', 'hidayah' ); ?></span>
                                     <span class="nav-title-sm"><?php echo get_the_title($prev_post->ID); ?></span>
                                 </div>
                             </a>
@@ -113,7 +113,7 @@ while ( have_posts() ) : the_post();
                         if ($next_post) : ?>
                             <a class="single-audio-nav-btn single-audio-nav-next" href="<?php echo get_permalink($next_post->ID); ?>">
                                 <div class="single-audio-nav-text">
-                                    <span class="nav-label"><?php _e( 'পরবর্তী এলবাম', 'hidayah' ); ?></span>
+                                    <span class="nav-label"><?php _e( 'Next Album', 'hidayah' ); ?></span>
                                     <span class="nav-title-sm"><?php echo get_the_title($next_post->ID); ?></span>
                                 </div>
                                 <span class="material-symbols-outlined">arrow_forward</span>
@@ -122,26 +122,7 @@ while ( have_posts() ) : the_post();
                     </div>
 
                     <!-- Share -->
-                    <div class="single-audio-share-wrap">
-                        <h3 class="section-heading-sm">
-                            <span class="material-symbols-outlined">share</span>
-                            <?php _e( 'শেয়ার করুন', 'hidayah' ); ?>
-                        </h3>
-                        <div class="main-share-buttons">
-                            <a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>" target="_blank">
-                                <span class="material-symbols-outlined">thumb_up</span>
-                                Facebook
-                            </a>
-                            <a class="share-btn whatsapp" href="https://api.whatsapp.com/send?text=<?php the_permalink(); ?>" target="_blank">
-                                <span class="material-symbols-outlined">chat</span>
-                                WhatsApp
-                            </a>
-                            <button class="share-btn copy-link" onclick="navigator.clipboard.writeText(window.location.href); alert('<?php _e( 'লিঙ্ক কপি হয়েছে!', 'hidayah' ); ?>');">
-                                <span class="material-symbols-outlined">link</span>
-                                <?php _e( 'লিঙ্ক কপি', 'hidayah' ); ?>
-                            </button>
-                        </div>
-                    </div>
+                    <?php get_template_part( 'template-parts/content/share-section' ); ?>
 
                     <!-- Comments -->
                     <?php if ( comments_open() || get_comments_number() ) comments_template(); ?>
@@ -155,13 +136,13 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">info</span>
-                            <?php _e( 'এলবামের তথ্য', 'hidayah' ); ?>
+                            <?php _e( 'Album Information', 'hidayah' ); ?>
                         </h4>
                         <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">
                             <li style="display: flex; gap: 10px; font-size: 13px">
                                 <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">event</span>
                                 <div>
-                                    <strong style="display: block"><?php _e( 'তারিখ', 'hidayah' ); ?></strong>
+                                    <strong style="display: block"><?php _e( 'Date', 'hidayah' ); ?></strong>
                                     <span style="color: var(--text-light)"><?php echo get_the_date(); ?></span>
                                 </div>
                             </li>
@@ -169,7 +150,7 @@ while ( have_posts() ) : the_post();
                                 <li style="display: flex; gap: 10px; font-size: 13px">
                                     <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">location_on</span>
                                     <div>
-                                        <strong style="display: block"><?php _e( 'স্থান', 'hidayah' ); ?></strong>
+                                        <strong style="display: block"><?php _e( 'Location', 'hidayah' ); ?></strong>
                                         <span style="color: var(--text-light)"><?php echo esc_html($loc); ?></span>
                                     </div>
                                 </li>
@@ -177,14 +158,14 @@ while ( have_posts() ) : the_post();
                             <li style="display: flex; gap: 10px; font-size: 13px">
                                 <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">photo_camera</span>
                                 <div>
-                                    <strong style="display: block"><?php _e( 'ছবির সংখ্যা', 'hidayah' ); ?></strong>
-                                    <span style="color: var(--text-light)"><?php printf( __( '%sটি ছবি', 'hidayah' ), h_bn_num($count) ); ?></span>
+                                    <strong style="display: block"><?php _e( 'Image Count', 'hidayah' ); ?></strong>
+                                    <span style="color: var(--text-light)"><?php printf( _n( '%s Photo', '%s Photos', $count, 'hidayah' ), $count ); ?></span>
                                 </div>
                             </li>
                             <li style="display: flex; gap: 10px; font-size: 13px">
                                 <span class="material-symbols-outlined" style="font-size: 17px; color: var(--primary-green-dark); flex-shrink: 0">person</span>
                                 <div>
-                                    <strong style="display: block"><?php _e( 'ফটোগ্রাফার', 'hidayah' ); ?></strong>
+                                    <strong style="display: block"><?php _e( 'Photographer', 'hidayah' ); ?></strong>
                                     <span style="color: var(--text-light)"><?php echo esc_html($photog); ?></span>
                                 </div>
                             </li>
@@ -195,12 +176,12 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">download</span>
-                            <?php _e( 'ডাউনলোড করুন', 'hidayah' ); ?>
+                            <?php _e( 'Download', 'hidayah' ); ?>
                         </h4>
                         <div style="display: flex; flex-direction: column; gap: 8px">
                             <a class="btn btn-sm" href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=download_gallery_zip&post_id=' . get_the_ID() ) ); ?>" style="display: flex; align-items: center; gap: 6px; justify-content: center">
                                 <span class="material-symbols-outlined">folder_zip</span>
-                                <?php _e( 'সম্পূর্ণ এলবাম (ZIP)', 'hidayah' ); ?>
+                                <?php _e( 'Full Album (ZIP)', 'hidayah' ); ?>
                             </a>
                         </div>
                     </div>
@@ -209,7 +190,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">photo_library</span>
-                            <?php _e( 'সম্পর্কিত এলবাম', 'hidayah' ); ?>
+                            <?php _e( 'Related Albums', 'hidayah' ); ?>
                         </h4>
                         <div class="gallery-sidebar-thumbs">
                             <?php
@@ -232,7 +213,7 @@ while ( have_posts() ) : the_post();
                     <div class="sidebar-widget" style="text-align: center">
                         <a class="probondho-read-more" href="<?php echo get_post_type_archive_link('photo_gallery'); ?>">
                             <span class="material-symbols-outlined">arrow_back</span>
-                            <?php _e( 'সব এলবাম দেখুন', 'hidayah' ); ?>
+                            <?php _e( 'View All Albums', 'hidayah' ); ?>
                         </a>
                     </div>
                 </div>

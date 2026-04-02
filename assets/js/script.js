@@ -2,7 +2,234 @@
 // Page-Specific Inline Scripts (Auto-Merged)
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  // 1. window.PRAYER_WIDGET_CONFIG (moved from inline)
+  // 1. Toast Notification System
+  window.showToast = function (message) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+    const toast = document.createElement("div");
+    toast.className = "toast-message";
+    toast.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${message}`;
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 3000);
+  };
+
+  // 1.1 Show toast from WooCommerce messages after page reload
+  const wcMessage = document.querySelector('.woocommerce-message');
+  if (wcMessage) {
+    const messageText = wcMessage.innerText.trim();
+    // Clean up the message (remove button text like "View Cart")
+    const cleanMessage = messageText.replace(/View Cart|→/gi, '').trim();
+    setTimeout(() => {
+        if (typeof window.showToast === 'function') {
+            window.showToast(cleanMessage);
+            wcMessage.style.display = 'none'; // Hide the default WC notice
+        }
+    }, 500);
+  }
+
+  // 1.2 Cart Drawer (Modal) Logic
+  const cartModal = document.getElementById("cartModalOverlay");
+  const cartOpenBtn = document.getElementById("headerCartBtn");
+  const cartCloseBtn = document.getElementById("cartModalCloseBtn");
+
+  window.openCartDrawer = function() {
+    if (cartModal) {
+      cartModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+  };
+
+  window.closeCartDrawer = function() {
+    if (cartModal) {
+      cartModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  };
+
+  if (cartOpenBtn) {
+    cartOpenBtn.addEventListener("click", function(e) {
+      // If it's the cart page, let it navigate normally, otherwise open drawer
+      if (window.location.pathname.includes('/cart/')) return;
+      
+      e.preventDefault();
+      window.openCartDrawer();
+    });
+  }
+
+  // 1.4 AJAX Auto-update cart on quantity change and remove
+  if (window.jQuery) {
+    const $ = window.jQuery;
+    let cartUpdateTimer;
+
+    function showHclLoader() {
+        if (!document.getElementById('hcl-loader-style')) {
+            const style = document.createElement('style');
+            style.id = 'hcl-loader-style';
+            style.innerHTML = `
+            #hcl-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255,255,255,0.7); z-index: 999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+            .hcl-spinner { width: 60px; height: 60px; border: 5px solid rgba(6, 95, 70, 0.15); border-top-color: #065F46; border-radius: 50%; animation: hcl_spin 0.8s linear infinite; box-shadow: 0 4px 20px rgba(6, 95, 70, 0.15); }
+            @keyframes hcl_spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            `;
+            document.head.appendChild(style);
+        }
+
+        if (!document.getElementById('hcl-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'hcl-overlay';
+            overlay.innerHTML = '<div class="hcl-spinner"></div>';
+            document.body.appendChild(overlay);
+        }
+    }
+
+    function hideHclLoader() {
+        const ov = document.getElementById('hcl-overlay');
+        if (ov) ov.remove();
+    }
+    
+    // Qty change update
+    $(document).on('change', '.woocommerce-cart-form input.qty', function() {
+        if (cartUpdateTimer) clearTimeout(cartUpdateTimer);
+        
+        const $form = $(this).closest('form');
+        const $container = $('.archive-section');
+        
+        cartUpdateTimer = setTimeout(function() {
+            showHclLoader();
+            
+            const formData = $form.serialize() + '&update_cart=Update%20Cart';
+            
+            $.ajax({
+                type: 'POST',
+                url: window.location.href,
+                data: formData,
+                success: function(response) {
+                    const $newContent = $(response).find('.archive-section').html();
+                    if ($newContent) {
+                        $container.html($newContent);
+                    } else {
+                        window.location.reload();
+                    }
+                    
+                    hideHclLoader();
+                    $(document.body).trigger('updated_cart_totals');
+                    $(document.body).trigger('wc_fragment_refresh');
+                },
+                error: function() {
+                    hideHclLoader();
+                    window.location.reload();
+                }
+            });
+        }, 100);
+    });
+
+    // Remove item update
+    $(document).on('click', '.cart-remove-btn', function(e) {
+        e.preventDefault();
+        const removeUrl = $(this).attr('href');
+        const $container = $('.archive-section');
+        
+        showHclLoader();
+        
+        $.ajax({
+            url: removeUrl,
+            type: 'GET',
+            success: function(response) {
+                const $newContent = $(response).find('.archive-section').html();
+                if ($newContent) {
+                    $container.html($newContent);
+                } else {
+                    window.location.reload();
+                }
+                
+                hideHclLoader();
+                $(document.body).trigger('updated_cart_totals');
+                $(document.body).trigger('wc_fragment_refresh');
+            },
+            error: function() {
+                hideHclLoader();
+                window.location.reload();
+            }
+        });
+    });
+
+    // Handle clicks on custom plus/minus buttons
+    $(document).on('click', '.sb-qty-btn', function() {
+        const $container = $(this).closest('.sb-quantity, .sb-qty-stepper');
+        const $input = $container.find('input.qty');
+        if ($input.length) {
+            $input.trigger('change');
+        }
+    });
+  }
+
+  if (cartCloseBtn) {
+    cartCloseBtn.addEventListener("click", window.closeCartDrawer);
+  }
+
+  if (cartModal) {
+    cartModal.addEventListener("click", function(e) {
+      if (e.target === cartModal) window.closeCartDrawer();
+    });
+  }
+
+  // 1.3 WooCommerce AJAX Success listeners
+  if (window.jQuery) {
+    const $ = window.jQuery;
+    window.jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+      // 1. Show Toast
+      let title = 'Book';
+      if ($button && $button.length > 0) {
+        const card = $button[0].closest('.book-sales-card, .book-archive-card, .product');
+        if (card) {
+          const titleEl = card.querySelector('h3, .woocommerce-loop-product__title, .product_title');
+          if (titleEl) title = titleEl.innerText;
+        }
+      }
+      window.showToast(`${title} added to cart!`);
+      
+      // 2. Refresh fragments (handled by WC automatically, but we ensure updates)
+      if (fragments) {
+        // Fragments are already updated by WC jQuery handler if we use standard IDs
+      }
+
+      // 3. Automatically open the side drawer
+      setTimeout(window.openCartDrawer, 500);
+    });
+
+    // Handle removal from side cart via AJAX
+    $(document).on('click', '.side-cart-remove', function(e) {
+      e.preventDefault();
+      const $this = $(this);
+      const cart_item_key = $this.data('cart_item_key');
+      
+      $this.closest('.side-cart-item').css('opacity', '0.5');
+
+      $.ajax({
+        type: 'POST',
+        url: wc_add_to_cart_params.ajax_url,
+        data: {
+          action: 'woocommerce_remove_from_cart',
+          cart_item_key: cart_item_key
+        },
+        success: function(response) {
+          if (response && response.fragments) {
+            $(document.body).trigger('removed_from_cart', [response.fragments, response.cart_hash, $this]);
+          }
+        }
+      });
+    });
+
+    $(document.body).on('removed_from_cart', function(e, fragments) {
+        // WC updates fragments automatically
+    });
+  }
+
+  // 1.5 window.PRAYER_WIDGET_CONFIG (moved from inline)
   if (!window.PRAYER_WIDGET_CONFIG) {
     window.PRAYER_WIDGET_CONFIG = {
       enabled: true,
@@ -19,17 +246,17 @@ document.addEventListener("DOMContentLoaded", function () {
       fallbackCoords: { latitude: 23.8103, longitude: 90.4125 }, // ঢাকা
       fallbackCity: "ঢাকা (ডিফল্ট)",
       labels: {
-        nextPrayerPrefix: "পরবর্তী নামাজ",
-        locationPending: "লোকেশন অনুমতির অপেক্ষায়...",
-        locationDenied: "লোকেশন অনুমতি না দিলে এটি কাজ করবে না",
-        locationUnavailable: "এই ব্রাউজারে লোকেশন সাপোর্ট নেই",
-        loading: "তথ্য লোড হচ্ছে...",
-        fetchError: "নামাজের সময় লোড করা যায়নি",
-        prayerTimesTitle: "আজকের নামাজের সময়",
-        nextPrayerText: "পরবর্তী নামাজ",
-        sehri: "সাহরীর শেষ সময়",
-        iftar: "ইফতার",
-        tomorrowFajr: "আগামীকালের ফজর",
+        nextPrayerPrefix: "Next Prayer",
+        locationPending: "Waiting for location permission...",
+        locationDenied: "This will not work without location permission",
+        locationUnavailable: "Location not supported in this browser",
+        loading: "Loading data...",
+        fetchError: "Could not load prayer times",
+        prayerTimesTitle: "Today's Prayer Times",
+        nextPrayerText: "Next Prayer",
+        sehri: "Sehri Ends",
+        iftar: "Iftar",
+        tomorrowFajr: "Tomorrow's Fajr",
       },
     };
   }
@@ -56,13 +283,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const now = new Date();
       const diff = deadline - now;
       if (diff <= 0) {
-        countdownEl.textContent = "শেষ হয়েছে";
+        countdownEl.textContent = "Ended";
         return;
       }
       const days = Math.floor(diff / 86400000);
       const hours = Math.floor((diff % 86400000) / 3600000);
       const mins = Math.floor((diff % 3600000) / 60000);
-      countdownEl.textContent = days + " দিন " + hours + " ঘণ্টা " + mins + " মিনিট";
+      countdownEl.textContent = days + " days " + hours + " hours " + mins + " minutes";
     }
     updateCountdown();
     setInterval(updateCountdown, 60000);
@@ -71,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 3.5 Share Copy Button (Toast)
   document.querySelectorAll(".share-copy[data-copy-message]").forEach((btn) => {
     btn.addEventListener("click", function () {
-      const msg = this.getAttribute("data-copy-message") || "লিঙ্ক কপি হয়েছে!";
+      const msg = this.getAttribute("data-copy-message") || "Link copied!";
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href).then(() => {
           if (typeof window.showToast === "function") window.showToast(msg);
@@ -84,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // 4. Book Archive - Price Range Slider & Mini Cart
+  // 4. Book Archive - Price Range Slider
   var slider = document.getElementById("priceRangeSlider");
   var maxLabel = document.getElementById("priceMax");
   if (slider && maxLabel) {
@@ -93,326 +320,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function syncMiniCart() {
-    var content = document.getElementById("miniCartContent");
-    var footer = document.getElementById("miniCartFooter");
-    var totalEl = document.getElementById("miniCartTotal");
-    if (!content) return;
-    try {
-      var cart = JSON.parse(localStorage.getItem("hd_cart") || "[]");
-      if (!cart.length) {
-        content.innerHTML = '<p class="mini-cart-empty">কার্টে কোনো বই নেই।</p>';
-        if (footer) footer.style.display = "none";
-        return;
-      }
-      var total = 0;
-      var html = '<ul class="mini-cart-list">';
-      cart.forEach(function (item) {
-        total += (item.price || 0) * (item.quantity || 1);
-        html += '<li class="mini-cart-item">' + '<span class="mini-cart-item-title">' + item.title + "</span>" + '<span class="mini-cart-item-qty">×' + (item.quantity || 1) + "</span>" + '<span class="mini-cart-item-price">৳ ' + (item.price || 0) * (item.quantity || 1) + "</span>" + "</li>";
-      });
-      html += "</ul>";
-      content.innerHTML = html;
-      if (totalEl) totalEl.textContent = "৳ " + total;
-      if (footer) footer.style.display = "";
-    } catch (e) {}
-  }
-  syncMiniCart();
-  window.addEventListener("hd_cart_updated", syncMiniCart);
-
-  // 5. Cart Page - Rendering
-  var cartTableBody = document.getElementById("cartTableBody");
-  if (cartTableBody) {
-    var DELIVERY_CHARGE = 60;
-    var discount = 0;
-
-    function getCart() {
-      try {
-        return JSON.parse(localStorage.getItem("hd_cart") || "[]");
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem("hd_cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("hd_cart_updated"));
-    }
-
-    function formatPrice(n) {
-      return "৳ " + n;
-    }
-
-    function renderCart() {
-      var cart = getCart();
-      var emptyState = document.getElementById("cartEmptyState");
-      var hasItems = document.getElementById("cartHasItems");
-      if (!cart.length) {
-        if (emptyState) emptyState.style.display = "";
-        if (hasItems) hasItems.style.display = "none";
-        return;
-      }
-      if (emptyState) emptyState.style.display = "none";
-      if (hasItems) hasItems.style.display = "";
-
-      var subtotal = cart.reduce(function (sum, item) {
-        return sum + (item.price || 0) * (item.quantity || 1);
-      }, 0);
-
-      var tbody = document.getElementById("cartTableBody");
-      if (!tbody) return;
-      var html = "";
-      cart.forEach(function (item, idx) {
-        var sub = (item.price || 0) * (item.quantity || 1);
-        html += '<div class="cart-table-row" data-idx="' + idx + '">' + '<div class="cart-td cart-td-product">' + '<div class="cart-product-info">' + '<div class="cart-product-cover"><span class="material-symbols-outlined">menu_book</span></div>' + '<div class="cart-product-meta"><strong>' + item.title + "</strong></div>" + "</div>" + "</div>" + '<div class="cart-td cart-td-price">' + formatPrice(item.price || 0) + "</div>" + '<div class="cart-td cart-td-qty">' + '<div class="sb-qty-stepper">' + '<button class="sb-qty-btn cart-qty-minus" data-idx="' + idx + '"><span class="material-symbols-outlined">remove</span></button>' + '<input type="number" class="sb-qty-input cart-qty-input" value="' + (item.quantity || 1) + '" min="1" max="20" data-idx="' + idx + '" />' + '<button class="sb-qty-btn cart-qty-plus" data-idx="' + idx + '"><span class="material-symbols-outlined">add</span></button>' + "</div>" + "</div>" + '<div class="cart-td cart-td-sub">' + formatPrice(sub) + "</div>" + '<div class="cart-td cart-td-remove">' + '<button class="cart-remove-btn" data-idx="' + idx + '" aria-label="সরান">' + '<span class="material-symbols-outlined">close</span>' + "</button>" + "</div>" + "</div>";
-      });
-      tbody.innerHTML = html;
-
-      if (document.getElementById("cartSubtotal")) document.getElementById("cartSubtotal").textContent = formatPrice(subtotal);
-      var afterDiscount = Math.max(0, subtotal - discount);
-      var total = afterDiscount + DELIVERY_CHARGE;
-      if (document.getElementById("cartDelivery")) document.getElementById("cartDelivery").textContent = formatPrice(DELIVERY_CHARGE);
-      if (document.getElementById("cartGrandTotal")) document.getElementById("cartGrandTotal").textContent = formatPrice(total);
-
-      if (discount > 0) {
-        if (document.getElementById("cartDiscountRow")) document.getElementById("cartDiscountRow").style.display = "";
-        if (document.getElementById("cartDiscount")) document.getElementById("cartDiscount").textContent = "- " + formatPrice(discount);
-      } else {
-        if (document.getElementById("cartDiscountRow")) document.getElementById("cartDiscountRow").style.display = "none";
-      }
-
-      tbody.querySelectorAll(".cart-qty-minus").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var i = parseInt(btn.dataset.idx, 10);
-          var cart2 = getCart();
-          if ((cart2[i].quantity || 1) > 1) cart2[i].quantity--;
-          else cart2[i].quantity = 1;
-          saveCart(cart2);
-          renderCart();
-        });
-      });
-      tbody.querySelectorAll(".cart-qty-plus").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var i = parseInt(btn.dataset.idx, 10);
-          var cart2 = getCart();
-          if ((cart2[i].quantity || 1) < 20) cart2[i].quantity = (cart2[i].quantity || 1) + 1;
-          saveCart(cart2);
-          renderCart();
-        });
-      });
-      tbody.querySelectorAll(".cart-qty-input").forEach(function (inp) {
-        inp.addEventListener("change", function () {
-          var i = parseInt(inp.dataset.idx, 10);
-          var val = Math.max(1, Math.min(20, parseInt(inp.value, 10) || 1));
-          var cart2 = getCart();
-          cart2[i].quantity = val;
-          saveCart(cart2);
-          renderCart();
-        });
-      });
-      tbody.querySelectorAll(".cart-remove-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var i = parseInt(btn.dataset.idx, 10);
-          var cart2 = getCart();
-          cart2.splice(i, 1);
-          saveCart(cart2);
-          renderCart();
-        });
-      });
-    }
-
-    var clearBtn = document.getElementById("cartClearBtn");
-    if (clearBtn) {
-      clearBtn.addEventListener("click", function () {
-        if (confirm("কার্ট খালি করবেন?")) {
-          saveCart([]);
-          renderCart();
-        }
-      });
-    }
-
-    var couponBtn = document.getElementById("couponApplyBtn");
-    if (couponBtn) {
-      couponBtn.addEventListener("click", function () {
-        var code = document.getElementById("couponInput").value.trim().toUpperCase();
-        var msg = document.getElementById("couponMsg");
-        if (code === "HOQUER10") {
-          var cart = getCart();
-          var sub = cart.reduce(function (s, i) {
-            return s + (i.price || 0) * (i.quantity || 1);
-          }, 0);
-          discount = Math.round(sub * 0.1);
-          if (msg) {
-            msg.textContent = "কুপন প্রয়োগ হয়েছে! ১০% ছাড় পেয়েছেন।";
-            msg.style.color = "var(--primary-green-dark)";
-          }
-        } else {
-          discount = 0;
-          if (msg) {
-            msg.textContent = "কুপন কোডটি বৈধ নয়।";
-            msg.style.color = "#b91c1c";
-          }
-        }
-        renderCart();
-      });
-    }
-
-    renderCart();
-    window.addEventListener("hd_cart_updated", renderCart);
-    window.addEventListener("storage", function (e) {
-      if (e.key === "hd_cart") renderCart();
-    });
-  }
-
-  // 6. Checkout Page - Rendering
-  var coDivision = document.getElementById("coDivision");
-  if (coDivision) {
-    var DELIVERY_CHARGE_CO = 60;
-    var coDiscount = 0;
-
-    var districtsByDivision = {
-      dhaka: ["ঢাকা", "গাজীপুর", "নারায়ণগঞ্জ", "মানিকগঞ্জ", "মুন্সিগঞ্জ", "নরসিংদী", "কিশোরগঞ্জ", "ময়মনসিংহ (ঢাকা বিভাগের অধীন)", "ফরিদপুর", "মাদারীপুর", "গোপালগঞ্জ", "রাজবাড়ী", "শরিয়তপুর"],
-      chittagong: ["চট্টগ্রাম", "কক্সবাজার", "ব্রাহ্মণবাড়িয়া", "কুমিল্লা", "চাঁদপুর", "ফেনী", "লক্ষ্মীপুর", "নোয়াখালী", "রাঙামাটি", "খাগড়াছড়ি", "বান্দরবান"],
-      rajshahi: ["রাজশাহী", "চাঁপাইনবাবগঞ্জ", "নওগাঁ", "নাটোর", "পাবনা", "সিরাজগঞ্জ", "বগুড়া", "জয়পুরহাট"],
-      khulna: ["খুলনা", "বাগেরহাট", "সাতক্ষীরা", "যশোর", "ঝিনাইদহ", "মাগুরা", "নড়াইল", "কুষ্টিয়া", "মেহেরপুর", "চুয়াডাঙ্গা"],
-      barisal: ["বরিশাল", "পটুয়াখালী", "পিরোজপুর", "ঝালকাঠি", "বরগুনা", "ভোলা"],
-      sylhet: ["সিলেট", "হবিগঞ্জ", "মৌলভীবাজার", "সুনামগঞ্জ"],
-      mymensingh: ["ময়মনসিংহ", "নেত্রকোণা", "জামালপুর", "শেরপুর"],
-      rangpur: ["রংপুর", "গাইবান্ধা", "কুড়িগ্রাম", "লালমনিরহাট", "নীলফামারী", "পঞ্চগড়", "ঠাকুরগাঁও", "দিনাজপুর"],
-    };
-
-    coDivision.addEventListener("change", function () {
-      var div = this.value;
-      var distSel = document.getElementById("coDistrict");
-      if (distSel) distSel.innerHTML = '<option value="">জেলা বেছে নিন</option>';
-      if (div && districtsByDivision[div] && distSel) {
-        districtsByDivision[div].forEach(function (d) {
-          var opt = document.createElement("option");
-          opt.value = d;
-          opt.textContent = d;
-          distSel.appendChild(opt);
-        });
-      }
-      DELIVERY_CHARGE_CO = div === "dhaka" ? 60 : 120;
-      renderCoSummary();
-    });
-
-    document.querySelectorAll('[name="payment"]').forEach(function (radio) {
-      radio.addEventListener("change", function () {
-        document.querySelectorAll(".co-payment-fields").forEach(function (f) {
-          f.style.display = "none";
-        });
-        document.querySelectorAll(".co-payment-card").forEach(function (c) {
-          c.classList.remove("active");
-        });
-        var closest = radio.closest(".co-radio-card");
-        if (closest) closest.classList.add("active");
-        if (radio.value === "bkash" && document.getElementById("coFieldsBkash")) document.getElementById("coFieldsBkash").style.display = "";
-        if (radio.value === "nagad" && document.getElementById("coFieldsNagad")) document.getElementById("coFieldsNagad").style.display = "";
-        if (radio.value === "rocket" && document.getElementById("coFieldsRocket")) document.getElementById("coFieldsRocket").style.display = "";
-      });
-    });
-
-    document.querySelectorAll('[name="delivery"]').forEach(function (radio) {
-      radio.addEventListener("change", function () {
-        document.querySelectorAll(".co-radio-cards .co-radio-card").forEach(function (c) {
-          c.classList.remove("active");
-        });
-        var closest = radio.closest(".co-radio-card");
-        if (closest) closest.classList.add("active");
-        DELIVERY_CHARGE_CO = radio.value === "pickup" ? 0 : 60;
-        renderCoSummary();
-      });
-    });
-
-    function getCartCo() {
-      try {
-        return JSON.parse(localStorage.getItem("hd_cart") || "[]");
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function renderCoSummary() {
-      var cart = getCartCo();
-      var items = document.getElementById("coSummaryItems");
-      var subtotal = cart.reduce(function (s, i) {
-        return s + (i.price || 0) * (i.quantity || 1);
-      }, 0);
-
-      if (items) {
-        if (!cart.length) {
-          items.innerHTML = '<p style="color:var(--text-light);font-size:14px;">কার্ট খালি</p>';
-        } else {
-          var html = "";
-          cart.forEach(function (item) {
-            html += '<div class="co-summary-item">' + '<span class="co-summary-item-title">' + item.title + " <em>×" + (item.quantity || 1) + "</em></span>" + '<span class="co-summary-item-price">৳ ' + (item.price || 0) * (item.quantity || 1) + "</span>" + "</div>";
-          });
-          items.innerHTML = html;
-        }
-      }
-
-      var afterDiscount = Math.max(0, subtotal - coDiscount);
-      var total = afterDiscount + DELIVERY_CHARGE_CO;
-      if (document.getElementById("coSubtotal")) document.getElementById("coSubtotal").textContent = "৳ " + subtotal;
-      if (document.getElementById("coDelivery")) document.getElementById("coDelivery").textContent = "৳ " + DELIVERY_CHARGE_CO;
-      if (document.getElementById("coTotal")) document.getElementById("coTotal").textContent = "৳ " + total;
-      if (coDiscount > 0) {
-        if (document.getElementById("coDiscountRow")) document.getElementById("coDiscountRow").style.display = "";
-        if (document.getElementById("coDiscount")) document.getElementById("coDiscount").textContent = "- ৳ " + coDiscount;
-      } else {
-        if (document.getElementById("coDiscountRow")) document.getElementById("coDiscountRow").style.display = "none";
-      }
-    }
-
-    var coCouponApply = document.getElementById("coCouponApply");
-    if (coCouponApply) {
-      coCouponApply.addEventListener("click", function () {
-        var code = document.getElementById("coCouponInput").value.trim().toUpperCase();
-        var msg = document.getElementById("coCouponMsg");
-        var cart = getCartCo();
-        var sub = cart.reduce(function (s, i) {
-          return s + (i.price || 0) * (i.quantity || 1);
-        }, 0);
-        if (code === "HOQUER10") {
-          coDiscount = Math.round(sub * 0.1);
-          if (msg) {
-            msg.textContent = "কুপন প্রয়োগ হয়েছে! ১০% ছাড় পেয়েছেন।";
-            msg.style.color = "var(--primary-green-dark)";
-          }
-        } else {
-          coDiscount = 0;
-          if (msg) {
-            msg.textContent = "কুপন কোডটি বৈধ নয়।";
-            msg.style.color = "#b91c1c";
-          }
-        }
-        renderCoSummary();
-      });
-    }
-
-    var checkoutForm = document.getElementById("checkoutForm");
-    if (checkoutForm) {
-      checkoutForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var coTerms = document.getElementById("coTerms");
-        if (coTerms && !coTerms.checked) {
-          alert("অর্ডার দিতে শর্তাবলী মেনে নিন।");
-          return;
-        }
-        alert("অর্ডার সফলভাবে সম্পন্ন হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।");
-        localStorage.removeItem("hd_cart");
-        window.dispatchEvent(new Event("hd_cart_updated"));
-        window.location.href = "index.html";
-      });
-    }
-
-    renderCoSummary();
-    window.addEventListener("hd_cart_updated", renderCoSummary);
-    window.addEventListener("storage", function (e) {
-      if (e.key === "hd_cart") renderCoSummary();
-    });
-  }
+  // 5. & 6. Cart and Checkout pages use native WooCommerce shortcodes now.
+  // Legacy manual rendering removed to avoid conflicts.
 
   // 7. Tab Filters (Dini Jiggasa / Notice)
   document.querySelectorAll(".jiggasa-tab").forEach((btn) => {
@@ -498,22 +407,26 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentImgIndex = 0;
 
     const updateLightboxImage = (index) => {
-      if (sbThumbs[index]) {
+      if (sbThumbs.length > 0 && sbThumbs[index]) {
         const newSrc = sbThumbs[index].getAttribute("data-src");
         if (newSrc) {
           sbLightboxImg.src = newSrc;
           currentImgIndex = index;
         }
+      } else if (sbMainImg) {
+        sbLightboxImg.src = sbMainImg.src;
       }
     };
 
     sbMainCover.addEventListener("click", function () {
       // Find current active thumb index
-      sbThumbs.forEach((thumb, idx) => {
-        if (thumb.classList.contains("active")) {
-          currentImgIndex = idx;
-        }
-      });
+      if (sbThumbs.length > 0) {
+        sbThumbs.forEach((thumb, idx) => {
+          if (thumb.classList.contains("active")) {
+            currentImgIndex = idx;
+          }
+        });
+      }
       updateLightboxImage(currentImgIndex);
       sbLightbox.classList.add("active");
       document.body.style.overflow = "hidden";
@@ -574,8 +487,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentIndex = 0;
 
     const toBanglaDigitsLocal = (str) => {
-      const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-      return String(str).replace(/\d/g, (d) => banglaDigits[d]);
+      return String(str);
     };
 
     const updateLightbox = (index) => {
@@ -583,11 +495,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const img = item.querySelector("img");
       const caption = item.getAttribute("data-caption");
       const date = item.getAttribute("data-date");
-      const src = img.src.split("?")[0]; // Use base image for lightbox
+      const fullSrc = item.getAttribute("data-full"); // Get high quality image
+      const thumbSrc = img.src.split("?")[0]; // Fallback to thumb if needed
+      
+      const src = fullSrc || thumbSrc;
 
       lightboxImg.src = src;
       lightboxCaption.innerHTML = `<strong>${caption}</strong><br><small style="opacity:0.7">${date}</small>`;
-      lightboxCounter.textContent = `${toBanglaDigitsLocal(index + 1)} / ${toBanglaDigitsLocal(photoItems.length)}`;
+      lightboxCounter.textContent = `${index + 1} / ${photoItems.length}`;
       if (lightboxDl) lightboxDl.href = src;
       currentIndex = index;
     };
@@ -636,16 +551,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const fontBtns = document.querySelectorAll(".probondho-font-btn");
   const articleBody = document.getElementById("articleBody");
   const jiggasaBody = document.getElementById("jiggasaAnswerBody");
+
+  const applyFontSize = (container, val) => {
+    if (!container) return;
+    container.style.fontSize = val;
+    // Apply explicitly to child elements to override deeply nested styles or WP block styles
+    const children = container.querySelectorAll("*:not(.material-symbols-outlined)");
+    children.forEach(el => {
+      // Don't apply to specific structural elements if we don't want to break layout
+      if(['SVG', 'svg', 'IMG', 'BR', 'HR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) return;
+      el.style.setProperty("font-size", val, "important");
+      el.style.setProperty("line-height", val === "21px" ? "2.2" : "1.8", "important");
+    });
+  };
+
   if (fontBtns.length > 0) {
     fontBtns.forEach((btn) => {
       btn.addEventListener("click", function () {
         fontBtns.forEach((b) => b.classList.remove("active"));
         this.classList.add("active");
         const size = this.dataset.size;
-        const sizes = { small: "14px", medium: "16px", large: "19px" };
-        const val = sizes[size] || "16px";
-        if (articleBody) articleBody.style.fontSize = val;
-        if (jiggasaBody) jiggasaBody.style.fontSize = val;
+        const sizes = { small: "15px", medium: "17px", large: "21px" };
+        const val = sizes[size] || "17px";
+        
+        applyFontSize(articleBody, val);
+        applyFontSize(jiggasaBody, val);
       });
     });
   }
@@ -676,6 +606,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const height = articleBody.offsetHeight;
       const pct = Math.min(100, Math.max(0, ((window.scrollY - top) / height) * 100));
       progressFill.style.width = pct + "%";
+    });
+  }
+
+  // 13. Book TOC Toggle
+  const sbTocToggle = document.getElementById("sbTocToggle");
+  const sbTocList = document.getElementById("sbTocList");
+  if (sbTocToggle && sbTocList) {
+    sbTocToggle.addEventListener("click", function () {
+      sbTocList.classList.toggle("open");
+      sbTocToggle.classList.toggle("active");
     });
   }
 }); // ==========================================
@@ -833,7 +773,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!existingBtn) {
       const toggleBtn = document.createElement("button");
       toggleBtn.className = "dd-toggle-btn";
-      toggleBtn.setAttribute("aria-label", "সাব-মেনু খুলুন");
+      toggleBtn.setAttribute("aria-label", "Open sub-menu");
       toggleBtn.setAttribute("aria-expanded", "false");
       toggleBtn.innerHTML = '<span class="material-symbols-outlined">expand_more</span>';
 
@@ -891,22 +831,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // Dynamic Video Modal Logic (Robust Fix for Error 153)
-  const videoThumbs = document.querySelectorAll(".video-thumb");
+  // Dynamic Video Modal Logic (Robust Fix for Error 153)
   const videoModal = document.getElementById("video-modal");
   const videoPlaceholder = document.getElementById("video-placeholder");
   const closeModal = document.querySelector(".close-modal");
 
-  if (videoThumbs && videoModal && videoPlaceholder) {
-    window.initVideoPlayers = function () {
-      document.querySelectorAll(".video-thumb").forEach((thumb) => {
+  window.initVideoPlayers = function () {
+    const videoThumbs = document.querySelectorAll(".video-thumb");
+    const videoInplace = document.querySelectorAll(".video-inplace");
+
+    if (videoThumbs.length > 0) {
+      videoThumbs.forEach((thumb) => {
         if (thumb.dataset.bound === "1") return;
         thumb.dataset.bound = "1";
-        thumb.addEventListener("click", function () {
+        thumb.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
           const videoId = this.getAttribute("data-video-id");
-          if (videoId) {
-            const origin = window.location.origin === "null" ? "*" : window.location.origin;
+          if (videoId && videoModal && videoPlaceholder) {
             const iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&origin=${origin}`;
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
             iframe.setAttribute("frameborder", "0");
             iframe.setAttribute("allowfullscreen", "true");
             iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture");
@@ -917,17 +861,18 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
       });
+    }
 
-      document.querySelectorAll(".video-inplace").forEach((wrapper) => {
+    if (videoInplace.length > 0) {
+      videoInplace.forEach((wrapper) => {
         if (wrapper.dataset.bound === "1") return;
         wrapper.dataset.bound = "1";
         wrapper.addEventListener("click", function () {
           const videoId = this.getAttribute("data-video-id");
           if (videoId) {
             if (this.querySelector("iframe")) return;
-            const origin = window.location.origin === "null" ? "*" : window.location.origin;
             const iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&origin=${origin}`;
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
             iframe.setAttribute("frameborder", "0");
             iframe.setAttribute("allowfullscreen", "true");
             iframe.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture");
@@ -936,7 +881,10 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
       });
-    };
+    }
+  };
+
+  if (videoModal && videoPlaceholder) {
     window.initVideoPlayers();
 
     const closeVideoModal = function () {
@@ -1299,44 +1247,38 @@ document.addEventListener("DOMContentLoaded", function () {
     geoMaximumAgeMs: 300000,
     refreshIntervalMinutes: 15,
     labels: {
-      nextPrayerPrefix: "\u09aa\u09b0\u09ac\u09b0\u09cd\u09a4\u09c0\u0020\u09a8\u09be\u09ae\u09be\u099c",
-      locationPending: "\u09b2\u09cb\u0995\u09c7\u09b6\u09a8\u0020\u0985\u09a8\u09c1\u09ae\u09a4\u09bf\u09b0\u0020\u0985\u09aa\u09c7\u0995\u09cd\u09b7\u09be\u09df\u002e\u002e\u002e",
-      locationDenied: "\u09b2\u09cb\u0995\u09c7\u09b6\u09a8\u0020\u0985\u09a8\u09c1\u09ae\u09a4\u09bf\u0020\u09a8\u09be\u0020\u09a6\u09bf\u09b2\u09c7\u0020\u098f\u099f\u09bf\u0020\u0995\u09be\u099c\u0020\u0995\u09b0\u09ac\u09c7\u0020\u09a8\u09be",
-      locationUnavailable: "\u098f\u0987\u0020\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u0020\u09b2\u09cb\u0995\u09c7\u09b6\u09a8\u0020\u09b8\u09be\u09aa\u09cb\u09b0\u09cd\u099f\u0020\u09a8\u09c7\u0987",
-      locationTimeout: "\u09b2\u09cb\u0995\u09c7\u09b6\u09a8\u0020\u09aa\u09c7\u09a4\u09c7\u0020\u09b8\u09ae\u09df\u0020\u09b2\u09be\u0997\u099b\u09c7\u002c\u0020\u0986\u09ac\u09be\u09b0\u0020\u099a\u09c7\u09b7\u09cd\u099f\u09be\u0020\u0995\u09b0\u09c1\u09a8",
-      locationRetrying: "\u09b2\u09cb\u0995\u09c7\u09b6\u09a8\u0020\u0986\u09ac\u09be\u09b0\u0020\u09a8\u09c7\u0993\u09df\u09be\u0020\u09b9\u099a\u09cd\u099b\u09c7\u002e\u002e\u002e",
-      loading: "\u09a8\u09be\u09ae\u09be\u099c\u09c7\u09b0\u0020\u09b8\u09ae\u09df\u0020\u09b2\u09cb\u09a1\u0020\u09b9\u099a\u09cd\u099b\u09c7\u002e\u002e\u002e",
-      fetchError: "\u09a8\u09be\u09ae\u09be\u099c\u09c7\u09b0\u0020\u09b8\u09ae\u09df\u0020\u09b2\u09cb\u09a1\u0020\u0995\u09b0\u09be\u0020\u09af\u09be\u09df\u09a8\u09bf",
-      retryHint: "\u0986\u09ac\u09be\u09b0\u0020\u099a\u09c7\u09b7\u09cd\u099f\u09be\u09b0\u0020\u099c\u09a8\u09cd\u09af\u0020\u09ab\u09cd\u09b2\u09cb\u099f\u09bf\u0982\u0020\u09ac\u09be\u099f\u09a8\u09c7\u0020\u0995\u09cd\u09b2\u09bf\u0995\u0020\u0995\u09b0\u09c1\u09a8",
-      prayerTimesTitle: "\u0986\u099c\u0995\u09c7\u09b0\u0020\u09a8\u09be\u09ae\u09be\u099c\u09c7\u09b0\u0020\u09b8\u09ae\u09df",
-      nextPrayerText: "\u09aa\u09b0\u09ac\u09b0\u09cd\u09a4\u09c0\u0020\u09a8\u09be\u09ae\u09be\u099c",
-      sehri: "\u09b8\u09be\u09b9\u09b0\u09c0\u09b0\u0020\u09b6\u09c7\u09b7\u0020\u09b8\u09ae\u09df",
-      iftar: "\u0987\u09ab\u09a4\u09be\u09b0",
-      tomorrowFajr: "\u0986\u0997\u09be\u09ae\u09c0\u0995\u09be\u09b2\u09c7\u09b0\u0020\u09ab\u099c\u09b0",
+      nextPrayerPrefix: "Next Prayer",
+      locationPending: "Waiting for location permission...",
+      locationDenied: "Location permission denied",
+      locationUnavailable: "Location not supported in this browser",
+      locationTimeout: "Location timeout, please try again",
+      locationRetrying: "Retrying location...",
+      loading: "Loading prayer times...",
+      fetchError: "Could not load prayer times",
+      retryHint: "Click the floating button to retry",
+      prayerTimesTitle: "Today's Prayer Times",
+      nextPrayerText: "Next Prayer",
+      sehri: "Sehri Ends",
+      iftar: "Iftar",
+      tomorrowFajr: "Tomorrow's Fajr",
+      am: "AM",
+      pm: "PM",
+      hijri: "Hijri",
+      gps: "GPS"
     },
   };
-  // Helper: convert English digits to Bengali, AM/PM to পূর্বাহ্ন/অপরাহ্ন, and month names to Bengali
+  // Helper: convert English digits to Bengali ONLY when locale is bn_BD.
+  // AM/PM and month names are always replaced from translated labels (already i18n'd via PHP).
   function toBanglaDigits(str) {
-    const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-    const monthMap = {
-      Jan: "জানুয়ারি",
-      Feb: "ফেব্রুয়ারি",
-      Mar: "মার্চ",
-      Apr: "এপ্রিল",
-      May: "মে",
-      Jun: "জুন",
-      Jul: "জুলাই",
-      Aug: "আগস্ট",
-      Sep: "সেপ্টেম্বর",
-      Oct: "অক্টোবর",
-      Nov: "নভেম্বর",
-      Dec: "ডিসেম্বর",
-    };
+    const isBangla = (window.hidayahData && window.hidayahData.locale === 'bn_BD');
+    const banglaDigits = (window.hidayahData && window.hidayahData.banglaDigits) ? window.hidayahData.banglaDigits : null;
+    const labels = (prayerConfig && prayerConfig.labels) ? prayerConfig.labels : {};
     return String(str)
-      .replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g, (m) => monthMap[m] || m)
-      .replace(/\d/g, (d) => banglaDigits[d])
-      .replace(/AM/gi, "পূর্বাহ্ন")
-      .replace(/PM/gi, "অপরাহ্ন");
+      .replace(/[0-9]/g, (match) => isBangla && banglaDigits ? banglaDigits[Number(match)] : match)
+      .replace(/\bAM\b/g, labels.am || "AM")
+      .replace(/\bPM\b/g, labels.pm || "PM")
+      .replace(/\bGPS\b/g, labels.gps || "GPS")
+      .replace(/\bHijri\b/g, labels.hijri || "Hijri");
   }
   const prayerConfigSource = window.PRAYER_WIDGET_CONFIG || {};
   const prayerConfig = {
@@ -1392,13 +1334,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    const prayerNames = {
-      Fajr: "\u09ab\u099c\u09b0",
-      Dhuhr: "\u09af\u09cb\u09b9\u09b0",
-      Asr: "\u0986\u09b8\u09b0",
-      Maghrib: "\u09ae\u09be\u0997\u09b0\u09bf\u09ac",
-      Isha: "\u098f\u09b6\u09be",
-    };
+    // Prayer names come from PHP via wp_localize_script (PRAYER_WIDGET_CONFIG.prayerNames)
+    // so they are fully translatable via the .po / .mo language file.
+    const prayerNames = Object.assign(
+      { Fajr: "Fajr", Dhuhr: "Dhuhr", Asr: "Asr", Maghrib: "Maghrib", Isha: "Isha" },
+      (prayerConfig.prayerNames || {})
+    );
 
     const prayerRows = [
       { key: "Imsak", label: prayerConfig.labels.sehri, kind: "meta" },
@@ -1478,7 +1419,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (parts.length < 2) return cleanValue;
       const dateValue = new Date();
       dateValue.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
-      const formatted = new Intl.DateTimeFormat("bn-BD", {
+      const formatted = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
         minute: "2-digit",
         hour12: !prayerConfig.use24Hour,
@@ -1594,7 +1535,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // format the target time (e.g 8:30 PM) instead of the remaining countdown
       const formattedTargetTime = toBanglaDigits(
-        new Intl.DateTimeFormat("bn-BD", {
+        new Intl.DateTimeFormat("en-US", {
           hour: "numeric",
           minute: "2-digit",
           hour12: !prayerConfig.use24Hour,
@@ -1650,26 +1591,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let readableDate = "";
         if (todayData.date && todayData.date.hijri && todayData.date.gregorian) {
-          const hDay = todayData.date.hijri.day;
-          
-          const hijriMonthsEn = {
-            1: "Muharram", 2: "Safar", 3: "Rabi' al-awwal", 4: "Rabi' al-thani",
-            5: "Jumada al-ula", 6: "Jumada al-akhira", 7: "Rajab", 8: "Sha'ban",
-            9: "Ramadan", 10: "Shawwal", 11: "Dhu al-Qi'dah", 12: "Dhu al-Hijjah"
-          };
-          const mNum = parseInt(todayData.date.hijri.month.number);
-          const hMonth = hijriMonthsEn[mNum] || todayData.date.hijri.month.en;
-          const hYear = todayData.date.hijri.year;
+          const hDay = toBanglaDigits(todayData.date.hijri.day);
 
-          const gDay = todayData.date.gregorian.day;
-          const gMonth = todayData.date.gregorian.month.en;
-          const gYear = todayData.date.gregorian.year;
+          // Use month NUMBER (1-12) for Hijri lookup — API text varies (e.g. "Shawwāl" vs "Shawwal")
+          const hMonthNum  = parseInt(todayData.date.hijri.month.number, 10);
+          const hijriMonthsByNumber = [
+            '', 'Muharram', 'Safar', "Rabi' al-awwal", "Rabi' al-thani",
+            'Jumada al-ula', 'Jumada al-akhira', 'Rajab', "Sha'ban",
+            'Ramadan', 'Shawwal', "Dhu al-Qi'dah", 'Dhu al-Hijjah'
+          ];
+          const hMonthKey = hijriMonthsByNumber[hMonthNum] || todayData.date.hijri.month.en;
+          const hMonth = (prayerConfig.months && prayerConfig.months.Hijri && prayerConfig.months.Hijri[hMonthKey])
+            ? prayerConfig.months.Hijri[hMonthKey]
+            : hMonthKey;
+          const hYear = toBanglaDigits(todayData.date.hijri.year);
 
-          readableDate = `${hDay} ${hMonth} ${hYear} Hijri  •  ${gDay} ${gMonth} ${gYear}`;
+          const gDay = toBanglaDigits(todayData.date.gregorian.day);
+          // Normalize Gregorian month name (remove diacritics, trim) for robust lookup
+          const gMonthRaw = todayData.date.gregorian.month.en || '';
+          const gMonthNorm = gMonthRaw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+          const gMonth = (prayerConfig.months && prayerConfig.months.Gregorian && prayerConfig.months.Gregorian[gMonthNorm])
+            ? prayerConfig.months.Gregorian[gMonthNorm]
+            : gMonthNorm;
+          const gYear = toBanglaDigits(todayData.date.gregorian.year);
+
+          const hijriLabel = prayerConfig.labels.hijri || "Hijri";
+          readableDate = `${hDay} ${hMonth} ${hYear} ${hijriLabel}  •  ${gDay} ${gMonth} ${gYear}`;
         } else if (todayData.date && todayData.date.readable) {
-          readableDate = todayData.date.readable;
+          readableDate = toBanglaDigits(todayData.date.readable);
         } else {
-          readableDate = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+          readableDate = toBanglaDigits(new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }));
         }
 
         prayerElements.sheetDate.textContent = readableDate;
@@ -1681,7 +1632,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (prayerElements.sheetLocation.textContent === "GPS" || prayerElements.sheetLocation.textContent.startsWith("GPS:")) {
           try {
-            const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=bn`);
+            const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
             if (geoRes.ok) {
               const geoData = await geoRes.json();
               // Extract district name (adminLevel 5 = জেলা) from localityInfo
@@ -1689,16 +1640,26 @@ document.addEventListener("DOMContentLoaded", function () {
               if (geoData.localityInfo && geoData.localityInfo.administrative) {
                 const district = geoData.localityInfo.administrative.find((a) => a.adminLevel === 5);
                 if (district && district.name) {
-                  // Remove "জেলা" suffix if present (e.g., "জয়পুরহাট জেলা" → "জয়পুরহাট")
-                  districtName = district.name.replace(/\s*জেলা\s*$/, "").trim();
+                  // Remove "District" suffix if present
+                  let rawName = district.name.replace(/\s*District\s*$/, "").trim();
+                  // Look up Bengali name
+                  districtName = (prayerConfig.districts && prayerConfig.districts[rawName]) 
+                    ? prayerConfig.districts[rawName] 
+                    : rawName;
                 }
               }
-              prayerElements.sheetLocation.textContent = districtName || geoData.city || geoData.locality || geoData.principalSubdivision || `GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+              const finalCity = districtName || geoData.city || geoData.locality || geoData.principalSubdivision;
+              // Also try to translate city/locality if district lookup failed but city is in our list
+              const translatedCity = (prayerConfig.districts && prayerConfig.districts[finalCity]) 
+                ? prayerConfig.districts[finalCity] 
+                : finalCity;
+
+              prayerElements.sheetLocation.textContent = translatedCity || `GPS: ${toBanglaDigits(latitude.toFixed(4))}, ${toBanglaDigits(longitude.toFixed(4))}`;
             } else {
-              prayerElements.sheetLocation.textContent = `GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+              prayerElements.sheetLocation.textContent = `GPS: ${toBanglaDigits(latitude.toFixed(4))}, ${toBanglaDigits(longitude.toFixed(4))}`;
             }
           } catch (e) {
-            prayerElements.sheetLocation.textContent = `GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            prayerElements.sheetLocation.textContent = `GPS: ${toBanglaDigits(latitude.toFixed(4))}, ${toBanglaDigits(longitude.toFixed(4))}`;
           }
         }
 
@@ -1861,7 +1822,7 @@ document.addEventListener("DOMContentLoaded", function () {
           longitude: 90.4125,
         };
         prayerState.currentCoords = coords;
-        prayerElements.sheetLocation.textContent = prayerConfig.fallbackCity || "ঢাকা";
+        prayerElements.sheetLocation.textContent = prayerConfig.fallbackCity || "Dhaka";
         refreshPrayerData();
       }
     }
@@ -1910,187 +1871,8 @@ document.addEventListener("DOMContentLoaded", function () {
     prayerState.refreshTimer = setInterval(refreshPrayerData, Math.max(5, Number(prayerConfig.refreshIntervalMinutes) || 15) * 60 * 1000);
   }
 
-  /* ==========================================
-     SHOPPING CART LOGIC
-     ========================================== */
-  const cartState = {
-    items: JSON.parse(localStorage.getItem("hd_cart")) || [],
-  };
 
-  const cartModalOverlay = document.getElementById("cartModalOverlay");
-  const cartModalCloseBtn = document.getElementById("cartModalCloseBtn");
-  const headerCartBtn = document.getElementById("headerCartBtn");
-  const cartItemsContainer = document.getElementById("cartItemsContainer");
-  const cartTotalPriceEl = document.getElementById("cartTotalPrice");
-  const cartCountBadge = document.getElementById("cartCountBadge");
-  const toastContainer = document.getElementById("toast-container");
 
-  if (headerCartBtn && cartModalOverlay) {
-    headerCartBtn.addEventListener("click", () => {
-      cartModalOverlay.classList.add("active");
-    });
-
-    cartModalCloseBtn.addEventListener("click", () => {
-      cartModalOverlay.classList.remove("active");
-    });
-
-    // Close when clicking outside of modal
-    cartModalOverlay.addEventListener("click", (e) => {
-      if (e.target === cartModalOverlay) {
-        cartModalOverlay.classList.remove("active");
-      }
-    });
-  }
-
-  window.showToast = function (message) {
-    if (!toastContainer) return;
-    const toast = document.createElement("div");
-    toast.className = "toast-message";
-    toast.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${message}`;
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 3000);
-  };
-
-  function updateCartUI() {
-    // Save to localStorage
-    localStorage.setItem("hd_cart", JSON.stringify(cartState.items));
-    window.dispatchEvent(new Event("hd_cart_updated"));
-
-    // Calculate total quantity for badge
-    const totalItems = cartState.items.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-    if (cartCountBadge) {
-      cartCountBadge.textContent = toBanglaDigits(totalItems);
-    }
-
-    if (cartState.items.length === 0) {
-      if (cartItemsContainer) cartItemsContainer.innerHTML = '<div class="empty-cart-msg">কার্টে কোন বই নেই।</div>';
-      if (cartTotalPriceEl) cartTotalPriceEl.textContent = "৳ ০";
-      return;
-    }
-
-    if (cartItemsContainer) {
-      cartItemsContainer.innerHTML = "";
-      let total = 0;
-
-      cartState.items.forEach((item, index) => {
-        const qty = item.quantity || 1;
-        total += item.price * qty;
-
-        const itemEl = document.createElement("div");
-        itemEl.className = "cart-item";
-        itemEl.innerHTML = `
-          <img src="${item.img}" alt="${item.title}">
-          <div class="cart-item-details">
-            <h4 class="cart-item-title">${item.title}</h4>
-            <div class="cart-item-price">৳ ${toBanglaDigits(item.price)}</div>
-          </div>
-          <div class="cart-item-actions">
-            <div class="cart-qty-controls">
-              <button class="cart-qty-btn minus-btn" data-index="${index}">-</button>
-              <span class="cart-qty-text">${toBanglaDigits(qty)}</span>
-              <button class="cart-qty-btn plus-btn" data-index="${index}">+</button>
-            </div>
-            <button class="cart-item-remove" data-index="${index}" title="রিমুভ করুন">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-          </div>
-        `;
-        cartItemsContainer.appendChild(itemEl);
-      });
-
-      // Add listeners for plus buttons
-      const plusBtns = cartItemsContainer.querySelectorAll(".plus-btn");
-      plusBtns.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          const idx = e.currentTarget.getAttribute("data-index");
-          if (!cartState.items[idx].quantity) cartState.items[idx].quantity = 1;
-          cartState.items[idx].quantity++;
-          updateCartUI();
-        });
-      });
-
-      // Add listeners for minus buttons
-      const minusBtns = cartItemsContainer.querySelectorAll(".minus-btn");
-      minusBtns.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          const idx = e.currentTarget.getAttribute("data-index");
-          if (!cartState.items[idx].quantity) cartState.items[idx].quantity = 1;
-          if (cartState.items[idx].quantity > 1) {
-            cartState.items[idx].quantity--;
-          } else {
-            cartState.items.splice(idx, 1); // remove if quantity goes below 1
-          }
-          updateCartUI();
-        });
-      });
-
-      // Add remove listeners
-      const removeBtns = cartItemsContainer.querySelectorAll(".cart-item-remove");
-      removeBtns.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          const idx = e.currentTarget.getAttribute("data-index");
-          cartState.items.splice(idx, 1);
-          updateCartUI();
-        });
-      });
-
-      if (cartTotalPriceEl) {
-        cartTotalPriceEl.textContent = "৳ " + toBanglaDigits(total);
-      }
-    }
-  }
-
-  // Initialize cart on page load
-  updateCartUI();
-
-  // Bind order buttons
-  window.initCartButtons = function () {
-    const orderButtons = document.querySelectorAll(".book-sales-order-btn");
-    orderButtons.forEach((btn) => {
-      if (btn.dataset.bound === "1") return;
-      btn.dataset.bound = "1";
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        const card = btn.closest(".book-sales-card, .book-archive-card");
-        if (!card) return;
-
-        const title = card.querySelector("h3") ? card.querySelector("h3").innerText : "নতুন বই";
-        const img = card.querySelector("img") ? card.querySelector("img").src : "";
-        const priceStr = card.querySelector(".book-sales-price") ? card.querySelector(".book-sales-price").innerText : "0";
-
-        let numericPriceStr = priceStr.replace(/[^০-৯0-9]/g, "");
-        const engDigits = numericPriceStr.replace(/[০-৯]/g, (d) => "০১২৩৪৫৬৭৮৯".indexOf(d));
-        const price = parseInt(engDigits, 10) || 0;
-
-        const existingItemIndex = cartState.items.findIndex((item) => item.title === title);
-
-        if (existingItemIndex > -1) {
-          if (!cartState.items[existingItemIndex].quantity) {
-            cartState.items[existingItemIndex].quantity = 1;
-          }
-          cartState.items[existingItemIndex].quantity++;
-        } else {
-          cartState.items.push({
-            title,
-            img,
-            price,
-            quantity: 1,
-          });
-        }
-
-        updateCartUI();
-        if (typeof window.showToast === "function") window.showToast(`${title} কার্টে যোগ করা হয়েছে!`);
-      });
-    });
-  };
-  window.initCartButtons();
 
   // ==========================================
   // Archive View Toggle (Grid / List)
@@ -2123,50 +1905,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Single Book Quantity Stepper & Add to Cart Fix
-  const qtyInput = document.getElementById("sbQtyInput");
-  const qtyMinus = document.getElementById("sbQtyMinus");
-  const qtyPlus = document.getElementById("sbQtyPlus");
-  const sbAddToCartBtn = document.querySelector(".sb-add-to-cart-btn");
+  // Legacy qty stepper logic removed. Native WooCommerce used instead.
 
-  if (qtyInput && qtyMinus && qtyPlus) {
-    qtyMinus.addEventListener("click", () => {
-      let val = parseInt(qtyInput.value) || 1;
-      if (val > 1) qtyInput.value = val - 1;
-    });
-    qtyPlus.addEventListener("click", () => {
-      let val = parseInt(qtyInput.value) || 1;
-      if (val < 20) qtyInput.value = val + 1;
-    });
-  }
-
-  if (sbAddToCartBtn) {
-    sbAddToCartBtn.addEventListener("click", function () {
-      const title = this.getAttribute("data-book-title");
-      const price = parseInt(this.getAttribute("data-book-price")) || 0;
-      const img = document.getElementById("sbMainImg") ? document.getElementById("sbMainImg").src : "";
-      const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-
-      const existingItemIndex = cartState.items.findIndex((item) => item.title === title);
-
-      if (existingItemIndex > -1) {
-        if (!cartState.items[existingItemIndex].quantity) {
-          cartState.items[existingItemIndex].quantity = 0;
-        }
-        cartState.items[existingItemIndex].quantity += qty;
-      } else {
-        cartState.items.push({
-          title,
-          img,
-          price,
-          quantity: qty,
-        });
-      }
-
-      updateCartUI();
-      showToast(`${title} কার্টে যোগ করা হয়েছে!`);
-    });
-  }
+  // Legacy add to cart listener removed. Native WooCommerce used instead.
 
   // ==========================================
   // Year Filter Dropdown Toggle
@@ -2199,7 +1940,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const year = this.textContent.split("(")[0].trim();
         if (selectedYearText) {
-          selectedYearText.textContent = year === "সব সাল" ? "সাল অনুযায়ী" : year;
+          selectedYearText.textContent = year === "All Years" ? "By Year" : year;
         }
         yearDropdown.classList.remove("active");
 
@@ -2305,7 +2046,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
               const countText = countData.textContent;
               const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-              self.$count.innerHTML = icon + ' মোট ' + countText + 'টি অডিও';
+              self.$count.innerHTML = icon + ' Total ' + countText + ' Audios';
           }
 
           if (paginationData) paginationData.remove();
@@ -2421,7 +2162,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি বই';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Books';
           }
 
           if (paginationData) paginationData.remove();
@@ -2429,9 +2170,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           self.$grid.innerHTML = tempDiv.innerHTML;
 
-          if (typeof window.initCartButtons === 'function') {
-            window.initCartButtons();
-          }
+          // Standard WooCommerce AJAX add to cart will handle buttons.
 
           window.scrollTo({
             top: self.$grid.getBoundingClientRect().top + window.pageYOffset - 100,
@@ -2542,7 +2281,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি প্রশ্ন';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Questions';
           }
 
           if (paginationData) paginationData.remove();
@@ -2613,7 +2352,7 @@ document.addEventListener("DOMContentLoaded", function () {
     filter: function(paged = 1) {
       const self = this;
       const data = new URLSearchParams({
-        action: 'filter_monthly_hd',
+        action: 'filter_monthly_magazine',
         nonce: ajaxNonce,
         year: this.$year ? this.$year.value : '',
         category: this.$category ? this.$category.value : '',
@@ -2648,7 +2387,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি সংখ্যা';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Issues';
           }
 
           if (paginationData) paginationData.remove();
@@ -2790,7 +2529,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি নোটিশ';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Notices';
           }
 
           if (paginationData) paginationData.remove();
@@ -2896,7 +2635,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি এলবাম';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Albums';
           }
 
           if (paginationData) paginationData.remove();
@@ -3000,7 +2739,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি প্রবন্ধ';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Articles';
           }
 
           if (paginationData) paginationData.remove();
@@ -3106,7 +2845,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (self.$count && countData) {
             const countText = countData.textContent;
             const icon = self.$count.querySelector('.material-symbols-outlined').outerHTML;
-            self.$count.innerHTML = icon + ' মোট ' + countText + 'টি ভিডিও';
+            self.$count.innerHTML = icon + ' Total ' + countText + ' Videos';
           }
 
           if (paginationData) paginationData.remove();
@@ -3169,7 +2908,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(res => {
           if (!res.success) {
             if (res.data && res.data.message === 'already_voted' && typeof window.showToast === 'function') {
-              window.showToast('আপনি ইতিমধ্যে ভোট দিয়েছেন।');
+              window.showToast('You have already voted.');
             }
             return;
           }
@@ -3180,10 +2919,10 @@ document.addEventListener("DOMContentLoaded", function () {
           const downBtn = document.querySelector('.jiggasa-vote-btn[data-type="down"]');
 
           if (upBtn) {
-            upBtn.innerHTML = '<span class="material-symbols-outlined">thumb_up</span> হ্যাঁ (' + toBanglaDigits(up) + ')';
+            upBtn.innerHTML = '<span class="material-symbols-outlined">thumb_up</span> Yes (' + toBanglaDigits(up) + ')';
           }
           if (downBtn) {
-            downBtn.innerHTML = '<span class="material-symbols-outlined">thumb_down</span> না (' + toBanglaDigits(down) + ')';
+            downBtn.innerHTML = '<span class="material-symbols-outlined">thumb_down</span> No (' + toBanglaDigits(down) + ')';
           }
         })
         .catch(err => console.error('AJAX Error:', err));
@@ -3213,4 +2952,73 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(res => res.json())
     .catch(err => console.error('AJAX Error:', err));
   };
+
+  // ==========================================
+  // Single Book Star Rating Picker
+  // ==========================================
+  const starPicker = document.getElementById("sbStarPicker");
+  if (starPicker) {
+    const starBtns = starPicker.querySelectorAll(".sb-star-pick");
+    const ratingInput = document.getElementById("hc-rating") || document.getElementById("rating");
+    const ratingError = document.getElementById("rating-error");
+
+    starBtns.forEach((btn, idx) => {
+      btn.addEventListener("mouseover", () => {
+        starBtns.forEach((b, i) => {
+          if (i <= idx) {
+            b.style.color = "#f59e0b";
+            const s = b.querySelector("span");
+            if (s) s.style.fontVariationSettings = '"FILL" 1, "wght" 400';
+          } else {
+            b.style.color = "#cbd5e1";
+            const s = b.querySelector("span");
+            if (s) s.style.fontVariationSettings = '"FILL" 0, "wght" 300';
+          }
+        });
+      });
+
+      btn.addEventListener("mouseout", () => {
+        starBtns.forEach((b) => {
+          b.style.color = "";
+          const s = b.querySelector("span");
+          if (s) {
+            if (b.classList.contains("selected")) {
+              s.style.fontVariationSettings = '"FILL" 1, "wght" 400';
+            } else {
+              s.style.fontVariationSettings = '"FILL" 0, "wght" 300';
+            }
+          }
+        });
+      });
+
+      btn.addEventListener("click", () => {
+        const val = parseInt(btn.getAttribute("data-val"));
+        ratingInput.value = val;
+
+        // Reset all stars and fill up to selected
+        starBtns.forEach((b, i) => {
+          const span = b.querySelector("span");
+          if (i < val) {
+            b.classList.add("selected");
+            if (span) span.style.fontVariationSettings = '"FILL" 1, "wght" 400';
+          } else {
+            b.classList.remove("selected");
+            if (span) span.style.fontVariationSettings = '"FILL" 0, "wght" 300';
+          }
+        });
+
+        if (ratingError) ratingError.style.display = "none";
+      });
+    });
+
+    const reviewForm = document.querySelector(".sb-review-form, .hc-form");
+    if (reviewForm) {
+      reviewForm.addEventListener("submit", (e) => {
+        if (ratingInput && parseInt(ratingInput.value) === 0) {
+          e.preventDefault();
+          if (ratingError) ratingError.style.display = "block";
+        }
+      });
+    }
+  }
 });

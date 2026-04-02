@@ -46,8 +46,8 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
 
 <section class="archive-hero">
     <div class="archive-hero-content">
-        <h2><?php _e( 'প্রবন্ধ ও লেখনি', 'hidayah' ); ?></h2>
-        <p><?php _e( 'ইসলামের বিভিন্ন বিষয়ে হক্কানী আলেমদের লেখা প্রবন্ধ ও বিশ্লেষণধর্মী রচনা।', 'hidayah' ); ?></p>
+        <h2><?php _e( 'Articles & Writings', 'hidayah' ); ?></h2>
+        <p><?php _e( 'Articles and analytical compositions written by Haqqani Ulama on various Islamic topics.', 'hidayah' ); ?></p>
     </div>
 </section>
 
@@ -55,9 +55,9 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
     <div class="container">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="archive-breadcrumb">
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'হোম', 'hidayah' ); ?></a>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php _e( 'Home', 'hidayah' ); ?></a>
             <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
-            <span class="breadcrumb-current"><?php _e( 'সকল প্রবন্ধ', 'hidayah' ); ?></span>
+            <span class="breadcrumb-current"><?php _e( 'All Articles', 'hidayah' ); ?></span>
         </nav>
 
         <div class="archive-layout">
@@ -69,14 +69,14 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                         <div class="archive-search-bar">
                             <form role="search" id="probondhoSearchForm" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" style="display: flex; width: 100%; align-items: center;">
                                 <span class="material-symbols-outlined">search</span>
-                                <input class="archive-search-input" id="probondhoSearchInput" placeholder="<?php _e( 'প্রবন্ধ খুঁজুন...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
+                                <input class="archive-search-input" id="probondhoSearchInput" placeholder="<?php _e( 'Search articles...', 'hidayah' ); ?>" type="text" name="s" value="<?php echo get_search_query(); ?>" />
                                 <input type="hidden" name="post_type" value="probondho" />
                             </form>
                         </div>
                         <div class="archive-toolbar-right">
                             <select class="archive-sort-select" id="probondhoSortSelect">
-                                <option value="newest" <?php selected($_GET['orderby'] ?? '', 'date'); ?>><?php _e( 'নতুন প্রথমে', 'hidayah' ); ?></option>
-                                <option value="popular" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'জনপ্রিয়', 'hidayah' ); ?></option>
+                                <option value="newest" <?php selected($_GET['orderby'] ?? '', 'date'); ?>><?php _e( 'Newest First', 'hidayah' ); ?></option>
+                                <option value="popular" <?php selected($_GET['orderby'] ?? '', 'popular'); ?>><?php _e( 'Popular', 'hidayah' ); ?></option>
                             </select>
                             <div class="archive-view-toggle" data-view-target="#probondhoArchiveList">
                                 <button class="view-toggle-btn active" data-view="grid">
@@ -94,13 +94,13 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                         <div class="archive-filters-toolbar">
                         <div class="archive-count-badge" id="probondhoCountBadge">
                             <span class="material-symbols-outlined">article</span>
-                            <?php printf( __( 'মোট %sটি প্রবন্ধ', 'hidayah' ), hidayah_en_to_bn_number( $art_query->found_posts ) ); ?>
+                            <?php printf( __( 'Total %s Articles', 'hidayah' ), $art_query->found_posts ); ?>
                         </div>
                         <div class="archive-taxonomy-filters">
                             <select id="probondhoCatFilter">
-                                <option value=""><?php _e( 'বিষয় অনুযায়ী', 'hidayah' ); ?></option>
+                                <option value=""><?php _e( 'By Topic', 'hidayah' ); ?></option>
                                 <?php foreach ( $cats as $ct ) : ?>
-                                    <option value="<?php echo esc_attr( $ct->term_id ); ?>"><?php echo esc_html( $ct->name ); ?> (<?php echo hidayah_en_to_bn_number($ct->count); ?>)</option>
+                                    <option value="<?php echo esc_attr( $ct->term_id ); ?>"><?php echo esc_html( $ct->name ); ?> (<?php echo $ct->count; ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -114,9 +114,9 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                         </div>
                         <div class="probondho-list" id="probondhoArchiveList">
                         <?php if ( $art_query->have_posts() ) : while ( $art_query->have_posts() ) : $art_query->the_post(); 
-                            $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '৫';
+                            $read_time = get_post_meta( get_the_ID(), '_reading_time', true ) ?: '5';
                             $cats = get_the_terms( get_the_ID(), 'probondho_cat' );
-                            $cat_name = !empty($cats) ? $cats[0]->name : __( 'সাধারণ', 'hidayah' );
+                            $cat_name = !empty($cats) ? $cats[0]->name : __( 'General', 'hidayah' );
                         ?>
                             <article class="probondho-card">
                                 <div class="probondho-card-img">
@@ -140,12 +140,12 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                                         </span>
                                         <span>
                                             <span class="material-symbols-outlined">schedule</span>
-                                            <?php printf( __( '%s মিনিট', 'hidayah' ), hidayah_en_to_bn_number($read_time) ); ?>
+                                            <?php printf( __( '%s Min Read', 'hidayah' ), $read_time ); ?>
                                         </span>
                                     </div>
                                     <p><?php echo wp_trim_words( get_the_excerpt(), 20 ); ?></p>
                                     <a class="probondho-read-more" href="<?php the_permalink(); ?>">
-                                        <?php _e( 'বিস্তারিত পড়ুন', 'hidayah' ); ?>
+                                        <?php _e( 'Read Details', 'hidayah' ); ?>
                                         <span class="material-symbols-outlined">arrow_forward</span>
                                     </a>
                                 </div>
@@ -173,7 +173,7 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">trending_up</span>
-                            <?php _e( 'সর্বাধিক পঠিত', 'hidayah' ); ?>
+                            <?php _e( 'Most Read', 'hidayah' ); ?>
                         </h4>
                         <ul class="sidebar-recent-list">
                             <?php
@@ -192,7 +192,7 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                                         <span class="material-symbols-outlined recent-icon">article</span>
                                         <div class="recent-info">
                                             <h5><?php the_title(); ?></h5>
-                                            <span><?php printf( __( '%s পাঠক', 'hidayah' ), hidayah_en_to_bn_number(number_format_i18n($v_count)) ); ?></span>
+                                            <span><?php printf( __( '%s Readers', 'hidayah' ), number_format_i18n($v_count) ); ?></span>
                                         </div>
                                     </a>
                                 </li>
@@ -204,7 +204,7 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                     <div class="sidebar-widget">
                         <h4 class="sidebar-widget-title">
                             <span class="material-symbols-outlined">tag</span>
-                            <?php _e( 'ট্যাগ ক্লাউড', 'hidayah' ); ?>
+                            <?php _e( 'Tag Cloud', 'hidayah' ); ?>
                         </h4>
                         <div class="probondho-tag-cloud">
                             <?php
@@ -218,9 +218,9 @@ $cats = get_terms( array( 'taxonomy' => 'probondho_cat' ) );
                     <!-- Submit Article CTA -->
                     <div class="sidebar-widget probondho-submit-cta">
                         <span class="material-symbols-outlined probondho-submit-icon">edit_note</span>
-                        <h4 class="probondho-submit-title"><?php _e( 'লেখা পাঠান', 'hidayah' ); ?></h4>
-                        <p class="probondho-submit-text"><?php _e( 'আপনার লেখা আমাদের পাঠাতে পারেন।', 'hidayah' ); ?></p>
-                        <a class="btn btn-sm" href="<?php echo esc_url( home_url( '/submit-article' ) ); ?>"><?php _e( 'লেখা পাঠান', 'hidayah' ); ?></a>
+                        <h4 class="probondho-submit-title"><?php _e( 'Submit Article', 'hidayah' ); ?></h4>
+                        <p class="probondho-submit-text"><?php _e( 'You can send your writings to us.', 'hidayah' ); ?></p>
+                        <a class="btn btn-sm" href="<?php echo esc_url( home_url( '/submit-article' ) ); ?>"><?php _e( 'Submit Writing', 'hidayah' ); ?></a>
                     </div>
                 </div>
             </aside>

@@ -13,7 +13,7 @@
 $h_site_title    = hidayah_opt( 'header_site_title',    get_bloginfo( 'name' ) );
 $h_site_subtitle = hidayah_opt( 'header_site_subtitle', get_bloginfo( 'description' ) );
 $h_donate_url    = hidayah_opt( 'header_donation_url',  home_url( '/hadiya' ) );
-$h_donate_label  = hidayah_opt( 'header_donation_label', __( 'হাদিয়া', 'hidayah' ) );
+$h_donate_label  = hidayah_opt( 'header_donation_label', __( 'Donation', 'hidayah' ) );
 $h_show_cart     = hidayah_opt( 'header_show_cart', true );
 $h_hide_donate_m = hidayah_opt( 'header_hide_donation_mobile', false );
 $h_show_date     = hidayah_opt( 'header_show_date', true );
@@ -48,15 +48,11 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
                 </div>
             <?php endif; ?>
             <div class="header-text">
-                <?php if ( is_front_page() && is_home() ) : ?>
-                    <h1><?php echo esc_html( $h_site_title ); ?></h1>
-                <?php else : ?>
-                    <p class="site-title">
-                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" style="color:inherit;">
-                            <?php echo esc_html( $h_site_title ); ?>
-                        </a>
-                    </p>
-                <?php endif; ?>
+                <p class="site-title">
+                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" style="color:inherit;">
+                        <?php echo esc_html( $h_site_title ); ?>
+                    </a>
+                </p>
                 <p><?php echo esc_html( $h_site_subtitle ); ?></p>
                 <?php if ( $h_show_date ) : ?>
                     <p id="hijri-date" class="hijri-date"></p>
@@ -69,12 +65,12 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
             <?php if ( $h_show_cart ) : ?>
                 <div class="cart-wrapper">
                     <?php if ( function_exists( 'WC' ) ) : ?>
-                    <button class="header-cart-btn" id="headerCartBtn">
+                    <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="header-cart-btn" id="headerCartBtn">
                         <span class="material-symbols-outlined cart-icon">shopping_cart</span>
                         <span class="cart-count" id="cartCountBadge">
                             <?php echo intval( WC()->cart->get_cart_contents_count() ); ?>
                         </span>
-                    </button>
+                    </a>
                     <?php else : ?>
                     <button class="header-cart-btn" id="headerCartBtn">
                         <span class="material-symbols-outlined cart-icon">shopping_cart</span>
@@ -102,8 +98,8 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
 
         <!-- Mobile menu header -->
         <div class="nav-header-mobile">
-            <span class="nav-title"><?php esc_html_e( 'মেনু', 'hidayah' ); ?></span>
-            <button class="close-menu" aria-label="<?php esc_attr_e( 'বন্ধ করুন', 'hidayah' ); ?>">
+            <span class="nav-title"><?php esc_html_e( 'Menu', 'hidayah' ); ?></span>
+            <button class="close-menu" aria-label="<?php esc_attr_e( 'Close', 'hidayah' ); ?>">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -124,7 +120,7 @@ $logo_url  = is_array( $logo_data ) ? ( $logo_data['url'] ?? '' ) : '';
             <ul class="nav-menu">
                 <li class="nav-item">
                     <p style="padding: 20px; color: rgba(255,255,255,0.6); font-size: 14px;">
-                        <?php esc_html_e( 'কোন মেনু সেট করা নেই। দয়া করে অ্যাপিয়ারেন্স > মেনু থেকে মেনু সেট করুন।', 'hidayah' ); ?>
+                        <?php esc_html_e( 'No menu set. Please set a menu from Appearance > Menus.', 'hidayah' ); ?>
                     </p>
                 </li>
             </ul>
