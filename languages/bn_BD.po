@@ -1,0 +1,1067 @@
+﻿# Bengali (Bangladesh) Translation for Hidayah Theme
+# Copyright (C) 2025 Ridowan Hossain
+# This file is distributed under the same license as the Hidayah package.
+# Translator: Ridowan Hossain
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Hidayah 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-11\n"
+"PO-Revision-Date: 2026-04-01\n"
+"Last-Translator: Ridowan Hossain\n"
+"Language-Team: Bengali (Bangladesh)\n"
+"Language: bn_BD\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Manual\n"
+"Domain: hidayah\n"
+
+# ─────────────────────────────────────────────
+# Navigation & General UI
+# ─────────────────────────────────────────────
+
+msgid "Home"
+msgstr "হোম"
+
+msgid "Search"
+msgstr "অনুসন্ধান"
+
+msgid "All"
+msgstr "সকল"
+
+msgid "Previous"
+msgstr "পূর্ববর্তী"
+
+msgid "Next"
+msgstr "পরবর্তী"
+
+msgid "Details"
+msgstr "বিস্তারিত"
+
+msgid "Read"
+msgstr "পড়ুন"
+
+msgid "Download"
+msgstr "ডাউনলোড"
+
+msgid "Primary Menu"
+msgstr "প্রধান মেনু"
+
+msgid "ago"
+msgstr "আগে"
+
+# ─────────────────────────────────────────────
+# Audio / Video Player
+# ─────────────────────────────────────────────
+
+msgid "Audio"
+msgstr "অডিও"
+
+msgid "Video"
+msgstr "ভিডিও"
+
+msgid "Play / Pause"
+msgstr "চালান / বিরতি"
+
+msgid "10 seconds backward"
+msgstr "১০ সেকেন্ড পেছনে"
+
+msgid "10 seconds forward"
+msgstr "১০ সেকেন্ড সামনে"
+
+msgid "Listeners"
+msgstr "শ্রোতা"
+
+msgid "minutes"
+msgstr "মিনিট"
+
+msgid "Latest Speech"
+msgstr "সর্বশেষ বয়ান"
+
+msgid "Special Speech"
+msgstr "বিশেষ বয়ান"
+
+msgid "Featured Lecture"
+msgstr "বিশেষ বক্তৃতা"
+
+msgid "Listen to more audio"
+msgstr "আরও অডিও শুনুন"
+
+msgid "Watch more videos"
+msgstr "আরও ভিডিও দেখুন"
+
+msgid "Other Videos"
+msgstr "অন্যান্য ভিডিও"
+
+msgid "Sorry, no audio was found."
+msgstr "দুঃখিত, কোনো অডিও পাওয়া যায়নি।"
+
+msgid "Set Reminder"
+msgstr "রিমাইন্ডার সেট করুন"
+
+# ─────────────────────────────────────────────
+# Book / WooCommerce
+# ─────────────────────────────────────────────
+
+msgid "Order Now"
+msgstr "অর্ডার করুন"
+
+msgid "Add to Cart"
+msgstr "কার্টে যোগ করুন"
+
+msgid "Out of stock"
+msgstr "স্টক শেষ"
+
+msgid "Sorry, no books were found."
+msgstr "দুঃখিত, কোনো বই পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Notice / Announcement
+# ─────────────────────────────────────────────
+
+msgid "Urgent"
+msgstr "জরুরি"
+
+msgid "Important"
+msgstr "গুরুত্বপূর্ণ"
+
+msgid "General"
+msgstr "সাধারণ"
+
+msgid "All Types"
+msgstr "সকল ধরন"
+
+msgid "By Category"
+msgstr "বিভাগ অনুযায়ী"
+
+msgid "Newest First"
+msgstr "নতুন থেকে পুরনো"
+
+msgid "Oldest First"
+msgstr "পুরনো থেকে নতুন"
+
+msgid "Pinned Notices"
+msgstr "পিন করা বিজ্ঞপ্তি"
+
+msgid "Latest Notices"
+msgstr "সর্বশেষ বিজ্ঞপ্তি"
+
+msgid "Download Center"
+msgstr "ডাউনলোড কেন্দ্র"
+
+msgid "Search notices..."
+msgstr "বিজ্ঞপ্তি খুঁজুন..."
+
+msgid "All official notices, emergency announcements, and Mahfil schedules of Darbar Sharif."
+msgstr "দরবার শরিফের সকল সরকারি বিজ্ঞপ্তি, জরুরি ঘোষণা এবং মাহফিলের সময়সূচি।"
+
+msgid "Total %s Notices"
+msgstr "মোট %s টি বিজ্ঞপ্তি"
+
+msgid "Sorry, no notices were found."
+msgstr "দুঃখিত, কোনো বিজ্ঞপ্তি পাওয়া যায়নি।"
+
+msgid "No announcements available."
+msgstr "কোনো ঘোষণা নেই।"
+
+# ─────────────────────────────────────────────
+# Dini Jiggasa (Q&A)
+# ─────────────────────────────────────────────
+
+msgid "Answered"
+msgstr "উত্তরিত"
+
+msgid "Pending"
+msgstr "অপেক্ষামাণ"
+
+msgid "Anonymous"
+msgstr "অজ্ঞাত"
+
+msgid "Read Answer"
+msgstr "উত্তর পড়ুন"
+
+msgid "times read"
+msgstr "বার পঠিত"
+
+msgid "No questions and answers found."
+msgstr "কোনো প্রশ্ন ও উত্তর পাওয়া যায়নি।"
+
+msgid "Sorry, no questions were found."
+msgstr "দুঃখিত, কোনো প্রশ্ন পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Monthly Magazine
+# ─────────────────────────────────────────────
+
+msgid "Current Issue"
+msgstr "চলতি সংখ্যা"
+
+msgid "Special Issue"
+msgstr "বিশেষ সংখ্যা"
+
+msgid "In this issue:"
+msgstr "এই সংখ্যায়:"
+
+msgid "Special topics:"
+msgstr "বিশেষ বিষয়সমূহ:"
+
+msgid "Vol"
+msgstr "খণ্ড"
+
+msgid "No"
+msgstr "নং"
+
+msgid "%s pages"
+msgstr "%s পৃষ্ঠা"
+
+msgid "Sorry, no issues were found."
+msgstr "দুঃখিত, কোনো সংখ্যা পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Probondho (Articles)
+# ─────────────────────────────────────────────
+
+msgid "Min Read"
+msgstr "মিনিট পড়া"
+
+msgid "Readers"
+msgstr "পাঠক"
+
+msgid "About the Author"
+msgstr "লেখক সম্পর্কে"
+
+msgid "References"
+msgstr "তথ্যসূত্র"
+
+msgid "Sorry, no articles were found."
+msgstr "দুঃখিত, কোনো প্রবন্ধ পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Photo Gallery
+# ─────────────────────────────────────────────
+
+msgid "Sorry, no albums were found."
+msgstr "দুঃখিত, কোনো অ্যালবাম পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Video Archive
+# ─────────────────────────────────────────────
+
+msgid "Views"
+msgstr "দেখেছেন"
+
+msgid "Video Description"
+msgstr "ভিডিও বিবরণ"
+
+msgid "Playlist"
+msgstr "প্লেলিস্ট"
+
+msgid "Sorry, no videos were found."
+msgstr "দুঃখিত, কোনো ভিডিও পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Archive pages — shared UI
+# ─────────────────────────────────────────────
+
+msgid "Search audio..."
+msgstr "অডিও খুঁজুন..."
+
+msgid "Search videos..."
+msgstr "ভিডিও খুঁজুন..."
+
+msgid "Search articles..."
+msgstr "প্রবন্ধ খুঁজুন..."
+
+msgid "Search albums..."
+msgstr "অ্যালবাম খুঁজুন..."
+
+msgid "Search questions..."
+msgstr "প্রশ্ন খুঁজুন..."
+
+msgid "Search issues..."
+msgstr "সংখ্যা খুঁজুন..."
+
+msgid "Total %s Audio"
+msgstr "মোট %s টি অডিও"
+
+msgid "Total %s Videos"
+msgstr "মোট %s টি ভিডিও"
+
+msgid "Total %s Articles"
+msgstr "মোট %s টি প্রবন্ধ"
+
+msgid "Total %s Albums"
+msgstr "মোট %s টি অ্যালবাম"
+
+msgid "Total %s Questions"
+msgstr "মোট %s টি প্রশ্ন"
+
+msgid "Total %s Issues"
+msgstr "মোট %s টি সংখ্যা"
+
+msgid "Total %s Books"
+msgstr "মোট %s টি বই"
+
+# ─────────────────────────────────────────────
+# WooCommerce Cart & Checkout
+# ─────────────────────────────────────────────
+
+msgid "Order Summary"
+msgstr "অর্ডার সারসংক্ষেপ"
+
+msgid "Continue Shopping"
+msgstr "কেনাকাটা চালিয়ে যান"
+
+msgid "Subtotal"
+msgstr "উপমোট"
+
+msgid "Total"
+msgstr "সর্বমোট"
+
+msgid "Shipping"
+msgstr "ডেলিভারি চার্জ"
+
+msgid "Proceed to Checkout"
+msgstr "চেকআউট করুন"
+
+msgid "Your cart is currently empty."
+msgstr "আপনার কার্ট এখন খালি।"
+
+msgid "Return to shop"
+msgstr "দোকানে ফিরুন"
+
+# ─────────────────────────────────────────────
+# Share Section
+# ─────────────────────────────────────────────
+
+msgid "Share"
+msgstr "শেয়ার করুন"
+
+msgid "Copied!"
+msgstr "কপি হয়েছে!"
+
+msgid "Copy Link"
+msgstr "লিঙ্ক কপি করুন"
+
+# ─────────────────────────────────────────────
+# Comments
+# ─────────────────────────────────────────────
+
+msgid "Average Rating"
+msgstr "গড় রেটিং"
+
+msgid "%s Reviews"
+msgstr "%s টি রিভিউ"
+
+msgid "Comments are closed."
+msgstr "মন্তব্য বন্ধ আছে।"
+
+msgid "Leave a comment"
+msgstr "একটি মন্তব্য লিখুন"
+
+msgid "Write your comment"
+msgstr "আপনার মন্তব্য লিখুন"
+
+msgid "Replying to %s"
+msgstr "%s-কে উত্তর দিচ্ছেন"
+
+msgid "Cancel"
+msgstr "বাতিল"
+
+msgid "Logged in as %s. <a href=\"%s\">Log out?</a>"
+msgstr "%s হিসেবে লগইন আছেন। <a href=\"%s\">লগআউট করুন?</a>"
+
+msgid "Name"
+msgstr "নাম"
+
+msgid "Your Name"
+msgstr "আপনার নাম"
+
+msgid "Email"
+msgstr "ইমেইল"
+
+msgid "Your email (will not be published)"
+msgstr "আপনার ইমেইল (প্রকাশিত হবে না)"
+
+msgid "Rating"
+msgstr "রেটিং"
+
+msgid "Select Rating"
+msgstr "রেটিং দিন"
+
+msgid "Please provide a rating"
+msgstr "একটি রেটিং দিন"
+
+msgid "Comment"
+msgstr "মন্তব্য"
+
+msgid "Write your comment here..."
+msgstr "এখানে আপনার মন্তব্য লিখুন..."
+
+msgid "Save my name and email in this browser for the next time I comment."
+msgstr "পরবর্তী মন্তব্যের জন্য এই ব্রাউজারে আমার নাম ও ইমেইল সংরক্ষণ করুন।"
+
+msgid "Send Comment"
+msgstr "মন্তব্য পাঠান"
+
+msgid "Awaiting moderation"
+msgstr "অনুমোদনের অপেক্ষায়"
+
+msgid "Edit"
+msgstr "সম্পাদনা"
+
+# ─────────────────────────────────────────────
+# Single Post Templates
+# ─────────────────────────────────────────────
+
+msgid "Asker"
+msgstr "প্রশ্নকারী"
+
+msgid "Answer"
+msgstr "উত্তর"
+
+msgid "Was this answer helpful?"
+msgstr "এই উত্তরটি কি সহায়ক ছিল?"
+
+msgid "Yes"
+msgstr "হ্যাঁ"
+
+msgid "No, not helpful"
+msgstr "না, সহায়ক নয়"
+
+msgid "Table of Contents"
+msgstr "বিষয়সূচি"
+
+msgid "Article Summaries"
+msgstr "প্রবন্ধের সারসংক্ষেপ"
+
+msgid "Image Count"
+msgstr "ছবির সংখ্যা"
+
+msgid "Photographer"
+msgstr "ফটোগ্রাফার"
+
+msgid "Album Description"
+msgstr "অ্যালবামের বিবরণ"
+
+msgid "Photo Gallery"
+msgstr "ফটো গ্যালারি"
+
+msgid "Attachment"
+msgstr "সংযুক্তি"
+
+msgid "Expires"
+msgstr "মেয়াদ শেষ"
+
+# ─────────────────────────────────────────────
+# 404 / Search / Misc
+# ─────────────────────────────────────────────
+
+msgid "Sorry, no posts matched your criteria."
+msgstr "দুঃখিত, আপনার অনুসন্ধানের সাথে কোনো পোস্ট মেলেনি।"
+
+msgid "Page Not Found"
+msgstr "পেজটি পাওয়া যায়নি"
+
+msgid "Go to Homepage"
+msgstr "হোমপেজে যান"
+
+msgid "Search Results for:"
+msgstr "অনুসন্ধানের ফলাফল:"
+
+msgid "Nothing found for your search query."
+msgstr "আপনার অনুসন্ধানে কিছু পাওয়া যায়নি।"
+
+# ─────────────────────────────────────────────
+# Contact / Forms
+# ─────────────────────────────────────────────
+
+msgid "Contact Us"
+msgstr "যোগাযোগ করুন"
+
+msgid "Your Message"
+msgstr "আপনার বার্তা"
+
+msgid "Send Message"
+msgstr "বার্তা পাঠান"
+
+msgid "Phone"
+msgstr "ফোন"
+
+msgid "Address"
+msgstr "ঠিকানা"
+
+# ─────────────────────────────────────────────
+# Footer / Sidebar
+# ─────────────────────────────────────────────
+
+msgid "Quick Links"
+msgstr "দ্রুত লিঙ্ক"
+
+msgid "Follow Us"
+msgstr "আমাদের অনুসরণ করুন"
+
+msgid "All Rights Reserved"
+msgstr "সর্বস্বত্ব সংরক্ষিত"
+
+msgid "Designed & Developed by"
+msgstr "ডিজাইন ও তৈরি:"
+
+# ─────────────────────────────────────────────
+# Prayer Times Widget
+# ─────────────────────────────────────────────
+
+msgid "Next Prayer Time"
+msgstr "পরবর্তী নামাজের সময়"
+
+msgid "Next Prayer"
+msgstr "পরবর্তী নামাজ"
+
+msgid "Location permission denied"
+msgstr "লোকেশনের অনুমতি দেওয়া হয়নি"
+
+msgid "Waiting for location..."
+msgstr "লোকেশন খোঁজা হচ্ছে..."
+
+msgid "Today's Prayer Times"
+msgstr "আজকের নামাজের সময়সূচী"
+
+msgid "Location unavailable"
+msgstr "লোকেশন পাওয়া যায়নি"
+
+msgid "Close"
+msgstr "বন্ধ করুন"
+
+msgid "Loading date..."
+msgstr "তারিখ লোড হচ্ছে..."
+
+msgid "Updating next prayer..."
+msgstr "পরবর্তী নামাজ আপডেট হচ্ছে..."
+
+msgid "Waiting for location permission..."
+msgstr "লোকেশনের অনুমতির জন্য অপেক্ষা করা হচ্ছে..."
+
+msgid "Location permission denied"
+msgstr "লোকেশনের অনুমতি দেওয়া হয়নি"
+
+msgid "Location not supported in this browser"
+msgstr "এই ব্রাউজারে লোকেশন সাপোর্ট নেই"
+
+msgid "Location timeout, please try again"
+msgstr "লোকেশন টাইমআউট, আবার চেষ্টা করুন"
+
+msgid "Retrying location..."
+msgstr "লোকেশন পুনরায় চেষ্টা হচ্ছে..."
+
+msgid "Loading prayer times..."
+msgstr "নামাজের সময়সূচী লোড হচ্ছে..."
+
+msgid "Could not load prayer times"
+msgstr "নামাজের সময়সূচী লোড করা সম্ভব হয়নি"
+
+msgid "Click the floating button to retry"
+msgstr "পুনরায় চেষ্টা করতে বাটনে ক্লিক করুন"
+
+msgid "Sehri Ends"
+msgstr "সেহরির শেষ সময়"
+
+msgid "Iftar"
+msgstr "ইফতার"
+
+msgid "Tomorrow's Fajr"
+msgstr "আগামীকালের ফজর"
+
+msgid "Fajr"
+msgstr "ফজর"
+
+msgid "Dhuhr"
+msgstr "জুহর"
+
+msgid "Asr"
+msgstr "আসর"
+
+msgid "Maghrib"
+msgstr "মাগরিব"
+
+msgid "Isha"
+msgstr "ইশা"
+
+msgid "Rajshahi"
+msgstr "রাজশাহী"
+
+# ─────────────────────────────────────────────
+# Districts of Bangladesh
+# ─────────────────────────────────────────────
+
+msgid "Dhaka"
+msgstr "ঢাকা"
+
+msgid "Faridpur"
+msgstr "ফরিদপুর"
+
+msgid "Gazipur"
+msgstr "গাজীপুর"
+
+msgid "Gopalganj"
+msgstr "গোপালগঞ্জ"
+
+msgid "Kishoreganj"
+msgstr "কিশোরগঞ্জ"
+
+msgid "Madaripur"
+msgstr "মাদারীপুর"
+
+msgid "Manikganj"
+msgstr "মানিকগঞ্জ"
+
+msgid "Munshiganj"
+msgstr "মুন্সীগঞ্জ"
+
+msgid "Narayanganj"
+msgstr "নারায়ণগঞ্জ"
+
+msgid "Narsingdi"
+msgstr "নরসিংদী"
+
+msgid "Rajbari"
+msgstr "রাজবাড়ী"
+
+msgid "Shariatpur"
+msgstr "শরীয়তপুর"
+
+msgid "Tangail"
+msgstr "টাঙ্গাইল"
+
+msgid "Banderban"
+msgstr "বান্দরবান"
+
+msgid "Brahmanbaria"
+msgstr "ব্রাহ্মণবাড়িয়া"
+
+msgid "Chandpur"
+msgstr "চাঁদপুর"
+
+msgid "Chittagong"
+msgstr "চট্টগ্রাম"
+
+msgid "Chattogram"
+msgstr "চট্টগ্রাম"
+
+msgid "Comilla"
+msgstr "কুমিল্লা"
+
+msgid "Cumilla"
+msgstr "কুমিল্লা"
+
+msgid "Cox's Bazar"
+msgstr "কক্সবাজার"
+
+msgid "Feni"
+msgstr "ফেনী"
+
+msgid "Khagrachari"
+msgstr "খাগড়াছড়ি"
+
+msgid "Lakshmipur"
+msgstr "লক্ষ্মীপুর"
+
+msgid "Noakhali"
+msgstr "নোয়াখালী"
+
+msgid "Rangamati"
+msgstr "রাঙ্গামাটি"
+
+msgid "Habiganj"
+msgstr "হবিগঞ্জ"
+
+msgid "Moulvibazar"
+msgstr "মৌলভীবাজার"
+
+msgid "Sunamganj"
+msgstr "সুনামগঞ্জ"
+
+msgid "Sylhet"
+msgstr "সিলেট"
+
+msgid "Bagerhat"
+msgstr "বাগেরহাট"
+
+msgid "Chuadanga"
+msgstr "চুয়াডাঙ্গা"
+
+msgid "Jessore"
+msgstr "যশোর"
+
+msgid "Jashore"
+msgstr "যশোর"
+
+msgid "Jhenaidah"
+msgstr "ঝিনাইদহ"
+
+msgid "Khulna"
+msgstr "খুলনা"
+
+msgid "Kushtia"
+msgstr "কুষ্টিয়া"
+
+msgid "Magura"
+msgstr "মাগুরা"
+
+msgid "Meherpur"
+msgstr "মেহেরপুর"
+
+msgid "Narail"
+msgstr "নড়াইল"
+
+msgid "Satkhira"
+msgstr "সাতক্ষীরা"
+
+msgid "Bogra"
+msgstr "বগুড়া"
+
+msgid "Bogura"
+msgstr "বগুড়া"
+
+msgid "Joypurhat"
+msgstr "জয়পুরহাট"
+
+msgid "Naogaon"
+msgstr "নওগাঁ"
+
+msgid "Natore"
+msgstr "নাটোর"
+
+msgid "Chapai Nawabganj"
+msgstr "চাঁপাইনবাবগঞ্জ"
+
+msgid "Pabna"
+msgstr "পাবনা"
+
+msgid "Sirajganj"
+msgstr "সিরাজগঞ্জ"
+
+msgid "Dinajpur"
+msgstr "দিনাজপুর"
+
+msgid "Gaibandha"
+msgstr "গাইবান্ধা"
+
+msgid "Kurigram"
+msgstr "কুড়িগ্রাম"
+
+msgid "Lalmonirhat"
+msgstr "লালমনিরহাট"
+
+msgid "Nilphamari"
+msgstr "নীলফামারী"
+
+msgid "Panchagarh"
+msgstr "পঞ্চগড়"
+
+msgid "Rangpur"
+msgstr "রংপুর"
+
+msgid "Thakurgaon"
+msgstr "ঠাকুরগাঁও"
+
+msgid "Berguna"
+msgstr "বরগুনা"
+
+msgid "Barguna"
+msgstr "বরগুনা"
+
+msgid "Barisal"
+msgstr "বরিশাল"
+
+msgid "Barishal"
+msgstr "বরিশাল"
+
+msgid "Bhola"
+msgstr "ভোলা"
+
+msgid "Jhalokati"
+msgstr "ঝালকাঠি"
+
+msgid "Patuakhali"
+msgstr "পটুয়াখালী"
+
+msgid "Pirojpur"
+msgstr "পিরোজপুর"
+
+msgid "Jamalpur"
+msgstr "জামালপুর"
+
+msgid "Mymensingh"
+msgstr "ময়মনসিংহ"
+
+msgid "Netrokona"
+msgstr "নেত্রকোনা"
+
+msgid "Sherpur"
+msgstr "শেরপুর"
+
+# ─────────────────────────────────────────────
+# Months & Days
+# ─────────────────────────────────────────────
+
+msgid "January"
+msgstr "জানুয়ারি"
+
+msgid "February"
+msgstr "ফেব্রুয়ারি"
+
+msgid "March"
+msgstr "মার্চ"
+
+msgid "April"
+msgstr "এপ্রিল"
+
+msgid "May"
+msgstr "মে"
+
+msgid "June"
+msgstr "জুন"
+
+msgid "July"
+msgstr "জুলাই"
+
+msgid "August"
+msgstr "আগস্ট"
+
+msgid "September"
+msgstr "সেপ্টেম্বর"
+
+msgid "October"
+msgstr "অক্টোবর"
+
+msgid "November"
+msgstr "নভেম্বর"
+
+msgid "December"
+msgstr "ডিসেম্বর"
+
+msgid "Saturday"
+msgstr "শনিবার"
+
+msgid "Sunday"
+msgstr "রবিবার"
+
+msgid "Monday"
+msgstr "সোমবার"
+
+msgid "Tuesday"
+msgstr "মঙ্গলবার"
+
+msgid "Wednesday"
+msgstr "বুধবার"
+
+msgid "Thursday"
+msgstr "বৃহস্পতিবার"
+
+msgid "Friday"
+msgstr "শুক্রবার"
+
+# ─────────────────────────────────────────────
+# Hijri Months
+# ─────────────────────────────────────────────
+
+msgid "Muharram"
+msgstr "মুহাররম"
+
+msgid "Safar"
+msgstr "সফর"
+
+msgid "Rabi' al-awwal"
+msgstr "রবিউল আউয়াল"
+
+msgid "Rabi' al-thani"
+msgstr "রবিউস সানি"
+
+msgid "Jumada al-ula"
+msgstr "জামাদিউল আউয়াল"
+
+msgid "Jumada al-akhira"
+msgstr "জামাদিউস সানি"
+
+msgid "Rajab"
+msgstr "রজব"
+
+msgid "Sha'ban"
+msgstr "শাবান"
+
+msgid "Ramadan"
+msgstr "রমজান"
+
+msgid "Shawwal"
+msgstr "শাওয়াল"
+
+msgid "Dhu al-Qi'dah"
+msgstr "জিলকদ"
+
+msgid "Dhu al-Hijjah"
+msgstr "জিলহজ"
+
+msgid "Hijri"
+msgstr "হিজরি"
+
+msgid "AM"
+msgstr "পূর্বাহ্ন"
+
+msgid "PM"
+msgstr "অপরাহ্ন"
+
+msgid "GPS"
+msgstr "জিপিএস"
+
+msgid "0123456789"
+msgstr "০১২৩৪৫৬৭৮৯"
+
+msgid "Tk."
+msgstr "টা."
+
+msgid "PDF Download"
+msgstr "পিডিএফ ডাউনলোড"
+
+msgid "Read Online"
+msgstr "অনলাইনে পড়ুন"
+
+msgid "Vol"
+msgstr "খণ্ড"
+
+msgid "No"
+msgstr "সংখ্যা"
+
+msgid "Current Issue"
+msgstr "বর্তমান সংখ্যা"
+
+msgid "Special Issue"
+msgstr "বিশেষ সংখ্যা"
+
+msgid "In this issue:"
+msgstr "এই সংখ্যায় যা থাকছে:"
+
+msgid "Special topics:"
+msgstr "বিশেষ আলোচনা:"
+
+msgid "Browse Issues"
+msgstr "সব সংখ্যা দেখুন"
+
+msgid "Next Prayer Time"
+msgstr "পরবর্তী নামাজের সময়"
+
+msgid "Next Prayer"
+msgstr "পরবর্তী নামাজ"
+
+msgid "Waiting for location..."
+msgstr "লোকেশন খুঁজছি..."
+
+msgid "Today's Prayer Times"
+msgstr "আজকের নামাজের সময়সূচী"
+
+msgid "Location unavailable"
+msgstr "লোকেশন পাওয়া যায়নি"
+
+msgid "Loading date..."
+msgstr "তারিখ লোড হচ্ছে..."
+
+msgid "Updating next prayer..."
+msgstr "আপডেট হচ্ছে..."
+
+msgid "Close"
+msgstr "বন্ধ করুন"
+
+msgid "Monthly Magazine"
+msgstr "মাসিক পত্রিকা"
+
+msgid "Monthly Publications and Magazine"
+msgstr "মাসিক প্রকাশনী এবং ম্যাগাজিন"
+
+msgid "Monthly Haquer Dawat"
+msgstr "মাসিক হক্বের দাওয়াত"
+
+msgid "Magazine Details"
+msgstr "সংখ্যার বিস্তারিত"
+
+msgid "Haqqer Dawat Info"
+msgstr "হক্বের দাওয়াত সম্পর্কিত তথ্য"
+
+msgid "Latest Issue"
+msgstr "সর্বশেষ সংখ্যা"
+
+msgid "Previous Issue"
+msgstr "পূর্ববর্তী সংখ্যা"
+
+msgid "Next Issue"
+msgstr "পরবর্তী সংখ্যা"
+
+msgid "Add New Issue"
+msgstr "নতুন সংখ্যা যোগ করুন"
+
+msgid "All Issues"
+msgstr "সকল সংখ্যা"
+
+msgid "Previous/Next Issues"
+msgstr "পূর্ববর্তী/পরবর্তী সংখ্যা"
+
+msgid "Issues of this Year"
+msgstr "এই বছরের সংখ্যাসমূহ"
+
+msgid "View All Issues"
+msgstr "সকল সংখ্যা দেখুন"
+
+msgid "No issues found."
+msgstr "কোন সংখ্যা পাওয়া যায়নি।"
+
+
+
+
+
+
+msgid "Order Now"
+msgstr "এখনি অর্ডার করুন"
+
+msgid "Monthly Haquer Dawat"
+msgstr "মাসিক হক্বের দাওয়াত"
+
+msgid "Monthly Publications and Magazine"
+msgstr "মাসিক প্রকাশনী ও ম্যাগাজিন"
+
+msgid "Publisher"
+msgstr "প্রকাশনী"
+
+msgid "Edition"
+msgstr "সংস্করণ"
+
+msgid "ISBN"
+msgstr "আইএসবিএন"
+
+msgid "Out of stock"
+msgstr "স্টক আউট"
+
+msgid "Add to Cart"
+msgstr "কার্টে যোগ করুন"
+
+msgid "Minutes"
+msgstr "মিনিট"
+
+msgid "Second"
+msgstr "সেকেন্ড"
+
+msgid "Seconds"
+msgstr "সেকেন্ড"
+
+msgid "backward"
+msgstr "পেছনে"
+
+msgid "forward"
+msgstr "সামনে"
+
+msgid "seconds backward"
+msgstr "সেকেন্ড পেছনে"
+
+msgid "seconds forward"
+msgstr "সেকেন্ড সামনে"
+
